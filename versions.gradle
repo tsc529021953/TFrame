@@ -1,0 +1,554 @@
+/*
+ * Copyright (C) 2018 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/**
+ * Shared file between builds so that they can all use the same dependencies and
+ * maven repositories.
+ **/
+ext.deps = [:]
+def versions = [:]
+versions.android_gradle_plugin = '4.0.1'
+versions.apache_commons = "2.5"
+versions.arch_core = "2.1.0"
+versions.atsl_core = "1.1.0"
+versions.atsl_rules = "1.1.1"
+versions.atsl_runner = "1.1.1"
+versions.atsl_junit = "1.1.0"
+versions.app_startup = "1.0.0-alpha01"
+versions.constraint_layout = "2.0.0-beta4"
+versions.core_ktx = "1.0.0"
+versions.dagger = "2.41"
+versions.dexmaker = "2.2.0"
+versions.espresso = "3.1.1"
+versions.fragment = "1.2.4"
+versions.glide = "4.9.0"
+versions.glide_transformations = "3.0.1"
+versions.hamcrest = "1.3"
+versions.junit = "4.12"
+versions.kotlin = "1.5.30"
+versions.coroutines = "1.3.5"
+versions.lifecycle = "2.2.0"
+versions.mockito = "2.25.0"
+versions.mockito_all = "1.10.19"
+versions.mockito_android = "2.25.0"
+versions.mockwebserver = "3.8.1"
+versions.navigation = "2.2.1"
+versions.okhttp_logging_interceptor = "3.11.0"
+versions.paging = "2.1.2"
+versions.retrofit = "2.6.0"
+versions.robolectric = "4.2"
+versions.room = "2.4.1"
+versions.rx_android = "2.0.1"
+versions.rx_binding = "2.1.1"
+versions.rxjava2 = "2.1.3"
+versions.support = "1.1.0"
+versions.cardview = "1.0.0"
+versions.swipe = "1.0.0"
+versions.timber = "4.7.1"
+versions.logback = "2.0.0"
+versions.work = "2.1.0"
+versions.gson = "2.8.5"
+versions.leakcanary = "2.3"
+versions.crashreport_runtime = "2.8.6"
+versions.crashreport_upgrade = "1.4.2"
+versions.crashreport_native = "3.7.3"
+versions.liveeventbus = "1.4.5"
+versions.mina = "2.0.16"
+versions.slf4j = "1.7.25"
+versions.favorite_button = "0.1.5"
+versions.seekbar_compat = "0.3.0"
+versions.brvah = "3.0.4"
+versions.base_popup = "2.1.6"
+versions.arouter_api = "1.5.0"
+versions.arouter_compiler = "1.2.2"
+versions.hope_utils = "1.2.7"
+versions.material_dialogs = "3.3.0"
+versions.zxing = "3.2.1"
+versions.cserial = "1.0.9"
+versions.csbrvahbindingtx = "1.0.2"
+versions.lyric = "1.0.3"
+versions.autosize = "1.2.1"
+versions.flowlayout = "1.1.2"
+versions.circleprogress = "1.2.1"
+versions.waveLineView = "1.0.4"
+versions.bgabanner = "2.2.7@aar"
+versions.spinKit = "1.4.0"
+versions.xCrash = "2.4.9"
+versions.hotfox = "3.2.14"
+versions.tinypinyin = "2.0.3"
+versions.halo = "2.2.6"
+versions.multidex = "2.0.1"
+versions.circleindicator = "1.2.2@aar"
+versions.SeekArc = "v1.1"
+versions.itemtouchhelperextension = "1.0.6"
+versions.swipedelmenulayout = "V1.3.0"
+versions.tray = "0.12.0"
+versions.drawerlayout = "1.1.0-alpha03"
+versions.LSwitch = "V1.0.4"
+versions.swipelayout = "1.2.0@aar"
+versions.stetho = "1.6.0"
+versions.range_seekbar = "v3.0.0"
+versions.ffmpeg = "4.1.3"
+versions.activity = '1.2.1'
+versions.toast = "8.8"
+ext.versions = versions
+
+def deps = [:] //依赖
+
+def activity = [:]
+activity.activity_ktx = "androidx.activity:activity-ktx:$versions.activity"
+deps.activity = activity
+
+
+def support = [:] //官方support扩展组件
+support.annotations = "androidx.annotation:annotation:$versions.support"
+support.app_compat = "androidx.appcompat:appcompat:$versions.support"
+support.recyclerview = "androidx.recyclerview:recyclerview:$versions.support"
+support.cardview = "androidx.cardview:cardview:$versions.cardview"
+support.swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:$versions.swipe"
+support.design = "com.google.android.material:material:$versions.support"
+support.v4 = "androidx.legacy:legacy-support-v4:$versions.support"
+support.core_utils = "androidx.legacy:legacy-support-core-utils:$versions.support"
+support.core_ktx = "androidx.core:core-ktx:$versions.core_ktx"
+support.fragment_runtime = "androidx.fragment:fragment:${versions.fragment}"
+support.fragment_runtime_ktx = "androidx.fragment:fragment-ktx:${versions.fragment}"
+support.fragment_testing = "androidx.fragment:fragment-testing:${versions.fragment}"
+support.drawerlayout = "androidx.drawerlayout:drawerlayout:${versions.drawerlayout}"
+deps.support = support
+
+def room = [:] //room数据库
+room.runtime = "androidx.room:room-runtime:$versions.room"
+room.compiler = "androidx.room:room-compiler:$versions.room"
+room.rxjava2 = "androidx.room:room-rxjava2:$versions.room"
+room.testing = "androidx.room:room-testing:$versions.room"
+room.ktx = "androidx.room:room-ktx:$versions.room"
+deps.room = room
+
+
+def lifecycle = [:] //生命周期组件
+lifecycle.runtime = "androidx.lifecycle:lifecycle-runtime:$versions.lifecycle"
+lifecycle.extensions = "androidx.lifecycle:lifecycle-extensions:$versions.lifecycle"
+lifecycle.java8 = "androidx.lifecycle:lifecycle-common-java8:$versions.lifecycle"
+lifecycle.compiler = "androidx.lifecycle:lifecycle-compiler:$versions.lifecycle"
+lifecycle.viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
+deps.lifecycle = lifecycle
+
+def arch_core = [:]
+arch_core.runtime = "androidx.arch.core:core-runtime:$versions.arch_core"
+arch_core.testing = "androidx.arch.core:core-testing:$versions.arch_core"
+deps.arch_core = arch_core
+
+def retrofit = [:] //网络加载框架
+retrofit.runtime = "com.squareup.retrofit2:retrofit:$versions.retrofit"
+retrofit.gson = "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+retrofit.mock = "com.squareup.retrofit2:retrofit-mock:$versions.retrofit"
+deps.retrofit = retrofit
+deps.okhttp_logging_interceptor = "com.squareup.okhttp3:logging-interceptor:${versions.okhttp_logging_interceptor}"
+
+def dagger = [:] //dagger依赖注入
+dagger.runtime = "com.google.dagger:dagger:$versions.dagger"
+dagger.android = "com.google.dagger:dagger-android:$versions.dagger"
+dagger.android_support = "com.google.dagger:dagger-android-support:$versions.dagger"
+dagger.compiler = "com.google.dagger:dagger-compiler:$versions.dagger"
+dagger.android_support_compiler = "com.google.dagger:dagger-android-processor:$versions.dagger"
+
+deps.dagger = dagger
+
+def arouter = [:]
+arouter.api = "com.alibaba:arouter-api:$versions.arouter_api"
+arouter.compiler = "com.alibaba:arouter-compiler:$versions.arouter_compiler"
+deps.arouter = arouter
+
+def espresso = [:] //单元测试框架
+espresso.core = "androidx.test.espresso:espresso-core:$versions.espresso"
+espresso.contrib = "androidx.test.espresso:espresso-contrib:$versions.espresso"
+espresso.intents = "androidx.test.espresso:espresso-intents:$versions.espresso"
+deps.espresso = espresso
+
+def atsl = [:] //单元测试框架
+atsl.core = "androidx.test:core:$versions.atsl_core"
+atsl.ext_junit = "androidx.test.ext:junit:$versions.atsl_junit"
+atsl.runner = "androidx.test:runner:$versions.atsl_runner"
+atsl.rules = "androidx.test:rules:$versions.atsl_rules"
+deps.atsl = atsl
+
+def mockito = [:] //单元测试框架
+mockito.core = "org.mockito:mockito-core:$versions.mockito"
+mockito.all = "org.mockito:mockito-all:$versions.mockito_all"
+mockito.android = "org.mockito:mockito-android:$versions.mockito_android"
+deps.mockito = mockito
+
+def kotlin = [:] //kotlin版本管理
+kotlin.stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+kotlin.test = "org.jetbrains.kotlin:kotlin-test-junit:$versions.kotlin"
+kotlin.plugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+kotlin.allopen = "org.jetbrains.kotlin:kotlin-allopen:$versions.kotlin"
+kotlin.coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines"
+
+deps.kotlin = kotlin
+
+deps.paging_ktx = "androidx.paging:paging-runtime-ktx:$versions.paging"
+def work = [:] //后台任务框架
+work.runtime = "androidx.work:work-runtime:$versions.work"
+work.testing = "androidx.work:work-testing:$versions.work"
+work.firebase = "androidx.work:work-firebase:$versions.work"
+work.runtime_ktx = "androidx.work:work-runtime-ktx:$versions.work"
+deps.work = work
+
+def navigation = [:] //Fragment管理框架
+navigation.runtime = "androidx.navigation:navigation-runtime:$versions.navigation"
+navigation.runtime_ktx = "androidx.navigation:navigation-runtime-ktx:$versions.navigation"
+navigation.fragment = "androidx.navigation:navigation-fragment:$versions.navigation"
+navigation.fragment_ktx = "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
+navigation.ui = "androidx.navigation:navigation-ui:$versions.navigation"
+navigation.ui_ktx = "androidx.navigation:navigation-ui-ktx:$versions.navigation"
+navigation.safe_args_plugin = "androidx.navigation:navigation-safe-args-gradle-plugin:$versions.navigation"
+deps.navigation = navigation
+
+def glide = [:] //图片处理框架
+glide.runtime = "com.github.bumptech.glide:glide:$versions.glide"
+glide.compiler = "com.github.bumptech.glide:compiler:$versions.glide"
+glide.transformations = "jp.wasabeef:glide-transformations:$versions.glide_transformations"
+glide.annotations = "com.github.bumptech.glide:annotations:$versions.glide"
+deps.glide = glide
+
+def leakcanary = [:] //内存溢出检测框架
+leakcanary.release = "com.squareup.leakcanary:leakcanary-android:$versions.leakcanary"
+leakcanary.debug = "com.squareup.leakcanary:leakcanary-android-no-op:$versions.leakcanary"
+
+def crashreport = [:] //bugly崩溃日志上传和版本升级
+//crashreport.runtime = "com.tencent.bugly:crashreport:$versions.crashreport_runtime" //只带崩溃日志上传功能的
+crashreport.upgrade = "com.tencent.bugly:crashreport_upgrade:$versions.crashreport_upgrade" //附带版本升级功能
+crashreport.native = "com.tencent.bugly:nativecrashreport:$versions.crashreport_native" //NDK日志上传
+deps.crashreport = crashreport
+
+//第三方
+deps.multidex = "androidx.multidex:multidex:$versions.multidex"
+deps.dexmaker = "com.linkedin.dexmaker:dexmaker-mockito:$versions.dexmaker"
+deps.constraint_layout = "androidx.constraintlayout:constraintlayout:$versions.constraint_layout"
+deps.timber = "com.jakewharton.timber:timber:$versions.timber"//日志框架
+deps.logback = "com.github.tony19:logback-android:$versions.logback"//日志框架
+deps.junit = "junit:junit:$versions.junit" //单元测试
+deps.mock_web_server = "com.squareup.okhttp3:mockwebserver:$versions.mockwebserver" //单元测试
+deps.rxjava2 = "io.reactivex.rxjava2:rxjava:$versions.rxjava2"
+deps.rx_android = "io.reactivex.rxjava2:rxandroid:$versions.rx_android"
+deps.rx_binding = "com.jakewharton.rxbinding2:rxbinding:$versions.rx_binding"
+deps.hamcrest = "org.hamcrest:hamcrest-all:$versions.hamcrest" //单元测试
+deps.android_gradle_plugin = "com.android.tools.build:gradle:$versions.android_gradle_plugin" //gradle版本
+deps.robolectric = "org.robolectric:robolectric:$versions.robolectric" //单元测试
+deps.liveeventbus = "com.jeremyliao:live-event-bus-x:$versions.liveeventbus"
+deps.mina = "org.apache.mina:mina-core:$versions.mina"
+deps.slf4j = "org.slf4j:slf4j-api:$versions.slf4j"
+deps.slf4j_simple = "org.slf4j:slf4j-simple:$versions.slf4j"
+//deps.slf4j_android = "org.slf4j:slf4j-android:$versions.slf4j_android"
+deps.gson = "com.google.code.gson:gson:$versions.gson"
+deps.favorite_button = "com.github.ivbaranov:materialfavoritebutton:$versions.favorite_button" //收藏按钮
+deps.seekbar_compat = "com.minimize.library:seekbar-compat:$versions.seekbar_compat" //进度条
+deps.brvah = "com.github.CymChad:BaseRecyclerViewAdapterHelper:$versions.brvah" //RecyclerViewAdapterHelper
+deps.base_popup = "com.github.razerdp:BasePopup:$versions.base_popup" //弹出框
+deps.material_dialogs = "com.afollestad.material-dialogs:core:$versions.material_dialogs" //对话框
+deps.material_dialogs_lifecycle = "com.afollestad.material-dialogs:lifecycle:$versions.material_dialogs"
+deps.material_dialogs_input = "com.afollestad.material-dialogs:input:$versions.material_dialogs"
+deps.zxing = "com.google.zxing:core:$versions.zxing"
+deps.cserial = "com.github.CaesarShao:CSerial:$versions.cserial"//CSerial的串口工具
+deps.csbrvahbindingtx = "com.github.CaesarShao:CSBrvahBindingTX:$versions.csbrvahbindingtx"//适用于mvvm的brvah的插件,从此不用写列表适配器
+deps.lyric = "com.github.Lauzy:LyricView:$versions.lyric"//歌词控件
+deps.autosize = "me.jessyan:autosize:$versions.autosize"//屏幕适配
+deps.flowlayout = "com.hyman:flowlayout-lib:$versions.flowlayout"//标签控件
+deps.circleprogress = "com.github.lzyzsd:circleprogress:$versions.circleprogress"//圆形进度条
+deps.waveLineView = "com.github.Jay-Goo:WaveLineView:$versions.waveLineView"//波浪纹UI
+deps.bgabanner = "cn.bingoogolapple:bga-banner:$versions.bgabanner"//引导图指示标
+deps.spinKit = "com.github.ybq:Android-SpinKit:$versions.spinKit"//引导图指示标
+deps.xCrash = "com.iqiyi.xcrash:xcrash-android-lib:$versions.xCrash"//爱奇艺的Crash捕获
+deps.hotfix = "com.aliyun.ams:alicloud-android-hotfix:$versions.hotfox"//爱奇艺的Crash捕获
+deps.tinypinyin = "com.github.promeg:tinypinyin:$versions.tinypinyin"
+deps.halo_turbo = "com.github.EthanCo.Halo-Turbo:halo-turbo:$versions.halo"//以前小白写的udp和tcp的工具
+deps.halo_turbo_mina = "com.github.EthanCo.Halo-Turbo:halo-turbo-mina:$versions.halo"
+deps.halo_json_convertor = "com.github.EthanCo.Halo-Turbo:json-convertor:$versions.halo"
+deps.codec = "commons-codec:commons-codec:1.3"
+deps.circleindicator = "me.relex:circleindicator:$versions.circleindicator"
+deps.SeekArc = "com.github.Triggertrap:SeekArc:$versions.SeekArc"
+deps.itemtouchhelperextension = "com.loopeer.library:itemtouchhelperextension:$versions.itemtouchhelperextension"
+deps.swipedelmenulayout = "com.github.mcxtzhang:SwipeDelMenuLayout:$versions.swipedelmenulayout"
+deps.tray = "net.grandcentrix.tray:tray:$versions.tray"
+deps.LSwitch = "com.github.liys666666:LSwitch:$versions.LSwitch"
+deps.swipelayout = "com.daimajia.swipelayout:library:$versions.swipelayout"
+deps.um_asms = "com.umeng.umsdk:asms:1.2.2"
+deps.um_common = "com.umeng.umsdk:common:9.3.8"
+deps.SwipeDelMenuLayout = "com.github.mcxtzhang:SwipeDelMenuLayout:V1.3.0"
+deps.stetho = "com.facebook.stetho:stetho:$versions.stetho"
+deps.stetho_okhttp3 = "com.facebook.stetho:stetho-okhttp3:$versions.stetho"
+deps.RangeSeekBar = "com.github.Jay-Goo:RangeSeekBar:$versions.range_seekbar"
+deps.ffmpeg="com.yyl.ffmpeg:ffmpeg_cmd:$versions.ffmpeg"
+deps.toast="com.hjq:toast:$versions.toast"
+
+def hope = [:]
+hope.utils = "com.nbhope.lib:utils:$versions.hope_utils"
+deps.hope = hope
+
+ext.deps = deps
+
+def apk_version = [:] //版本号
+apk_version.version_code = VERSION_CODE as int
+apk_version.version_name = VERSION_NAME
+ext.apk_version = apk_version
+
+def build_versions = [:] //环境编译版本
+build_versions.min_sdk = 21
+build_versions.target_sdk = 28
+build_versions.build_tools = "29.0.2"
+ext.build_versions = build_versions
+ext.is_module = false
+
+def main_activity = [:]
+main_activity.version = "hy"
+ext.main_activity = main_activity
+
+static def addRepos(RepositoryHandler handler) {
+    handler.mavenCentral()
+    handler.mavenLocal()
+    handler.maven { url 'https://jitpack.io' }
+    handler.maven { url "https://maven.aliyun.com/repository/public" }
+    handler.maven { url "https://maven.aliyun.com/repository/central" }
+    handler.maven { url "https://maven.aliyun.com/repository/google" }
+    handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    handler.maven { url "http://deve.nbhope.cn:8081/nexus/content/groups/android_group/" }
+    handler.maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    handler.maven { url "http://maven.aliyun.com/nexus/content/repositories/releases" }
+    handler.jcenter()
+    handler.google()
+}
+
+ext.addRepos = this.&addRepos
+
+
+def device = [:]
+device.handleCode = HANDLE_CODE == "true"
+device.device = new Device().handleCode(CODE)
+ext.device = device
+
+
+class Device {
+    String playerMode
+    String cpu
+    String hopeBaseStand
+    String isKtv
+    String isTunnelIndependent
+    String isTunnelSourceShow
+    String isDoubleChannel
+    String noBaseMusicChannelCount
+    String volumeControl
+    String hasScreen
+    String screenSize
+    String isHope
+    String voice
+    String isRadio
+    String wakeUpCpu
+    String hopeVolumeShow
+    String isHasSwitchSource
+    String isHideBlueTooth
+    String isSingleControlDualBase
+    String xiaomi = false
+    String isHomeSlideUhome = false
+    String company
+    String buglyId
+    String theme = "000"
+
+
+    String toString() {
+        return "Device{" +
+                "playerMode='" + playerMode + '\'' +
+                ", cpu='" + cpu + '\'' +
+                ", hopeBaseStand='" + hopeBaseStand + '\'' +
+                ", isKtv='" + isKtv + '\'' +
+                ", isTunnelIndependent='" + isTunnelIndependent + '\'' +
+                ", isTunnelSourceShow='" + isTunnelSourceShow + '\'' +
+                ", isDoubleChannel='" + isDoubleChannel + '\'' +
+                ", noBaseMusicChannelCount='" + noBaseMusicChannelCount + '\'' +
+                ", volumeControl='" + volumeControl + '\'' +
+                ", hasScreen='" + hasScreen + '\'' +
+                ", screenSize='" + screenSize + '\'' +
+                ", isHope='" + isHope + '\'' +
+                ", voice='" + voice + '\'' +
+                ", wakeUpCpu='" + wakeUpCpu + '\'' +
+                ", isRadio='" + isRadio + '\'' +
+                ", hopeVolumeShow='" + hopeVolumeShow + '\'' +
+                ", isHasSwitchSource='" + isHasSwitchSource + '\'' +
+                ", isHideBlueTooth='" + isHideBlueTooth + '\'' +
+                ", isSingleControlDualBase='" + isSingleControlDualBase + '\'' +
+                ", xiaomi='" + xiaomi + '\'' +
+                ", company='" + company + '\'' +
+                ", isHomeSlideUhome='" + isHomeSlideUhome + '\'' +
+                ", buglyId='" + buglyId + '\'' +
+                ", theme='" + theme + '\'' +
+                '}'
+    }
+
+
+    Device handleCode(String code32) {
+
+        String code = new BigInteger(code32.substring(7), 32).toString(2)
+        while (code.length() < 35) {
+            code = "0" + code
+        }
+        playerMode = code.charAt(0) == '0' ? 'single' : 'dual'
+        switch (code.substring(1, 3)) {
+            case "00":
+                cpu = "rk3368"
+                break
+            case "10":
+                cpu = "a83t"
+                break
+            case "01":
+                cpu = "rk3326"
+                break
+            case "11":
+                cpu = "rk3566"
+                break
+            default:
+                cpu = "a83t"
+                break
+        }
+        isKtv = code.charAt(3) == '0' ? 'false' : 'true'
+        isHope = code.charAt(4) == '0' ? 'true' : 'false'
+        hopeBaseStand = code.charAt(5) == '0' ? 'false' : 'true'
+        if (code.charAt(6) == '0') {
+            if (code.charAt(7) == '0') {
+                volumeControl = 'system'
+            } else {
+                volumeControl = 'tunnel'
+            }
+        } else {
+            if (code.charAt(7) == '0') {
+                volumeControl = 'auth'
+            }
+        }
+
+        isTunnelSourceShow = code.charAt(8) == '0' ? 'false' : 'true'
+        isTunnelIndependent = code.charAt(9) == '0' ? 'false' : 'true'
+        noBaseMusicChannelCount = Integer.parseUnsignedInt('' + code.charAt(10) + code.charAt(11), 2)
+        isHasSwitchSource = code.charAt(12) == '0' ? 'true' : 'false'
+        isHideBlueTooth = code.charAt(13) == '0' ? 'false' : 'true'
+        isDoubleChannel = code.charAt(14) == '0' ? 'false' : 'true'
+        hasScreen = code.charAt(15) == '0' ? 'false' : 'true'
+        hopeVolumeShow = code.charAt(16) == '1' ? 'false' : 'true'
+        if (code.charAt(18) == '0') {
+            if (code.charAt(19) == '0') {
+                screenSize = 'small'
+            } else {
+                screenSize = 'large'
+            }
+        } else {
+            if (code.charAt(19) == '0') {
+                screenSize = 'normal'
+            } else {
+                screenSize = 'xlarge'
+            }
+        }
+        if (code.charAt(21) == '0') {
+            if (code.charAt(22) == '0') {
+                voice = 'none'
+            } else {
+                voice = 'speech'
+            }
+        } else {
+            if (code.charAt(22) == '0') {
+                voice = 'tianmaosdk'
+            } else {
+                voice = 'tianmaoapp'
+
+            }
+        }
+//        isRadio = code.charAt(23) == '0' ? 'false' : 'true'
+        isRadio = 'false'
+        if (code.charAt(25) == '0') {
+            wakeUpCpu = 'AC108'
+        } else if (code.charAt(25) == '1') {
+            wakeUpCpu = '7210'
+        }
+        isSingleControlDualBase = code.charAt(27) == '0' ? 'false' : 'true'
+        isHomeSlideUhome = code.charAt(28) == '0' ? 'false' : 'true'
+        theme = code.substring(29,31)+code.charAt(26).toString()
+        int thirdSdk = Integer.parseUnsignedInt('' + code.charAt(31) + code.charAt(32) + code.charAt(33) + code.charAt(34), 2)
+        switch (thirdSdk) {
+            case 1:
+                xiaomi = true
+                break
+        }
+        company = code32.substring(0, 4)
+        switch (company) {
+            case "HD01":
+            case "HD02":
+            case "HD04":
+            case "HD24":
+                theme = "000"
+                break
+            case "HD22":
+                theme = "200"
+                company = 'XW'
+                break
+            case "HK44":
+            case "HW18":
+            case "HA01":
+            case "HA02":
+            case "HA06":
+            case "HA10":
+            case "HA07":
+            case "HK03":
+            case "HK05":
+            case "HK06":
+            case "HK07":
+                break
+            default:
+                company = 'XW'
+                break
+        }
+        switch (code32.substring(0,2)){
+            case "HS":
+                buglyId = "712b220c3f"
+                break
+            case "HD":
+            case "HW":
+                buglyId = "3f0a247c46"
+                break
+            case "HM":
+                buglyId = "d4c5300502"
+                break
+            case "HQ":
+                buglyId = "89e78cf22e"
+                break
+            case "HK":
+                buglyId = "a4cfeef259"
+                break
+            case "HA":
+                if (code32=='HA07S01jr1h6ig'){
+                    buglyId = "56bf1c6a80"
+                    cpu = "a133"
+                }else {
+                    buglyId = "7aa1bdb862"
+                    cpu = "a133"
+                }
+                break
+        }
+
+
+        println this.toString()
+
+        return this
+
+    }
+}
