@@ -1,0 +1,201 @@
+android {
+
+    signingConfigs {
+        def path = ''
+//        if (isBuildModule.toBoolean())
+        path = '../app/';
+        debug {
+//            if ((device.handleCode ? device.device.cpu : CPU) == RK3368) {
+//                storeFile file(path + project.property('keyStore'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            } else if ((device.handleCode ? device.device.cpu : CPU) == RK3326) {
+//                storeFile file(path + project.property('keyStore3326'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            } else if((device.handleCode ? device.device.cpu : CPU) == A83T) {
+//                storeFile file(path + project.property('keyStoreDual'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }else if((device.handleCode ? device.device.cpu : CPU) == RK3566) {
+////                if (isBuildModule.toBoolean()) {
+////                    storeFile file("../app/" + project.property('keyStore3566'))
+////                } else {
+////                    storeFile file(project.property('keyStore3566'))
+////                }
+//                storeFile file(path + project.property('keyStore3566'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }else {
+//                storeFile file(path + project.property('keyStoreA133'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+        release {
+//            if ((device.handleCode ? device.device.cpu : CPU) == RK3368) {
+//                storeFile file(path + project.property('keyStore'))
+////                storeFile file(project.property('keyStore'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            } else if ((device.handleCode ? device.device.cpu : CPU) == RK3326) {
+//                storeFile file(path + project.property('keyStore3326'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            } else if((device.handleCode ? device.device.cpu : CPU) == A83T) {
+//                storeFile file(path + project.property('keyStoreDual'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }else if((device.handleCode ? device.device.cpu : CPU) == RK3566) {
+//                storeFile file(path + project.property('keyStore3566'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }else {
+//                storeFile file(path + project.property('keyStoreA133'))
+//                storePassword project.property('keyStorePassword')
+//                keyAlias project.property('keyAlias')
+//                keyPassword project.property('keyAliasPassword')
+//            }
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+    }
+
+    buildTypes {
+        debug {
+            matchingFallbacks = ['release', 'debug']
+            testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled false
+//            signingConfig signingConfigs.debug
+
+
+//            if (SERVER == TEST_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${TEST_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${TEST_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${TEST_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${TEST_SERVER_HTTP_PORT}"
+//            } else if (SERVER == PRETEST_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${PRETEST_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${PRETEST_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${PRETEST_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${PRETEST_SERVER_HTTP_PORT}"
+//            } else if (SERVER == PRODUCT_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${PRODUCT_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${PRODUCT_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${PRODUCT_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${PRODUCT_SERVER_HTTP_PORT}"
+//            }
+//
+//            buildConfigField "Boolean", "IS_JENKINS", "${IS_JENKINS}"
+//            buildConfigField "String", "SERVER", "\"${SERVER}\""
+//
+//
+//            buildConfigField "String", "PLAYER_MODE",device.handleCode ? "\"${device.device.playerMode}\"" : "\"${PLAYER_MODE}\""
+//            buildConfigField "Boolean", "HOPE_BASE_STAND",device.handleCode ? "${device.device.hopeBaseStand}" : "${HOPE_BASE_STAND}"
+//            buildConfigField "Boolean", "IS_KTV",device.handleCode ? "${device.device.isKtv}" : "${IS_KTV}"
+//            buildConfigField "Boolean", "IS_TUNNEL_INDEPENDENT",device.handleCode ? "${device.device.isTunnelIndependent}" : "${IS_TUNNEL_INDEPENDENT}"
+//            buildConfigField "Boolean", "IS_RADIO",device.handleCode ? "${device.device.isRadio}" : "${IS_RADIO}"
+//            buildConfigField "Boolean", "IS_TUNNEL_SOURCE_SHOW",device.handleCode ? "${device.device.isTunnelSourceShow}" : "${IS_TUNNEL_SOURCE_SHOW}"
+//            buildConfigField "String", "VOICE",device.handleCode ? "\"${device.device.voice}\"" : "\"${VOICE}\""
+//            buildConfigField "String", "CPU",device.handleCode ? "\"${device.device.cpu}\"" : "\"${CPU}\""
+//            buildConfigField "Boolean", "HAS_SCREEN",device.handleCode ? "${device.device.hasScreen}" : "${HAS_SCREEN}"
+//            buildConfigField "Boolean", "IS_DOUBLE_CHANNEL",device.handleCode ? "${device.device.isDoubleChannel}" : "${IS_DOUBLE_CHANNEL}"
+//            buildConfigField "String", "SCREEN_SIZE",device.handleCode ? "\"${device.device.screenSize}\"" : "\"${SCREEN_SIZE}\""
+//            buildConfigField "Boolean", "IS_HOPE",device.handleCode ? "${device.device.isHope}" : "${IS_HOPE}"
+//            buildConfigField "int", "NOBASE_MUSIC_CHANNEL_COUNT",device.handleCode ? "${device.device.noBaseMusicChannelCount}" : "${NOBASE_MUSIC_CHANNEL_COUNT}"
+//            buildConfigField "Boolean", "IS_XIAOMI",device.handleCode ? "${device.device.xiaomi}" : "${XIAOMI}"
+//            buildConfigField "Boolean", "HOPE_VOLUME_SHOW",device.handleCode ? "${device.device.hopeVolumeShow}" : "${HOPE_VOLUME_SHOW}"
+//            buildConfigField "Boolean", "IS_HAS_SWITCH_SOURCE",device.handleCode ? "${device.device.isHasSwitchSource}" : "${IS_HAS_SWITCH_SOURCE}"
+//            buildConfigField "String", "WAKE_UP_CPU",device.handleCode ? "\"${device.device.wakeUpCpu}\"" : "\"${WAKE_UP_CPU}\""
+//            buildConfigField "String", "HOPE_CODE", "\"${CODE}\""
+//            buildConfigField "String", "COMPANY",device.handleCode ? "\"${device.device.company}\"" : "\"${COMPANY}\""
+//            buildConfigField "Boolean", "IS_VOICE_OUT", "${IS_VOICE_OUT}"
+//            buildConfigField "String", "SPEECH_ALIAS","\"${SPEECH_ALIAS}\""
+//            buildConfigField "Boolean", "IS_LAUNCHER", "${IS_LAUNCHER}"
+//            buildConfigField "String", "THIRT_SMART_HOME","\"${THIRT_SMART_HOME}\""
+//            buildConfigField "Boolean", "IS_SINGLE_CONTROL_DUAL_BASE",device.handleCode ? "${device.device.isSingleControlDualBase}" : "${IS_SINGLE_CONTROL_DUAL_BASE}"
+//            buildConfigField "Boolean", "IS_HIDE_BLUETOOTH",device.handleCode ? "${device.device.isHideBlueTooth}" : "${IS_HIDE_BLUETOOTH}"
+//            buildConfigField "String", "THEME",  device.handleCode ? "\"${device.device.theme}\"" : "\"${THEME}\""
+//            buildConfigField "String", "BUGLY_ID", "\"${device.device.buglyId}\""
+//            buildConfigField "Boolean", "IS_HOME_SLIDE_UHOME",device.handleCode ? "${device.device.isHomeSlideUhome}" : "${IS_HOME_SLIDE_UHOME}"
+        }
+        release {
+            matchingFallbacks = ['release', 'debug']
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
+
+
+//            if (SERVER == TEST_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${TEST_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${TEST_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${TEST_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${TEST_SERVER_HTTP_PORT}"
+//            } else if (SERVER == PRETEST_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${PRETEST_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${PRETEST_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${PRETEST_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${PRETEST_SERVER_HTTP_PORT}"
+//            } else if (SERVER == PRODUCT_SERVER) {
+//                buildConfigField "String", "SOCKET_IP", "\"${PRODUCT_SOCKET_URL}\""
+//                buildConfigField "int", "SOCKET_PORT", "${PRODUCT_SERVER_TCP_PORT}"
+//                buildConfigField "String", "HTTP_IP", "\"${PRODUCT_SERVER_URL}\""
+//                buildConfigField "int", "HTTP_PORT", "${PRODUCT_SERVER_HTTP_PORT}"
+//            }
+//
+//            buildConfigField "Boolean", "IS_JENKINS", "${IS_JENKINS}"
+//            buildConfigField "String", "SERVER", "\"${SERVER}\""
+//
+//
+//            buildConfigField "String", "PLAYER_MODE",device.handleCode ? "\"${device.device.playerMode}\"" : "\"${PLAYER_MODE}\""
+//            buildConfigField "Boolean", "HOPE_BASE_STAND",device.handleCode ? "${device.device.hopeBaseStand}" : "${HOPE_BASE_STAND}"
+//            buildConfigField "Boolean", "IS_KTV",device.handleCode ? "${device.device.isKtv}" : "${IS_KTV}"
+//            buildConfigField "Boolean", "IS_TUNNEL_INDEPENDENT",device.handleCode ? "${device.device.isTunnelIndependent}" : "${IS_TUNNEL_INDEPENDENT}"
+//            buildConfigField "Boolean", "IS_RADIO",device.handleCode ? "${device.device.isRadio}" : "${IS_RADIO}"
+//            buildConfigField "Boolean", "IS_TUNNEL_SOURCE_SHOW",device.handleCode ? "${device.device.isTunnelSourceShow}" : "${IS_TUNNEL_SOURCE_SHOW}"
+//            buildConfigField "String", "VOICE",device.handleCode ? "\"${device.device.voice}\"" : "\"${VOICE}\""
+//            buildConfigField "String", "CPU",device.handleCode ? "\"${device.device.cpu}\"" : "\"${CPU}\""
+//            buildConfigField "Boolean", "HAS_SCREEN",device.handleCode ? "${device.device.hasScreen}" : "${HAS_SCREEN}"
+//            buildConfigField "Boolean", "IS_DOUBLE_CHANNEL",device.handleCode ? "${device.device.isDoubleChannel}" : "${IS_DOUBLE_CHANNEL}"
+//            buildConfigField "String", "SCREEN_SIZE",device.handleCode ? "\"${device.device.screenSize}\"" : "\"${SCREEN_SIZE}\""
+//            buildConfigField "Boolean", "IS_HOPE",device.handleCode ? "${device.device.isHope}" : "${IS_HOPE}"
+//            buildConfigField "int", "NOBASE_MUSIC_CHANNEL_COUNT",device.handleCode ? "${device.device.noBaseMusicChannelCount}" : "${NOBASE_MUSIC_CHANNEL_COUNT}"
+//            buildConfigField "Boolean", "IS_XIAOMI",device.handleCode ? "${device.device.xiaomi}" : "${XIAOMI}"
+//            buildConfigField "Boolean", "HOPE_VOLUME_SHOW",device.handleCode ? "${device.device.hopeVolumeShow}" : "${HOPE_VOLUME_SHOW}"
+//            buildConfigField "Boolean", "IS_HAS_SWITCH_SOURCE",device.handleCode ? "${device.device.isHasSwitchSource}" : "${IS_HAS_SWITCH_SOURCE}"
+//            buildConfigField "String", "WAKE_UP_CPU",device.handleCode ? "\"${device.device.wakeUpCpu}\"" : "\"${WAKE_UP_CPU}\""
+//            buildConfigField "String", "HOPE_CODE", "\"${CODE}\""
+//            buildConfigField "String", "COMPANY",device.handleCode ? "\"${device.device.company}\"" : "\"${COMPANY}\""
+//            buildConfigField "Boolean", "IS_VOICE_OUT", "${IS_VOICE_OUT}"
+//            buildConfigField "String", "SPEECH_ALIAS","\"${SPEECH_ALIAS}\""
+//            buildConfigField "Boolean", "IS_LAUNCHER", "${IS_LAUNCHER}"
+//            buildConfigField "String", "THIRT_SMART_HOME","\"${THIRT_SMART_HOME}\""
+//            buildConfigField "Boolean", "IS_SINGLE_CONTROL_DUAL_BASE",device.handleCode ? "${device.device.isSingleControlDualBase}" : "${IS_SINGLE_CONTROL_DUAL_BASE}"
+//            buildConfigField "Boolean", "IS_HIDE_BLUETOOTH",device.handleCode ? "${device.device.isHideBlueTooth}" : "${IS_HIDE_BLUETOOTH}"
+//            buildConfigField "String", "THEME",  device.handleCode ? "\"${device.device.theme}\"" : "\"${THEME}\""
+//            buildConfigField "String", "BUGLY_ID", "\"${device.device.buglyId}\""
+//            buildConfigField "Boolean", "IS_HOME_SLIDE_UHOME",device.handleCode ? "${device.device.isHomeSlideUhome}" : "${IS_HOME_SLIDE_UHOME}"
+        }
+    }
+
+}
+
+
+
+

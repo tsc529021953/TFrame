@@ -1,38 +1,32 @@
-plugins {
-    id 'com.android.library'
-}
+apply from: "../component_lib.gradle"
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion "32.0.0"
-
-    defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 32
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    repositories {
+        flatDir {
+            dirs 'libs'
         }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api deps.lifecycle.viewmodel_ktx
+    implementation deps.liveeventbus
+
+//    api deps.hope.utils
+    implementation deps.kotlin.stdlib
+    implementation deps.retrofit.runtime
+    implementation deps.tray
+
+    implementation deps.xCrash
+    implementation deps.slf4j
+    implementation deps.logback
+    api deps.timber
+
+    implementation deps.arouter.api
+
+    api deps.gson
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
 }

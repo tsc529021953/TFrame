@@ -319,18 +319,18 @@ main_activity.version = "hy"
 ext.main_activity = main_activity
 
 static def addRepos(RepositoryHandler handler) {
-    handler.mavenCentral()
-    handler.mavenLocal()
-    handler.maven { url 'https://jitpack.io' }
-    handler.maven { url "https://maven.aliyun.com/repository/public" }
-    handler.maven { url "https://maven.aliyun.com/repository/central" }
-    handler.maven { url "https://maven.aliyun.com/repository/google" }
-    handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    handler.maven { url "http://deve.nbhope.cn:8081/nexus/content/groups/android_group/" }
-    handler.maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    handler.maven { url "http://maven.aliyun.com/nexus/content/repositories/releases" }
+//    handler.mavenCentral()
+//    handler.mavenLocal()
     handler.jcenter()
     handler.google()
+//    handler.maven { url 'https://jitpack.io' }
+//    handler.maven { url "https://maven.aliyun.com/repository/public" }
+//    handler.maven { url "https://maven.aliyun.com/repository/central" }
+//    handler.maven { url "https://maven.aliyun.com/repository/google" }
+//    handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+//    handler.maven { url "http://deve.nbhope.cn:8081/nexus/content/groups/android_group/" }
+//    handler.maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+//    handler.maven { url "http://maven.aliyun.com/nexus/content/repositories/releases" }
 }
 
 ext.addRepos = this.&addRepos

@@ -1,0 +1,97 @@
+//// Top-level build file where you can add configuration options common to all sub-projects/modules.
+if (isBuildModule.toBoolean()) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+apply plugin: 'kotlin-allopen'
+apply plugin: 'androidx.navigation.safeargs.kotlin'
+apply plugin: 'kotlin-android-extensions'
+
+apply from: "../build_types.gradle"
+
+kapt {
+    useBuildCache = true
+    arguments {
+        arg("AROUTER_MODULE_NAME", project.getName())
+    }
+}
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode apk_version.version_code
+        versionName apk_version.version_name
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled = true
+        vectorDrawables.useSupportLibrary = true
+
+        ndk {
+            //指定需要的os平台
+            abiFilters 'armeabi-v7a'
+        }
+        if ("small" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)) {
+            manifestPlaceholders = [
+                    DESIGN_WIDTH   : 	"480",
+                    DESIGN_HEIGHT	:	"480"
+            ]
+        } /*else if ("normal" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)){
+            manifestPlaceholders = [
+                    DESIGN_WIDTH : "900",
+                    DESIGN_HEIGHT: "553"
+            ]
+        }*/ else {
+            manifestPlaceholders = [
+                    DESIGN_WIDTH : "853",
+                    DESIGN_HEIGHT: "553"
+            ]
+        }
+//        if ("hy"== main_activity.version){
+//            manifestPlaceholders=[hope_main_key:"android.intent.action.MAIN",
+//                                   hy_main_key:"android.intent.action.NO_MAIN"
+//            ]
+//        }else{
+//            manifestPlaceholders=[hope_main_key:"android.intent.action.MAIN",
+//                                   hy_main_key:"android.intent.action.NO_MAIN"
+//            ]
+//        }
+
+    }
+
+
+    sourceSets {
+        main { jniLibs.srcDirs = ['libs'] }
+    }
+
+    buildFeatures {
+        dataBinding  = true
+//        compose = true
+    }
+
+    lintOptions {
+        lintConfig rootProject.file('lint.xml') //忽略检查
+//        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+
+
+
+

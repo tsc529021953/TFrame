@@ -1,0 +1,35 @@
+//if (isBuildModule.toBoolean()) {
+//    apply plugin: 'com.android.application'
+//} else {
+//    apply plugin: 'com.android.library'
+//}
+
+android {
+    //这里进行设置使用单独运行还是合并运行的Manifest.xml
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            if (isBuildModule.toBoolean()) {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                java.srcDirs += "src/main/debug/java/"
+                res.srcDirs += "src/main/debug/res/"
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                java.srcDirs += "src/main/release/java/"
+//                resources {
+//                    exclude 'src/debug/*'
+//                }
+            }
+        }
+    }
+
+}
+
+task hello() {
+
+
+}
+
+
+
+
