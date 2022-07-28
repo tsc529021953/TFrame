@@ -9,9 +9,12 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api deps.lifecycle.viewmodel_ktx
     implementation deps.liveeventbus
+    api deps.constraint_layout
+    api deps.multidex
 
 //    api deps.hope.utils
     implementation deps.kotlin.stdlib
@@ -24,6 +27,7 @@ dependencies {
     api deps.timber
 
     implementation deps.arouter.api
+    kapt deps.arouter.compiler
 
     api deps.gson
     implementation deps.dagger.runtime

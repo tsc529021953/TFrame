@@ -82,7 +82,7 @@ android {
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             minifyEnabled false
-//            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.debug
 
 
 //            if (SERVER == TEST_SERVER) {
@@ -139,7 +139,7 @@ android {
             matchingFallbacks = ['release', 'debug']
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-//            signingConfig signingConfigs.release
+            signingConfig signingConfigs.release
 
 
 //            if (SERVER == TEST_SERVER) {

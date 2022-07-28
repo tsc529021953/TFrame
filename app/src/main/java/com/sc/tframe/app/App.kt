@@ -10,12 +10,8 @@ import com.sc.lib_frame.base.BaseApp
  * @version 0.0.0-1
  * @description
  */
-class App : Application() {
-
+class App : BaseApp() {
     override fun onCreate() {
         super.onCreate()
-
-        //
     }
-
 }

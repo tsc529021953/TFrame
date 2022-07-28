@@ -1,40 +1,91 @@
-plugins {
-    id 'com.android.application'
+//plugins {
+//    id 'com.android.application'
+//    id 'kotlin-android'
+//}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "../build_types.gradle"
+apply plugin: 'kotlin-kapt'
+
+kapt {
+    useBuildCache = true
+    arguments {
+        arg("AROUTER_MODULE_NAME", project.getName())
+    }
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
 
     defaultConfig {
         applicationId "com.sc.tframe"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode apk_version.version_code
+        versionName apk_version.version_name
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    lintOptions {
+        lintConfig rootProject.file('lint.xml') //忽略检查
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    //开发用 MMdd  打包提测 MMddHH 因为精确到小时 跨小时就不能自动安装apk
+    def timeForDebugFileFormater = "MMdd"
+    def timeForReleaseFileFormater = "MMddHH"
+    ndkVersion '21.0.6113669'
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+
+            def buildTypeName = variant.buildType.name
+
+            def timeFormater
+            if ("debug".equalsIgnoreCase(buildTypeName) && IS_JENKINS == 'false') {
+                timeFormater = timeForDebugFileFormater
+            } else {
+                timeFormater = timeForReleaseFileFormater
+            }
+//            outputFileName = "${CODE}_${SERVER}_${buildTypeName}_V${variant.versionName}_${releaseTime(timeFormater)}_${IS_JENKINS}.apk"
+            outputFileName = " ${parent.name}_${buildTypeName}_V${variant.versionName}_${releaseTime(timeFormater)}_${IS_JENKINS}.apk"
+        }
+    }
+}
+
+static def releaseTime(String formater) {
+    return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
 }
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-//    implementation project(path: ':lib_frame')
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation deps.kotlin.stdlib
+    implementation deps.support.core_ktx
+
+    implementation deps.support.app_compat
+    androidTestImplementation deps.support.app_compat
+    implementation deps.support.design
+    androidTestImplementation deps.support.design
+    implementation deps.constraint_layout
+    implementation project(path: ':lib_frame')
+    testImplementation deps.junit
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation deps.espresso.core
 }

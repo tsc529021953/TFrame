@@ -97,6 +97,7 @@ class HopeUtils {
 
             try {
                 val en = NetworkInterface.getNetworkInterfaces()
+                if (en == null) return null
                 while (en.hasMoreElements()) {
                     val intf = en.nextElement()
                     val enumIpAddr = intf.inetAddresses
