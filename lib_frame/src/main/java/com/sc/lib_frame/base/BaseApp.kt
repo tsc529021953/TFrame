@@ -121,7 +121,7 @@ open class BaseApp : Application() {
 
     private fun initTimber() {
         if (BuildConfig.DEBUG) {
-            Timber.plant(ThreadAwareDebugTree())
+            Timber.plant(Timber.DebugTree())
         } else {
             Timber.plant(FileLoggingTree())
         }

@@ -1,3 +1,4 @@
+include ':app_xw'
 include ':lib_frame'
 include ':app'
 rootProject.name = "TFrame"

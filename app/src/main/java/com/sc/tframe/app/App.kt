@@ -3,6 +3,7 @@ package com.sc.tframe.app
 import android.app.Application
 import android.content.Context
 import com.sc.lib_frame.base.BaseApp
+import timber.log.Timber
 
 /**
  * @author  tsc
@@ -13,5 +14,7 @@ import com.sc.lib_frame.base.BaseApp
 class App : BaseApp() {
     override fun onCreate() {
         super.onCreate()
+
+        Timber.i("初始化 准备开启服务！")
     }
 }

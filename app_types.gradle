@@ -1,0 +1,47 @@
+apply plugin: 'kotlin-kapt'
+
+kapt {
+    useBuildCache = true
+    arguments {
+        arg("AROUTER_MODULE_NAME", project.getName())
+    }
+}
+
+android {
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        lintConfig rootProject.file('lint.xml') //忽略检查
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    //开发用 MMdd  打包提测 MMddHH 因为精确到小时 跨小时就不能自动安装apk
+    def timeForDebugFileFormater = "MMdd"
+    def timeForReleaseFileFormater = "MMddHH"
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+
+            def buildTypeName = variant.buildType.name
+
+            def timeFormater
+            if ("debug".equalsIgnoreCase(buildTypeName) && IS_JENKINS == 'false') {
+                timeFormater = timeForDebugFileFormater
+            } else {
+                timeFormater = timeForReleaseFileFormater
+            }
+//            outputFileName = "${CODE}_${SERVER}_${buildTypeName}_V${variant.versionName}_${releaseTime(timeFormater)}_${IS_JENKINS}.apk"
+            outputFileName = " ${parent.name}_${buildTypeName}_V${variant.versionName}_${releaseTime(timeFormater)}_${IS_JENKINS}.apk"
+        }
+    }
+}
+
+static def releaseTime(String formater) {
+    return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
+}
+
+
+
+

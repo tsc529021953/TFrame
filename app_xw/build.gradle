@@ -8,7 +8,7 @@ android {
     buildToolsVersion "32.0.0"
 
     defaultConfig {
-        applicationId "com.sc.tframe"
+        applicationId "com.sc.xwservice"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 1
@@ -39,4 +39,5 @@ dependencies {
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core
 
+    implementation deps.hellodaemon
 }

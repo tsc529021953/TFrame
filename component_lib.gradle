@@ -34,22 +34,22 @@ android {
             //指定需要的os平台
             abiFilters 'armeabi-v7a'
         }
-        if ("small" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)) {
-            manifestPlaceholders = [
-                    DESIGN_WIDTH   : 	"480",
-                    DESIGN_HEIGHT	:	"480"
-            ]
-        } /*else if ("normal" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)){
-            manifestPlaceholders = [
-                    DESIGN_WIDTH : "900",
-                    DESIGN_HEIGHT: "553"
-            ]
-        }*/ else {
-            manifestPlaceholders = [
-                    DESIGN_WIDTH : "853",
-                    DESIGN_HEIGHT: "553"
-            ]
-        }
+//        if ("small" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)) {
+//            manifestPlaceholders = [
+//                    DESIGN_WIDTH   : 	"480",
+//                    DESIGN_HEIGHT	:	"480"
+//            ]
+//        } /*else if ("normal" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)){
+//            manifestPlaceholders = [
+//                    DESIGN_WIDTH : "900",
+//                    DESIGN_HEIGHT: "553"
+//            ]
+//        }*/ else {
+//            manifestPlaceholders = [
+//                    DESIGN_WIDTH : "853",
+//                    DESIGN_HEIGHT: "553"
+//            ]
+//        }
 //        if ("hy"== main_activity.version){
 //            manifestPlaceholders=[hope_main_key:"android.intent.action.MAIN",
 //                                   hy_main_key:"android.intent.action.NO_MAIN"

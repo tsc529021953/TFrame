@@ -105,6 +105,7 @@ versions.range_seekbar = "v3.0.0"
 versions.ffmpeg = "4.1.3"
 versions.activity = '1.2.1'
 versions.toast = "8.8"
+versions.hellodaemon = "+"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -296,6 +297,9 @@ deps.RangeSeekBar = "com.github.Jay-Goo:RangeSeekBar:$versions.range_seekbar"
 deps.ffmpeg="com.yyl.ffmpeg:ffmpeg_cmd:$versions.ffmpeg"
 deps.toast="com.hjq:toast:$versions.toast"
 
+// 服务后台保活
+deps.hellodaemon = "com.xdandroid:hellodaemon:$versions.hellodaemon"
+
 def hope = [:]
 hope.utils = "com.nbhope.lib:utils:$versions.hope_utils"
 deps.hope = hope
@@ -343,207 +347,220 @@ ext.device = device
 
 
 class Device {
-    String playerMode
-    String cpu
-    String hopeBaseStand
-    String isKtv
-    String isTunnelIndependent
-    String isTunnelSourceShow
-    String isDoubleChannel
-    String noBaseMusicChannelCount
-    String volumeControl
-    String hasScreen
-    String screenSize
-    String isHope
-    String voice
-    String isRadio
-    String wakeUpCpu
-    String hopeVolumeShow
-    String isHasSwitchSource
-    String isHideBlueTooth
-    String isSingleControlDualBase
-    String xiaomi = false
-    String isHomeSlideUhome = false
-    String company
-    String buglyId
-    String theme = "000"
+    String PACKAGE_NAME_XW = "com.sc.xwservice"
+    String PACKAGE_NAME = "com.sc.tframe"
+
+    String packageName
+//    String playerMode
+//    String cpu
+//    String hopeBaseStand
+//    String isKtv
+//    String isTunnelIndependent
+//    String isTunnelSourceShow
+//    String isDoubleChannel
+//    String noBaseMusicChannelCount
+//    String volumeControl
+//    String hasScreen
+//    String screenSize
+//    String isHope
+//    String voice
+//    String isRadio
+//    String wakeUpCpu
+//    String hopeVolumeShow
+//    String isHasSwitchSource
+//    String isHideBlueTooth
+//    String isSingleControlDualBase
+//    String xiaomi = false
+//    String isHomeSlideUhome = false
+//    String company
+//    String buglyId
+//    String theme = "000"
 
 
     String toString() {
         return "Device{" +
-                "playerMode='" + playerMode + '\'' +
-                ", cpu='" + cpu + '\'' +
-                ", hopeBaseStand='" + hopeBaseStand + '\'' +
-                ", isKtv='" + isKtv + '\'' +
-                ", isTunnelIndependent='" + isTunnelIndependent + '\'' +
-                ", isTunnelSourceShow='" + isTunnelSourceShow + '\'' +
-                ", isDoubleChannel='" + isDoubleChannel + '\'' +
-                ", noBaseMusicChannelCount='" + noBaseMusicChannelCount + '\'' +
-                ", volumeControl='" + volumeControl + '\'' +
-                ", hasScreen='" + hasScreen + '\'' +
-                ", screenSize='" + screenSize + '\'' +
-                ", isHope='" + isHope + '\'' +
-                ", voice='" + voice + '\'' +
-                ", wakeUpCpu='" + wakeUpCpu + '\'' +
-                ", isRadio='" + isRadio + '\'' +
-                ", hopeVolumeShow='" + hopeVolumeShow + '\'' +
-                ", isHasSwitchSource='" + isHasSwitchSource + '\'' +
-                ", isHideBlueTooth='" + isHideBlueTooth + '\'' +
-                ", isSingleControlDualBase='" + isSingleControlDualBase + '\'' +
-                ", xiaomi='" + xiaomi + '\'' +
-                ", company='" + company + '\'' +
-                ", isHomeSlideUhome='" + isHomeSlideUhome + '\'' +
-                ", buglyId='" + buglyId + '\'' +
-                ", theme='" + theme + '\'' +
+                "packageName='" + packageName + '\'' +
+//                "playerMode='" + playerMode + '\'' +
+//                ", cpu='" + cpu + '\'' +
+//                ", hopeBaseStand='" + hopeBaseStand + '\'' +
+//                ", isKtv='" + isKtv + '\'' +
+//                ", isTunnelIndependent='" + isTunnelIndependent + '\'' +
+//                ", isTunnelSourceShow='" + isTunnelSourceShow + '\'' +
+//                ", isDoubleChannel='" + isDoubleChannel + '\'' +
+//                ", noBaseMusicChannelCount='" + noBaseMusicChannelCount + '\'' +
+//                ", volumeControl='" + volumeControl + '\'' +
+//                ", hasScreen='" + hasScreen + '\'' +
+//                ", screenSize='" + screenSize + '\'' +
+//                ", isHope='" + isHope + '\'' +
+//                ", voice='" + voice + '\'' +
+//                ", wakeUpCpu='" + wakeUpCpu + '\'' +
+//                ", isRadio='" + isRadio + '\'' +
+//                ", hopeVolumeShow='" + hopeVolumeShow + '\'' +
+//                ", isHasSwitchSource='" + isHasSwitchSource + '\'' +
+//                ", isHideBlueTooth='" + isHideBlueTooth + '\'' +
+//                ", isSingleControlDualBase='" + isSingleControlDualBase + '\'' +
+//                ", xiaomi='" + xiaomi + '\'' +
+//                ", company='" + company + '\'' +
+//                ", isHomeSlideUhome='" + isHomeSlideUhome + '\'' +
+//                ", buglyId='" + buglyId + '\'' +
+//                ", theme='" + theme + '\'' +
                 '}'
     }
 
 
-    Device handleCode(String code32) {
-
-        String code = new BigInteger(code32.substring(7), 32).toString(2)
+    Device handleCode(String code) {
         while (code.length() < 35) {
-            code = "0" + code
+            code +=  "0"
         }
-        playerMode = code.charAt(0) == '0' ? 'single' : 'dual'
-        switch (code.substring(1, 3)) {
-            case "00":
-                cpu = "rk3368"
-                break
-            case "10":
-                cpu = "a83t"
-                break
-            case "01":
-                cpu = "rk3326"
-                break
-            case "11":
-                cpu = "rk3566"
+        switch(code.substring(0, 3)) {
+            case "XWI":
+                packageName = PACKAGE_NAME_XW
                 break
             default:
-                cpu = "a83t"
+                packageName = PACKAGE_NAME
                 break
         }
-        isKtv = code.charAt(3) == '0' ? 'false' : 'true'
-        isHope = code.charAt(4) == '0' ? 'true' : 'false'
-        hopeBaseStand = code.charAt(5) == '0' ? 'false' : 'true'
-        if (code.charAt(6) == '0') {
-            if (code.charAt(7) == '0') {
-                volumeControl = 'system'
-            } else {
-                volumeControl = 'tunnel'
-            }
-        } else {
-            if (code.charAt(7) == '0') {
-                volumeControl = 'auth'
-            }
-        }
+//        String code = new BigInteger(code32.substring(7), 32).toString(2)
 
-        isTunnelSourceShow = code.charAt(8) == '0' ? 'false' : 'true'
-        isTunnelIndependent = code.charAt(9) == '0' ? 'false' : 'true'
-        noBaseMusicChannelCount = Integer.parseUnsignedInt('' + code.charAt(10) + code.charAt(11), 2)
-        isHasSwitchSource = code.charAt(12) == '0' ? 'true' : 'false'
-        isHideBlueTooth = code.charAt(13) == '0' ? 'false' : 'true'
-        isDoubleChannel = code.charAt(14) == '0' ? 'false' : 'true'
-        hasScreen = code.charAt(15) == '0' ? 'false' : 'true'
-        hopeVolumeShow = code.charAt(16) == '1' ? 'false' : 'true'
-        if (code.charAt(18) == '0') {
-            if (code.charAt(19) == '0') {
-                screenSize = 'small'
-            } else {
-                screenSize = 'large'
-            }
-        } else {
-            if (code.charAt(19) == '0') {
-                screenSize = 'normal'
-            } else {
-                screenSize = 'xlarge'
-            }
-        }
-        if (code.charAt(21) == '0') {
-            if (code.charAt(22) == '0') {
-                voice = 'none'
-            } else {
-                voice = 'speech'
-            }
-        } else {
-            if (code.charAt(22) == '0') {
-                voice = 'tianmaosdk'
-            } else {
-                voice = 'tianmaoapp'
-
-            }
-        }
-//        isRadio = code.charAt(23) == '0' ? 'false' : 'true'
-        isRadio = 'false'
-        if (code.charAt(25) == '0') {
-            wakeUpCpu = 'AC108'
-        } else if (code.charAt(25) == '1') {
-            wakeUpCpu = '7210'
-        }
-        isSingleControlDualBase = code.charAt(27) == '0' ? 'false' : 'true'
-        isHomeSlideUhome = code.charAt(28) == '0' ? 'false' : 'true'
-        theme = code.substring(29,31)+code.charAt(26).toString()
-        int thirdSdk = Integer.parseUnsignedInt('' + code.charAt(31) + code.charAt(32) + code.charAt(33) + code.charAt(34), 2)
-        switch (thirdSdk) {
-            case 1:
-                xiaomi = true
-                break
-        }
-        company = code32.substring(0, 4)
-        switch (company) {
-            case "HD01":
-            case "HD02":
-            case "HD04":
-            case "HD24":
-                theme = "000"
-                break
-            case "HD22":
-                theme = "200"
-                company = 'XW'
-                break
-            case "HK44":
-            case "HW18":
-            case "HA01":
-            case "HA02":
-            case "HA06":
-            case "HA10":
-            case "HA07":
-            case "HK03":
-            case "HK05":
-            case "HK06":
-            case "HK07":
-                break
-            default:
-                company = 'XW'
-                break
-        }
-        switch (code32.substring(0,2)){
-            case "HS":
-                buglyId = "712b220c3f"
-                break
-            case "HD":
-            case "HW":
-                buglyId = "3f0a247c46"
-                break
-            case "HM":
-                buglyId = "d4c5300502"
-                break
-            case "HQ":
-                buglyId = "89e78cf22e"
-                break
-            case "HK":
-                buglyId = "a4cfeef259"
-                break
-            case "HA":
-                if (code32=='HA07S01jr1h6ig'){
-                    buglyId = "56bf1c6a80"
-                    cpu = "a133"
-                }else {
-                    buglyId = "7aa1bdb862"
-                    cpu = "a133"
-                }
-                break
-        }
+//        playerMode = code.charAt(0) == '0' ? 'single' : 'dual'
+//        switch (code.substring(1, 3)) {
+//            case "00":
+//                cpu = "rk3368"
+//                break
+//            case "10":
+//                cpu = "a83t"
+//                break
+//            case "01":
+//                cpu = "rk3326"
+//                break
+//            case "11":
+//                cpu = "rk3566"
+//                break
+//            default:
+//                cpu = "a83t"
+//                break
+//        }
+//        isKtv = code.charAt(3) == '0' ? 'false' : 'true'
+//        isHope = code.charAt(4) == '0' ? 'true' : 'false'
+//        hopeBaseStand = code.charAt(5) == '0' ? 'false' : 'true'
+//        if (code.charAt(6) == '0') {
+//            if (code.charAt(7) == '0') {
+//                volumeControl = 'system'
+//            } else {
+//                volumeControl = 'tunnel'
+//            }
+//        } else {
+//            if (code.charAt(7) == '0') {
+//                volumeControl = 'auth'
+//            }
+//        }
+//
+//        isTunnelSourceShow = code.charAt(8) == '0' ? 'false' : 'true'
+//        isTunnelIndependent = code.charAt(9) == '0' ? 'false' : 'true'
+//        noBaseMusicChannelCount = Integer.parseUnsignedInt('' + code.charAt(10) + code.charAt(11), 2)
+//        isHasSwitchSource = code.charAt(12) == '0' ? 'true' : 'false'
+//        isHideBlueTooth = code.charAt(13) == '0' ? 'false' : 'true'
+//        isDoubleChannel = code.charAt(14) == '0' ? 'false' : 'true'
+//        hasScreen = code.charAt(15) == '0' ? 'false' : 'true'
+//        hopeVolumeShow = code.charAt(16) == '1' ? 'false' : 'true'
+//        if (code.charAt(18) == '0') {
+//            if (code.charAt(19) == '0') {
+//                screenSize = 'small'
+//            } else {
+//                screenSize = 'large'
+//            }
+//        } else {
+//            if (code.charAt(19) == '0') {
+//                screenSize = 'normal'
+//            } else {
+//                screenSize = 'xlarge'
+//            }
+//        }
+//        if (code.charAt(21) == '0') {
+//            if (code.charAt(22) == '0') {
+//                voice = 'none'
+//            } else {
+//                voice = 'speech'
+//            }
+//        } else {
+//            if (code.charAt(22) == '0') {
+//                voice = 'tianmaosdk'
+//            } else {
+//                voice = 'tianmaoapp'
+//
+//            }
+//        }
+////        isRadio = code.charAt(23) == '0' ? 'false' : 'true'
+//        isRadio = 'false'
+//        if (code.charAt(25) == '0') {
+//            wakeUpCpu = 'AC108'
+//        } else if (code.charAt(25) == '1') {
+//            wakeUpCpu = '7210'
+//        }
+//        isSingleControlDualBase = code.charAt(27) == '0' ? 'false' : 'true'
+//        isHomeSlideUhome = code.charAt(28) == '0' ? 'false' : 'true'
+//        theme = code.substring(29,31)+code.charAt(26).toString()
+//        int thirdSdk = Integer.parseUnsignedInt('' + code.charAt(31) + code.charAt(32) + code.charAt(33) + code.charAt(34), 2)
+//        switch (thirdSdk) {
+//            case 1:
+//                xiaomi = true
+//                break
+//        }
+//        company = code32.substring(0, 4)
+//        switch (company) {
+//            case "HD01":
+//            case "HD02":
+//            case "HD04":
+//            case "HD24":
+//                theme = "000"
+//                break
+//            case "HD22":
+//                theme = "200"
+//                company = 'XW'
+//                break
+//            case "HK44":
+//            case "HW18":
+//            case "HA01":
+//            case "HA02":
+//            case "HA06":
+//            case "HA10":
+//            case "HA07":
+//            case "HK03":
+//            case "HK05":
+//            case "HK06":
+//            case "HK07":
+//                break
+//            default:
+//                company = 'XW'
+//                break
+//        }
+//        switch (code32.substring(0,2)){
+//            case "HS":
+//                buglyId = "712b220c3f"
+//                break
+//            case "HD":
+//            case "HW":
+//                buglyId = "3f0a247c46"
+//                break
+//            case "HM":
+//                buglyId = "d4c5300502"
+//                break
+//            case "HQ":
+//                buglyId = "89e78cf22e"
+//                break
+//            case "HK":
+//                buglyId = "a4cfeef259"
+//                break
+//            case "HA":
+//                if (code32=='HA07S01jr1h6ig'){
+//                    buglyId = "56bf1c6a80"
+//                    cpu = "a133"
+//                }else {
+//                    buglyId = "7aa1bdb862"
+//                    cpu = "a133"
+//                }
+//                break
+//        }
 
 
         println this.toString()

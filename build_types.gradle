@@ -81,8 +81,9 @@ android {
             matchingFallbacks = ['release', 'debug']
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            minifyEnabled false
+            minifyEnabled true
             signingConfig signingConfigs.debug
+            debuggable true
 
 
 //            if (SERVER == TEST_SERVER) {
@@ -140,7 +141,7 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-
+//            debuggable false
 
 //            if (SERVER == TEST_SERVER) {
 //                buildConfigField "String", "SOCKET_IP", "\"${TEST_SOCKET_URL}\""
