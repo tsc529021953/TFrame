@@ -81,7 +81,7 @@ android {
             matchingFallbacks = ['release', 'debug']
             testCoverageEnabled !project.hasProperty('android.injected.invoked.from.ide')
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            minifyEnabled true
+//            minifyEnabled true
             signingConfig signingConfigs.debug
             debuggable true
 

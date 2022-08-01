@@ -6,9 +6,21 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.location.Location
 import android.os.Build
 import android.os.IBinder
+import android.webkit.ValueCallback
+import androidx.lifecycle.Observer
+import com.sc.lib_frame.ITNotice
+import com.sc.lib_frame.bean.TMessage
+import com.sc.lib_frame.utils.LiveEBUtil
+import com.sc.lib_frame.utils.json.BaseGsonUtils
+import com.sc.lib_weather.bean.WeatherBean
+import com.sc.lib_weather.WeatherListener
+import com.sc.lib_weather.utils.LocationUtil
+import com.sc.lib_weather.utils.WeatherUtil
 import com.sc.xwservice.app.App.Companion.TAG
+import com.sc.xwservice.config.MessageConst
 import com.xdandroid.hellodaemon.AbsWorkService
 import timber.log.Timber
 import java.util.*
@@ -24,7 +36,7 @@ import java.util.*
 class InfoService : AbsWorkService() {
 
     companion object{
-        const val TIMER: Long = 4000
+        const val TIMER: Long = 40000
     }
 
     var timer: Timer? = Timer()
@@ -33,6 +45,20 @@ class InfoService : AbsWorkService() {
             Timber.i("$TAG 定时器执行一次")
         }
     }
+//    var weatherListener : WeatherListener? = null
+    var weatherUtil : WeatherUtil? = null
+    var weatherCB = ValueCallback<WeatherBean> { 
+        Timber.i("$TAG 获取到天气信息") 
+    }
+
+    private val liveRemoteObserver = Observer<Any> {
+        it as TMessage
+        Timber.i("$TAG aidlMessage ${it?.cmd} ${it.toString()}")
+        if (it.cmd == MessageConst.PERMISSION_GET){
+            weatherUtil?.onRequestPermissionsResult(LocationUtil.REQUEST_CODE, arrayOf(), IntArray(0))
+        }
+//            weatherListener?.registerListener(this, weatherCB)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -40,6 +66,25 @@ class InfoService : AbsWorkService() {
         // 开启定时器
         timer?.schedule(timerTask, 0 , TIMER)
         // 初始化相关
+        initSP()
+        initWeather()
+        LiveEBUtil.registForever(TMessage::class.java, liveRemoteObserver)
+    }
+
+    fun initWeather(){
+//        weatherListener = WeatherListener.getInstance()
+//        weatherListener?.registerListener(this, weatherCB)
+
+        weatherUtil = WeatherUtil(this, object : ValueCallback<WeatherBean>{
+            override fun onReceiveValue(p0: WeatherBean?) {
+                Timber.i("$TAG ${BaseGsonUtils.GsonString(p0)}")
+            }
+
+        })
+    }
+
+    fun initSP(){
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -63,7 +108,7 @@ class InfoService : AbsWorkService() {
             val notification: Notification =
                 Notification.Builder(applicationContext, chanId)
                     .setContentTitle("小屏中控")
-                    .setContentText("https://an.rustfisher.com")
+                    .setContentText("用于向小屏传递信息")
 //                    .setSmallIcon(R.drawable.f_zan_1)
 //                    .setContentIntent(pendingIntent)
                     .build()
@@ -79,32 +124,43 @@ class InfoService : AbsWorkService() {
         Timber.i("$TAG 服务移除")
         timer?.cancel()
         timer = null
+        weatherUtil?.dispose()
+//        weatherListener?.unregisterListener(weatherCB)
+//        weatherListener?.dispose()
+        LiveEBUtil.unRegist(TMessage::class.java, liveRemoteObserver)
+    }
+
+    private val mBinder = object : ITNotice.Stub(){
+        override fun aidlMessage(message: TMessage?) {
+            Timber.i("$TAG aidlMessage ${message?.cmd} ${message.toString()}")
+        }
+
     }
 
     override fun onBind(intent: Intent?, alwaysNull: Void?): IBinder? {
-        Timber.i("$TAG onBind")
-        return null
+        Timber.i(" onBind")
+        return mBinder
     }
 
     override fun shouldStopService(intent: Intent?, flags: Int, startId: Int): Boolean {
-        Timber.i("$TAG shouldStopService")
+        Timber.i(" shouldStopService")
         return false
     }
 
     override fun startWork(intent: Intent?, flags: Int, startId: Int) {
-        Timber.i("$TAG startWork")
+        Timber.i(" startWork")
     }
 
     override fun stopWork(intent: Intent?, flags: Int, startId: Int) {
-        Timber.i("$TAG stopWork")
+        Timber.i(" stopWork")
     }
 
     override fun isWorkRunning(intent: Intent?, flags: Int, startId: Int): Boolean {
-        Timber.i("$TAG isWorkRunning")
+        Timber.i(" isWorkRunning")
         return true
     }
 
     override fun onServiceKilled(rootIntent: Intent?) {
-        Timber.i("$TAG onServiceKilled $rootIntent")
+        Timber.i(" onServiceKilled $rootIntent")
     }
 }

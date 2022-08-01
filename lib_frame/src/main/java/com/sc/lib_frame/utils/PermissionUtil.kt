@@ -16,6 +16,7 @@ import java.lang.reflect.Method
  */
 object PermissionUtil {
 
+    @JvmStatic
     //Tells whether permissions are granted to the app.
     fun hasPermissionsGranted(activity: Activity, permissions: Array<String>): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

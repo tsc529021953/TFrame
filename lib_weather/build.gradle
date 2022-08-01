@@ -1,0 +1,28 @@
+apply from: "../component_lib.gradle"
+
+android {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.retrofit.runtime
+
+    implementation deps.xstream
+    implementation deps.gson
+    implementation deps.timber
+//    implementation deps.location
+//    'com.github.quentin7b:android-location-tracker:4.0'
+
+    implementation deps.support.app_compat
+    implementation deps.support.design
+    implementation deps.espresso.core
+    implementation deps.atsl.ext_junit
+    implementation deps.junit
+//    implementation project(path: ':lib_frame')
+}

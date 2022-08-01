@@ -1,3 +1,4 @@
+include ':lib_weather'
 include ':app_xw'
 include ':lib_frame'
 include ':app'
