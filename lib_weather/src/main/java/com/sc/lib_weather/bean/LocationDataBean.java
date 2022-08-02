@@ -53,6 +53,10 @@ public class LocationDataBean {
         this.longitude =longitude;
     }
 
+    public LocationDataBean(String admin, String subAdmin, String locality){
+        this(CHINA, admin, subAdmin, locality, 0, 0);
+    }
+
     public LocationDataBean(String admin, String subAdmin, String locality, double latitude, double longitude){
        this(CHINA, admin, subAdmin, locality, latitude, longitude);
     }

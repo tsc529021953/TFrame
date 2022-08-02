@@ -13,14 +13,8 @@ dependencies {
     implementation deps.kotlin.stdlib
     implementation deps.retrofit.runtime
 
-    implementation deps.xstream
-    implementation deps.gson
+    implementation deps.serialport
     implementation deps.timber
-    implementation deps.ip2region
-//    implementation 'org.lionsoul:ip2region:2.6.5'
-//    implementation 'net.dreamlu:mica-ip2region:2.7.2'
-//    implementation deps.location
-//    'com.github.quentin7b:android-location-tracker:4.0'
 
     implementation deps.support.app_compat
     implementation deps.support.design

@@ -28,6 +28,19 @@ public class LocationBean {
         public String ip;
     }
 
+    public class LocationBean2 {
+
+        public String ip;
+        public String pro;
+        public String proCode;
+        public String city;
+        public String cityCode;
+        public String region;
+        public String regionCode;
+        public String addr;
+
+    }
+
     public class LocationALiBean{
         public String lat;
 

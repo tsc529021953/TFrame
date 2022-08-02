@@ -79,6 +79,7 @@ versions.hope_utils = "1.2.7"
 versions.material_dialogs = "3.3.0"
 versions.zxing = "3.2.1"
 versions.cserial = "1.0.9"
+versions.serialport = "2.1"
 versions.csbrvahbindingtx = "1.0.2"
 versions.lyric = "1.0.3"
 versions.autosize = "1.2.1"
@@ -108,6 +109,7 @@ versions.toast = "8.8"
 versions.hellodaemon = "+"
 versions.location = "4.0"
 versions.xstream = "1.4.18"
+versions.ip2region = "2.6.5"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -269,6 +271,7 @@ deps.material_dialogs_lifecycle = "com.afollestad.material-dialogs:lifecycle:$ve
 deps.material_dialogs_input = "com.afollestad.material-dialogs:input:$versions.material_dialogs"
 deps.zxing = "com.google.zxing:core:$versions.zxing"
 deps.cserial = "com.github.CaesarShao:CSerial:$versions.cserial"//CSerial的串口工具
+deps.serialport = "tp.xmaihh:serialport:$versions.serialport"
 deps.csbrvahbindingtx = "com.github.CaesarShao:CSBrvahBindingTX:$versions.csbrvahbindingtx"//适用于mvvm的brvah的插件,从此不用写列表适配器
 deps.lyric = "com.github.Lauzy:LyricView:$versions.lyric"//歌词控件
 deps.autosize = "me.jessyan:autosize:$versions.autosize"//屏幕适配
@@ -304,6 +307,7 @@ deps.toast="com.hjq:toast:$versions.toast"
 deps.hellodaemon = "com.xdandroid:hellodaemon:$versions.hellodaemon"
 // 定位
 deps.location = "com.github.quentin7b:android-location-tracker:$versions.location"
+deps.ip2region = "org.lionsoul:ip2region:$versions.ip2region"
 
 def hope = [:]
 hope.utils = "com.nbhope.lib:utils:$versions.hope_utils"
@@ -318,8 +322,8 @@ ext.apk_version = apk_version
 
 def build_versions = [:] //环境编译版本
 build_versions.min_sdk = 21
-build_versions.target_sdk = 28
-build_versions.build_tools = "29.0.2"
+build_versions.target_sdk = 32
+build_versions.build_tools = "32.0.0"
 ext.build_versions = build_versions
 ext.is_module = false
 

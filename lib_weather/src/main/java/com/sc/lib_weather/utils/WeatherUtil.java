@@ -187,6 +187,15 @@ public class WeatherUtil {
         String id = getChinaCityID(bean.admin, bean.subAdmin, bean.locality);
         Timber.d("id " + id);
         if (id == null)return;
+        if (bean.latitude == 0 || bean.longitude == 0) {
+            getWeatherByWNL(id, bean, new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String s) {
+
+                }
+            });
+            return;
+        }
         getWeatherByXiaomi(id, bean, new ValueCallback<String>() {
             @Override
             public void onReceiveValue(String id) {
@@ -203,6 +212,54 @@ public class WeatherUtil {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // 权限监听
         if (locationUtil != null)locationUtil.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void getWeatherByXiaomiSimple(final String id, final ValueCallback<String> callback){
+        // 获取实时天气 （小米）
+        String url = XIAOMI_WEATHER_API_SK + id;
+        OKHttpUtil.get(url, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Timber.d("" + e);
+                // 换另外一个api
+                if (callback != null)
+                    callback.onReceiveValue(id);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String data = response.body().string();
+                XiaoMiWeaherBaen baen = null;
+                try {
+                    baen = new Gson().fromJson(data, XiaoMiWeaherBaen.class);
+                } catch (Exception e) {
+                    Timber.d("xiaomi fail " + e);
+                    if (callback != null)
+                        callback.onReceiveValue(id);
+                    return;
+                }
+
+                if (baen != null) {
+                    WeatherBean weatherBean = new WeatherBean();
+                    XiaoMiWeaherBaen.Info1 info = baen.current.feelsLike;
+                    weatherBean.temperature = info.value + info.unit;
+                    info = baen.current.humidity;
+                    weatherBean.humidity = info.value + info.unit;
+                    String weather = baen.current.weather;
+                    int index = Arrays.asList(WeatherCodeUtil.XIAOMI_INDEXS).indexOf(weather);
+                    if (index == -1) {
+                        weatherBean.weather = WeatherCodeUtil.XIAOMI_NAMES[WeatherCodeUtil.XIAOMI_NAMES.length - 1];
+                        weatherBean.weatherID = WeatherCodeUtil.WEATHER_IMGS[WeatherCodeUtil.WEATHER_IMGS.length - 1];
+                    } else {
+                        weatherBean.weather = WeatherCodeUtil.XIAOMI_NAMES[index];
+                        weatherBean.weatherID = WeatherCodeUtil.WEATHER_IMGS[index];
+                    }
+                    if (onWeatherChanged != null)
+                        onWeatherChanged.onReceiveValue(weatherBean);
+                }
+
+            }
+        });
     }
 
     private void getWeatherByXiaomi(final String id, LocationDataBean location, final ValueCallback<String> callback){
@@ -262,6 +319,7 @@ public class WeatherUtil {
         OKHttpUtil.get(url, new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                Timber.i("onFailure " + e);
                 if (callback != null)callback.onReceiveValue(id);
             }
 
@@ -271,7 +329,6 @@ public class WeatherUtil {
                 //解析返回值
 
                 WnlWeatherBean bean = null;
-
                 try {
                     XStream xStream = new XStream(new DomDriver());
                     xStream.ignoreUnknownElements();
@@ -284,6 +341,7 @@ public class WeatherUtil {
                     e.printStackTrace();
                 }
                 if (bean != null) {
+                    Timber.i("getWeatherByWNL ??");
                     WeatherBean weatherBean = new WeatherBean();
                     weatherBean.temperature = bean.wendu + "℃";
                     weatherBean.humidity = bean.shidu;

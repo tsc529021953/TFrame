@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.webkit.ValueCallback
@@ -16,11 +15,11 @@ import com.sc.lib_frame.bean.TMessage
 import com.sc.lib_frame.utils.LiveEBUtil
 import com.sc.lib_frame.utils.json.BaseGsonUtils
 import com.sc.lib_weather.bean.WeatherBean
-import com.sc.lib_weather.WeatherListener
 import com.sc.lib_weather.utils.LocationUtil
 import com.sc.lib_weather.utils.WeatherUtil
 import com.sc.xwservice.app.App.Companion.TAG
 import com.sc.xwservice.config.MessageConst
+import com.sc.xwservice.xp.XPUtil
 import com.xdandroid.hellodaemon.AbsWorkService
 import timber.log.Timber
 import java.util.*
@@ -39,12 +38,14 @@ class InfoService : AbsWorkService() {
         const val TIMER: Long = 40000
     }
 
-    var timer: Timer? = Timer()
-    var timerTask: TimerTask = object : TimerTask() {
-        override fun run(){
-            Timber.i("$TAG 定时器执行一次")
-        }
-    }
+    var xpUtil: XPUtil? = null
+
+//    var timer: Timer? = Timer()
+//    var timerTask: TimerTask = object : TimerTask() {
+//        override fun run(){
+//            Timber.i("$TAG 定时器执行一次")
+//        }
+//    }
 //    var weatherListener : WeatherListener? = null
     var weatherUtil : WeatherUtil? = null
     var weatherCB = ValueCallback<WeatherBean> { 
@@ -64,7 +65,7 @@ class InfoService : AbsWorkService() {
         super.onCreate()
         Timber.i("$TAG 服务创建")
         // 开启定时器
-        timer?.schedule(timerTask, 0 , TIMER)
+//        timer?.schedule(timerTask, 0 , TIMER)
         // 初始化相关
         initSP()
         initWeather()
@@ -78,13 +79,19 @@ class InfoService : AbsWorkService() {
         weatherUtil = WeatherUtil(this, object : ValueCallback<WeatherBean>{
             override fun onReceiveValue(p0: WeatherBean?) {
                 Timber.i("$TAG ${BaseGsonUtils.GsonString(p0)}")
+                if (p0 == null) return
+                Timber.d("接收到定位数据 ${p0.weather} ${weatherUtil?.getLocation()?.subAdmin}")
+                if (xpUtil != null) {
+                    xpUtil!!.xpBean.location = weatherUtil?.getLocation()?.subAdmin
+                    xpUtil!!.xpBean.tem = p0.temperature.replace("℃", "")
+                    xpUtil!!.xpBean.weather = p0.weather
+                }
             }
-
         })
     }
 
     fun initSP(){
-
+        xpUtil = XPUtil()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -122,8 +129,9 @@ class InfoService : AbsWorkService() {
     override fun onDestroy() {
         super.onDestroy()
         Timber.i("$TAG 服务移除")
-        timer?.cancel()
-        timer = null
+//        timer?.cancel()
+//        timer = null
+        xpUtil?.dispose()
         weatherUtil?.dispose()
 //        weatherListener?.unregisterListener(weatherCB)
 //        weatherListener?.dispose()

@@ -35,4 +35,4 @@
 -keep class ch.qos.** { *; }
 -keep class org.slf4j.** { *; }
 
--keep class org.xmlpull.v1.** { *; }
+#-keep class org.xmlpull.v1.** { *; }

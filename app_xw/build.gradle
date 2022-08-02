@@ -35,6 +35,7 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
+    implementation project(path: ':lib_system')
     implementation project(path: ':lib_weather')
     testImplementation deps.junit
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
