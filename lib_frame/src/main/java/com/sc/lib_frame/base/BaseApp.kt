@@ -11,7 +11,9 @@ import com.sc.lib_frame.BuildConfig
 import com.sc.lib_frame.network.NetworkCallback
 import com.sc.lib_frame.sp.SharedPreferencesManager
 import com.sc.lib_frame.utils.FileLoggingTree
+import com.sc.lib_frame.utils.Preconditions
 import com.sc.lib_frame.utils.ThreadAwareDebugTree
+import dagger.android.DispatchingAndroidInjector
 import timber.log.Timber
 import xcrash.XCrash
 

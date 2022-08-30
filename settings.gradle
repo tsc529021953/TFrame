@@ -1,3 +1,5 @@
+include ':lib_local_device'
+include ':app_xsg'
 include ':lib_system'
 include ':lib_weather'
 include ':app_xw'

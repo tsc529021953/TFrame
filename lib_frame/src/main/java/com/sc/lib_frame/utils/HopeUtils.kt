@@ -5,10 +5,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.text.TextUtils
 import ch.qos.logback.core.android.SystemPropertiesProxy
+import com.alibaba.android.arouter.launcher.ARouter
 import com.sc.lib_frame.base.BaseApp
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -75,6 +77,13 @@ class HopeUtils {
             return address
         }
 
+        fun startActivityByArouter(arouterPath: String,context: Context, bundle: Bundle? = null) {
+            if (bundle == null) {
+                ARouter.getInstance().build(arouterPath).navigation(context)
+            } else {
+                ARouter.getInstance().build(arouterPath).with(bundle).navigation(context)
+            }
+        }
 
         /**
          * 获取SN

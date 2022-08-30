@@ -358,6 +358,7 @@ ext.device = device
 class Device {
     String PACKAGE_NAME_XW = "com.sc.xwservice"
     String PACKAGE_NAME = "com.sc.tframe"
+    String PACKAGE_NAME_XSG = "com.sc.app_xsg"
 
     String packageName
 //    String playerMode
@@ -424,6 +425,9 @@ class Device {
         switch(code.substring(0, 3)) {
             case "XWI":
                 packageName = PACKAGE_NAME_XW
+                break
+            case "XSG":
+                packageName = PACKAGE_NAME_XSG
                 break
             default:
                 packageName = PACKAGE_NAME

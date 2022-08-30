@@ -1,0 +1,50 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "../build_types.gradle"
+apply from: "../app_types.gradle"
+
+android {
+    compileSdkVersion 32
+    buildToolsVersion "32.0.0"
+
+    defaultConfig {
+        applicationId "com.sc.app_xsg"
+        minSdkVersion 21
+        targetSdkVersion 32
+        versionCode 1
+        versionName "0.1.0-1"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+}
+
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.support.core_ktx
+    testImplementation deps.junit
+    androidTestImplementation deps.espresso.core
+    implementation deps.support.app_compat
+    androidTestImplementation deps.support.app_compat
+    implementation deps.support.design
+    androidTestImplementation deps.support.design
+    implementation deps.constraint_layout
+
+    // 服务保活
+    implementation deps.hellodaemon
+    implementation deps.arouter.api
+    implementation project(path: ':lib_frame')
+    implementation project(path: ':lib_local_device')
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+}

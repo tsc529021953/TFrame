@@ -99,4 +99,5 @@ class SharedPreferencesManager private constructor(private val app: Application)
         return tary.isBoolean(IS_STARTED_SYNC_PLAY, false)
     }
 
+    fun getTray() = tary
 }

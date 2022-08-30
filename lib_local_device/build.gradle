@@ -1,0 +1,23 @@
+apply from: "../component_lib.gradle"
+
+android {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+dependencies {
+
+    implementation deps.support.app_compat
+    implementation deps.support.design
+    testImplementation deps.espresso.core
+    testImplementation deps.atsl.ext_junit
+    testImplementation deps.junit
+
+    implementation project(path: ':lib_frame')
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+}
