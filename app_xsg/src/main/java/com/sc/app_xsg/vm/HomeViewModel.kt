@@ -2,7 +2,8 @@ package com.sc.app_xsg.vm
 
 import androidx.databinding.ObservableBoolean
 import com.sc.lib_frame.base.BaseViewModel
-import com.sc.lib_frame.sp.SharedPreferencesManager
+import com.sc.lib_frame.utils.SharedPreferencesManager
+import com.sc.lib_local_device.common.DeviceCommon
 import com.sc.lib_local_device.vm.BaseLDViewModel
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -16,5 +17,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager) : BaseLDViewModel() {
 
 //    val deviceInfo = Observable<>()
+
+    override fun initData() {
+       super.initData()
+    }
 
 }

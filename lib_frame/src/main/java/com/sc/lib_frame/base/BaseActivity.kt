@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.alibaba.android.arouter.launcher.ARouter
 import com.sc.lib_frame.R
 import com.sc.lib_frame.constants.HopeConstants
+import com.sc.lib_frame.di.AndroidInjectionDelegate
 import com.sc.lib_frame.di.Injectable
 import com.sc.lib_frame.utils.HopeUtils
 import com.sc.lib_frame.utils.LockScreenHelper
@@ -36,12 +37,12 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector, Injectabl
     protected open fun initParam(savedInstanceState: Bundle?) {
 //        when (HopeConstants.THEME) {
 //            "000" -> {
-//                if (HopeConstants.isScreenSmall()) {
+//                if (HopeConstants.isScreenSmall()){
 //                    setTheme(R.style.AppThemeDark_small)
-//                } else {
-//                    if (HopeConstants.CPU == "rk3566") {
+//                }else{
+//                    if (HopeConstants.CPU == "rk3566"){
 //                        setTheme(R.style.AppThemeSkb)
-//                    } else {
+//                    }else{
 //                        setTheme(R.style.AppThemeDark)
 //                    }
 //                }
@@ -51,26 +52,26 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector, Injectabl
 //                setTheme(R.style.AppThemeLight)
 //            }
 //            "010" -> {
-//                if (HopeConstants.CPU == "a133") {
+//                if (HopeConstants.CPU == "a133"){
 //                    setTheme(R.style.AppThemeSkb)
-//                } else {
+//                }else{
 //                    setTheme(R.style.AppThemeDark_New)
 //                }
 //            }
 //            "011" -> {
-//                if (HopeConstants.HOPE_CODE.startsWith("HK44") || HopeConstants.HOPE_CODE.startsWith("HK05")) {
+//                if (HopeConstants.HOPE_CODE.startsWith("HK44")||HopeConstants.HOPE_CODE.startsWith("HK05")){
 //                    setTheme(R.style.AppThemeSkb)
-//                } else {
+//                }else{
 //                    setTheme(R.style.AppThemeLight_New)
 //                }
 //            }
-//            "100", "101" -> {
+//            "100" ,"101" -> {
 //                setTheme(R.style.AppThemeDark20_New)
 //            }
 //            "200" -> {
 //                setTheme(R.style.AppThemeDark_30)
 //            }
-//            else -> {
+//            else ->{
 //                setTheme(R.style.AppThemeDark)
 //            }
 //        }
@@ -100,7 +101,7 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector, Injectabl
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        AndroidInjectionDelegate.inject(this)
+        AndroidInjectionDelegate.inject(this)
 //        setDefaultDisplay(this)
         changeTheme()
         super.onCreate(savedInstanceState)
@@ -133,7 +134,7 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector, Injectabl
     }
 
     fun launchActivity(arouterPath: String, bundle: Bundle? = null) {
-        HopeUtils.startActivityByArouter(arouterPath, baseContext, bundle)
+        HopeUtils.startActivityByArouter(arouterPath, baseContext,bundle)
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -141,8 +142,7 @@ abstract class BaseActivity : AppCompatActivity(), HasAndroidInjector, Injectabl
         hideSystemUI()
         onWindowFocusChangedHelper(hasFocus)
     }
-
-    open fun onWindowFocusChangedHelper(hasFocus: Boolean) {
+    open fun onWindowFocusChangedHelper(hasFocus: Boolean){
 
     }
 

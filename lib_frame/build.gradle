@@ -9,28 +9,91 @@ android {
 }
 
 dependencies {
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//
+//    api deps.lifecycle.viewmodel_ktx
+//    implementation deps.liveeventbus
+//    api deps.constraint_layout
+//    api deps.multidex
+//
+////    api deps.hope.utils
+//    implementation deps.kotlin.stdlib
+//    implementation deps.retrofit.runtime
+//    implementation deps.tray
+//
+//    implementation deps.xCrash
+//    implementation deps.slf4j
+//    implementation deps.logback
+//    api deps.timber
+//
+//    implementation deps.arouter.api
+//    kapt deps.arouter.compiler
+//
+//    api deps.gson
+//    implementation deps.dagger.runtime
+//    implementation deps.dagger.android
+//    implementation deps.dagger.android_support
+//
+//    kapt deps.dagger.android_support_compiler
+//    kapt deps.dagger.compiler
+//
+//    api project(":lib.network")
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation deps.support.app_compat
+    implementation deps.support.annotations
+    api deps.support.swiperefreshlayout
     api deps.lifecycle.viewmodel_ktx
-    implementation deps.liveeventbus
-    api deps.constraint_layout
-    api deps.multidex
-
-//    api deps.hope.utils
+    implementation deps.support.recyclerview
     implementation deps.kotlin.stdlib
     implementation deps.retrofit.runtime
-    implementation deps.tray
-
-    implementation deps.xCrash
-    implementation deps.slf4j
-    implementation deps.logback
-    api deps.timber
-
-    implementation deps.arouter.api
-    kapt deps.arouter.compiler
-
-    api deps.gson
     implementation deps.dagger.runtime
     implementation deps.dagger.android
     implementation deps.dagger.android_support
+    implementation deps.arouter.api
+    implementation deps.room.runtime
+    implementation deps.room.ktx
+//    api deps.hope.utils
+    api deps.glide.runtime
+    implementation deps.xCrash
+    implementation deps.slf4j
+    implementation deps.logback
+    implementation deps.crashreport.upgrade
+    implementation deps.crashreport.native
+    implementation deps.zxing
+    api project(":lib.network")
+    api deps.rx_binding
+
+    api deps.multidex
+    api deps.codec
+    api deps.csbrvahbindingtx
+    api deps.liveeventbus
+    api deps.timber
+    api deps.gson
+    api deps.brvah
+    api deps.material_dialogs
+    api deps.material_dialogs_lifecycle
+    api deps.material_dialogs_input
+    api deps.autosize
+    api deps.swipedelmenulayout
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    kapt deps.arouter.compiler
+    kapt deps.room.compiler
+
+    api deps.constraint_layout
+
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+    kapt deps.glide.compiler
+
+    testImplementation deps.junit
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.espresso.core
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+
+    api 'com.facebook.network.connectionclass:connectionclass:1.0.1'
+
+    implementation 'q.rorbin:badgeview:1.1.2'
+    api deps.um_asms
+    api deps.um_common
 }

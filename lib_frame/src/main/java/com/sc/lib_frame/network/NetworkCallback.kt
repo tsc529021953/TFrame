@@ -1,3 +1,4 @@
+
 package com.sc.lib_frame.network
 
 import android.net.ConnectivityManager
@@ -7,25 +8,20 @@ import com.sc.lib_frame.constants.HopeConstants
 import com.sc.lib_frame.utils.HopeUtils
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
+import javax.inject.Inject
+import javax.inject.Singleton
+
 
 /**
- *Created by ywr on 2021/11/11 15:28
+ * Created by zhouwentao on 2020/4/27.
  */
-class NetworkCallback private constructor() : ConnectivityManager.NetworkCallback() {
-    companion object {
-        @Volatile
-        private var instance: NetworkCallback? = null
 
-        fun getInstance() =
-            instance ?: synchronized(this) {
-                instance ?: NetworkCallback().also { instance = it }
-            }
-    }
+@Singleton
+class NetworkCallback @Inject constructor(): ConnectivityManager.NetworkCallback() {
 
+    private val networkCallbackImplList  = CopyOnWriteArrayList<NetworkCallbackModule>()
 
-    private val networkCallbackImplList = CopyOnWriteArrayList<NetworkCallbackModule>()
-
-    fun registNetworkCallback(networkCallbackModule: NetworkCallbackModule) {
+    fun registNetworkCallback(networkCallbackModule: NetworkCallbackModule){
         networkCallbackImplList.add(networkCallbackModule)
     }
 
@@ -48,7 +44,7 @@ class NetworkCallback private constructor() : ConnectivityManager.NetworkCallbac
 
     override fun onLost(network: Network) {
         super.onLost(network)
-        Timber.e("NetworkCallback onLost: 网络已断开")
+        Timber.e( "NetworkCallback onLost: 网络已断开")
         HopeConstants.IS_NETWORK_AVAILABLE = false
 
 
@@ -62,20 +58,21 @@ class NetworkCallback private constructor() : ConnectivityManager.NetworkCallbac
         if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
             when {
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                    Timber.i("NetworkCallback onCapabilitiesChanged: 网络类型为wifi")
+                    Timber.i( "NetworkCallback onCapabilitiesChanged: 网络类型为wifi")
                 }
                 networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                    Timber.i("NetworkCallback onCapabilitiesChanged: 网络类型为以太网")
+                    Timber.i( "NetworkCallback onCapabilitiesChanged: 网络类型为以太网")
                 }
                 else -> {
-                    Timber.i("NetworkCallback onCapabilitiesChanged: 其他网络")
+                    Timber.i( "NetworkCallback onCapabilitiesChanged: 其他网络")
                 }
             }
         }
 
 
         networkCallbackImplList.map {
-            it.onCapabilitiesChanged(network, networkCapabilities)
+            it.onCapabilitiesChanged(network,networkCapabilities)
         }
     }
+
 }

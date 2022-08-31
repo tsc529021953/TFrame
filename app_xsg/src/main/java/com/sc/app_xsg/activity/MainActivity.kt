@@ -5,18 +5,19 @@ import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.sc.app_xsg.R
 import com.sc.lib_frame.utils.PermissionUtil
 import com.sc.lib_frame.utils.ViewUtil.Companion.immersionTitle
 import com.sc.lib_frame.utils.json.BaseGsonUtils
-import com.sc.app_xsg.app.App.Companion.TAG
-import com.sc.app_xsg.common.MainPath
-import com.sc.lib_frame.base.BaseApp
+import com.sc.app_xsg.app.AppHope.Companion.TAG
+import com.sc.lib_frame.app.HopeBaseApp
 import com.sc.lib_local_device.common.DeviceCommon
 import com.sc.lib_frame.common.BasePath
-import com.sc.lib_frame.sp.SharedPreferencesManager
 import timber.log.Timber
 
 /**
@@ -25,7 +26,6 @@ import timber.log.Timber
  * @version 0.0.0-1
  * @description
  */
-@Route(path = BasePath.MAIN_PATH)
 class MainActivity : Activity() {
 
     companion object {
@@ -34,6 +34,7 @@ class MainActivity : Activity() {
             Manifest.permission.READ_EXTERNAL_STORAGE,
 //            Manifest.permission.ACCESS_COARSE_LOCATION,
 //            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.READ_PHONE_STATE
         )
 
         const val REQUEST_CODE = 10086
@@ -46,8 +47,18 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isRequestPER = false
+        // UI
         setContentView(R.layout.activity_main)
         immersionTitle(this)
+        findViewById<Button>(R.id.view_btn).setOnClickListener {
+            DeviceCommon.deviceType = DeviceCommon.DeviceType.View
+            goHome()
+        }
+        findViewById<Button>(R.id.ctrl_btn).setOnClickListener {
+            DeviceCommon.deviceType = DeviceCommon.DeviceType.Ctrl
+            goHome()
+        }
+
         Timber.i("$TAG onCreate HelloBro!!! XSG")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!PermissionUtil.hasPermissionsGranted(this, PERMISSIONS)) {
@@ -55,8 +66,6 @@ class MainActivity : Activity() {
                 return
             }
         }
-
-        //
         mainInit()
     }
 
@@ -67,10 +76,19 @@ class MainActivity : Activity() {
         // 开启
         var handle = Handler()
         handle.postDelayed(Runnable {
-            Timber.i("$TAG 启动动画显示完成 ${BaseApp.getContext() == null} ${BasePath.HOME_PATH}")
-            // 进入首页
-            ARouter.getInstance().build(BasePath.HOME_PATH).navigation(BaseApp.getContext())
+            Timber.i("$TAG 启动动画显示完成 ${DeviceCommon.deviceType} ${BasePath.HOME_PATH}")
+            // 隐藏logo界面
+            findViewById<ImageView>(R.id.launcher_iv).visibility = View.GONE
+            if (DeviceCommon.deviceType != DeviceCommon.DeviceType.UN_KNOW) {
+                // 跳转界面
+                goHome()
+            }
         }, 1000)
+    }
+
+    fun goHome() {
+        // 进入首页
+        ARouter.getInstance().build(BasePath.HOME_PATH).navigation(HopeBaseApp.getContext())
     }
 
     override fun onResume() {

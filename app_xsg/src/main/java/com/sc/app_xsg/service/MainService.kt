@@ -8,18 +8,14 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
-import android.webkit.ValueCallback
 import androidx.lifecycle.Observer
 import com.sc.lib_frame.ITNotice
 import com.sc.lib_frame.bean.TMessage
 import com.sc.lib_frame.utils.LiveEBUtil
-import com.sc.lib_frame.utils.json.BaseGsonUtils
-import com.sc.app_xsg.app.App.Companion.TAG
-import com.sc.app_xsg.config.MessageConst
+import com.sc.app_xsg.app.AppHope.Companion.TAG
 import com.sc.lib_frame.common.BaseMessage
 import com.xdandroid.hellodaemon.AbsWorkService
 import timber.log.Timber
-import java.util.*
 
 /**
  * @author  tsc

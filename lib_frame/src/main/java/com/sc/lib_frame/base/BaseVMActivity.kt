@@ -12,6 +12,7 @@ import com.sc.lib_frame.app.AppManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Created by zhouwentao on 2019-09-02.

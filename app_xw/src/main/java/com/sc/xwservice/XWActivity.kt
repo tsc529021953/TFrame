@@ -10,7 +10,7 @@ import com.sc.lib_frame.utils.LiveEBUtil
 import com.sc.lib_frame.utils.PermissionUtil
 import com.sc.lib_frame.utils.ViewUtil.Companion.immersionTitle
 import com.sc.lib_frame.utils.json.BaseGsonUtils
-import com.sc.xwservice.app.App.Companion.TAG
+import com.sc.xwservice.app.AppHope.Companion.TAG
 import com.sc.xwservice.config.MessageConst
 import timber.log.Timber
 

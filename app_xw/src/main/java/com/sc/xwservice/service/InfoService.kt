@@ -17,12 +17,11 @@ import com.sc.lib_frame.utils.json.BaseGsonUtils
 import com.sc.lib_weather.bean.WeatherBean
 import com.sc.lib_weather.utils.LocationUtil
 import com.sc.lib_weather.utils.WeatherUtil
-import com.sc.xwservice.app.App.Companion.TAG
+import com.sc.xwservice.app.AppHope.Companion.TAG
 import com.sc.xwservice.config.MessageConst
 import com.sc.xwservice.xp.XPUtil
 import com.xdandroid.hellodaemon.AbsWorkService
 import timber.log.Timber
-import java.util.*
 
 /**
  * @author  tsc

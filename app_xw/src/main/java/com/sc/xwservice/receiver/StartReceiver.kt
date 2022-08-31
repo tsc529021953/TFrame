@@ -3,7 +3,7 @@ package com.sc.xwservice.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.sc.xwservice.app.App.Companion.TAG
+import com.sc.xwservice.app.AppHope.Companion.TAG
 import timber.log.Timber
 
 /**

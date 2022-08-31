@@ -1,0 +1,28 @@
+apply from: "../component_lib.gradle"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation deps.support.app_compat
+    implementation deps.retrofit.runtime
+    implementation deps.retrofit.gson
+    implementation deps.okhttp_logging_interceptor
+    implementation deps.kotlin.stdlib
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    implementation deps.kotlin.coroutines
+    implementation deps.timber
+    implementation deps.brvah
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+    api deps.tray
+
+
+    testImplementation deps.junit
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.espresso.core
+
+    api deps.stetho
+    api deps.stetho_okhttp3
+}

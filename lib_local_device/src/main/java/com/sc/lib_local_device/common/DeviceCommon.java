@@ -1,6 +1,6 @@
 package com.sc.lib_local_device.common;
 
-import com.sc.lib_frame.sp.SharedPreferencesManager;
+import com.sc.lib_frame.utils.SharedPreferencesManager;
 
 /**
  * @author tsc
@@ -15,22 +15,24 @@ public class DeviceCommon {
     public static DeviceType deviceType = DeviceType.View;
 
     public static void initDeviceType(){
-        String deviceType = SharedPreferencesManager.Companion.getInstance()
-                .getTray().getString(DeviceCommon.DEVICE_TYPE, DeviceCommon.DeviceType.View.toString());
-        setDeviceType(deviceType);
+
+//        String deviceType = SharedPreferencesManager.Companion.getInstance()
+//                .getTray().getString(DeviceCommon.DEVICE_TYPE, DeviceCommon.DeviceType.View.toString());
+//        setDeviceType(deviceType);
     }
 
     public static void setDeviceType(String type) {
         try{
             deviceType = DeviceType.valueOf(type);
         }catch (Exception e) {
-            deviceType = DeviceType.View;
+            deviceType = DeviceType.UN_KNOW;
         }
     }
 
     public enum DeviceType {
         View,
-        Ctrl
+        Ctrl,
+        UN_KNOW
     }
 
 }

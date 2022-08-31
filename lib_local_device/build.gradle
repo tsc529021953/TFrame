@@ -20,4 +20,6 @@ dependencies {
     implementation deps.dagger.runtime
     implementation deps.dagger.android
     implementation deps.dagger.android_support
+    implementation deps.arouter.api
+    kapt deps.arouter.compiler
 }

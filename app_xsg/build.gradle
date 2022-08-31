@@ -42,9 +42,12 @@ dependencies {
     // 服务保活
     implementation deps.hellodaemon
     implementation deps.arouter.api
+    kapt deps.arouter.compiler
     implementation project(path: ':lib_frame')
     implementation project(path: ':lib_local_device')
     implementation deps.dagger.runtime
     implementation deps.dagger.android
     implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
 }

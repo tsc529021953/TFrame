@@ -17,11 +17,15 @@ open class BaseLDViewModel : BaseViewModel() {
 
     val deviceInfo = MutableLiveData<DeviceInfo>();
 
-    fun initData() {
+    open fun initData() {
         var di = DeviceInfo()
         di.code = HopeUtils.getSN()
 
         deviceInfo.postValue(di)
+    }
+
+    open fun onClicked() {
+
     }
 
 }
