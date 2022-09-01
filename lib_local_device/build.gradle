@@ -22,4 +22,8 @@ dependencies {
     implementation deps.dagger.android_support
     implementation deps.arouter.api
     kapt deps.arouter.compiler
+
+    implementation deps.halo_turbo
+    implementation deps.halo_turbo_mina
+    implementation deps.halo_json_convertor
 }

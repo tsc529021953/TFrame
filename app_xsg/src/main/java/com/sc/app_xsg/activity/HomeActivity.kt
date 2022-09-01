@@ -13,6 +13,14 @@ import com.sc.lib_frame.utils.SharedPreferencesManager
 import com.sc.lib_local_device.common.DeviceCommon
 import javax.inject.Inject
 
+/**
+ * @author  tsc
+ * @date  2022/8/1 13:12
+ * @version 0.0.0-1
+ * @description
+ * 主页 显示一张主页图片
+ * 到此处
+ */
 @Route(path = BasePath.HOME_PATH)
 class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
 

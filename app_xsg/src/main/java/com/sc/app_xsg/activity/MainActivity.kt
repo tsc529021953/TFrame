@@ -15,7 +15,12 @@ import com.sc.lib_frame.utils.PermissionUtil
 import com.sc.lib_frame.utils.ViewUtil.Companion.immersionTitle
 import com.sc.lib_frame.utils.json.BaseGsonUtils
 import com.sc.app_xsg.app.AppHope.Companion.TAG
+import com.sc.app_xsg.databinding.ActivityHomeBinding
+import com.sc.app_xsg.databinding.ActivityMainBinding
+import com.sc.app_xsg.vm.HomeViewModel
+import com.sc.app_xsg.vm.MainViewModel
 import com.sc.lib_frame.app.HopeBaseApp
+import com.sc.lib_frame.base.BaseBindingActivity
 import com.sc.lib_local_device.common.DeviceCommon
 import com.sc.lib_frame.common.BasePath
 import timber.log.Timber
@@ -25,8 +30,12 @@ import timber.log.Timber
  * @date  2022/8/1 13:12
  * @version 0.0.0-1
  * @description
+ * 1.申请权限
+ * 2.读取本地信息 控制/显示
+ * 3.读取是否有上次记录的设备
+ * 4.开启组播发布模块
  */
-class MainActivity : Activity() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     companion object {
         var PERMISSIONS = arrayOf(
@@ -51,7 +60,7 @@ class MainActivity : Activity() {
         setContentView(R.layout.activity_main)
         immersionTitle(this)
         findViewById<Button>(R.id.view_btn).setOnClickListener {
-            DeviceCommon.deviceType = DeviceCommon.DeviceType.View
+//            DeviceCommon.saveDeviceType(AppHope. ,DeviceCommon.DeviceType.View)
             goHome()
         }
         findViewById<Button>(R.id.ctrl_btn).setOnClickListener {
@@ -70,36 +79,25 @@ class MainActivity : Activity() {
     }
 
     fun mainInit() {
-        // 参数读取 设备类型
-        DeviceCommon.initDeviceType();
-
-        // 开启
-        var handle = Handler()
-        handle.postDelayed(Runnable {
-            Timber.i("$TAG 启动动画显示完成 ${DeviceCommon.deviceType} ${BasePath.HOME_PATH}")
+        if (DeviceCommon.deviceType != DeviceCommon.DeviceType.UN_KNOW) {
             // 隐藏logo界面
             findViewById<ImageView>(R.id.launcher_iv).visibility = View.GONE
-            if (DeviceCommon.deviceType != DeviceCommon.DeviceType.UN_KNOW) {
+
+        } else {
+            // 打开logo界面
+            // 延时开启
+            var handle = Handler()
+            handle.postDelayed(Runnable {
+                Timber.i("$TAG 启动动画显示完成 ${DeviceCommon.deviceType} ${BasePath.HOME_PATH}")
                 // 跳转界面
                 goHome()
-            }
-        }, 1000)
+            }, 1000)
+        }
     }
 
     fun goHome() {
         // 进入首页
         ARouter.getInstance().build(BasePath.HOME_PATH).navigation(HopeBaseApp.getContext())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        // 请求权限
-        Timber.i("$TAG onResume")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (PermissionUtil.hasPermissionsGranted(this, PERMISSIONS) || isRequestPER) {
-//                moveBack()
-            }
-        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
@@ -115,8 +113,24 @@ class MainActivity : Activity() {
         Timber.i("$TAG 获权结果 ${BaseGsonUtils.GsonString(grantResults)}")
     }
 
-    fun moveBack(){
+    fun moveBack() {
         Timber.i("$TAG 回到后台")
         moveTaskToBack(true)
     }
+
+    override var layoutId: Int = R.layout.activity_main
+
+    override fun subscribeUi() {
+
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun linkViewModel() {
+        binding.vm = viewModel
+    }
+
+    override lateinit var viewModel: MainViewModel
 }

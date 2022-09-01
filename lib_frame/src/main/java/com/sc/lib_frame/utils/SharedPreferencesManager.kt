@@ -994,4 +994,6 @@ class SharedPreferencesManager constructor(private val app: Application) {
 
     // 获取设备类型
     fun getString(key: String, type: String): String = tary!!.getString(key, type)!!
+
+    fun setString(key: String, value: String) = tary!!.putString(key, value)
 }

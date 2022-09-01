@@ -33,7 +33,9 @@ class AppHope : HopeBaseApp() {
         initService()
 
         // 读取设备类型
-        DeviceCommon.setDeviceType(spManager.getString(DeviceCommon.DEVICE_TYPE, DeviceCommon.DeviceType.UN_KNOW.toString()))
+        DeviceCommon.readDeviceType(spManager)
+        // 读取上次连接的设备
+        DeviceCommon.readRecordDeviceInfo(spManager)
     }
 
     private fun initService() {

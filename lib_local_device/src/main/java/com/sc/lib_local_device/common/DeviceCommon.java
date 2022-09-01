@@ -1,6 +1,8 @@
 package com.sc.lib_local_device.common;
 
+import com.google.gson.Gson;
 import com.sc.lib_frame.utils.SharedPreferencesManager;
+import com.sc.lib_local_device.dao.DeviceInfo;
 
 /**
  * @author tsc
@@ -11,22 +13,47 @@ import com.sc.lib_frame.utils.SharedPreferencesManager;
 public class DeviceCommon {
 
     public static final String DEVICE_TYPE = "DEVICE_TYPE";
+    public static final String DEVICE_INFO = "DEVICE_INFO";
 
     public static DeviceType deviceType = DeviceType.View;
 
-    public static void initDeviceType(){
+    public static DeviceInfo recordDeviceInfo = null;
 
-//        String deviceType = SharedPreferencesManager.Companion.getInstance()
-//                .getTray().getString(DeviceCommon.DEVICE_TYPE, DeviceCommon.DeviceType.View.toString());
-//        setDeviceType(deviceType);
+    public static void readDeviceType(SharedPreferencesManager sp) {
+        if (sp == null) return;
+        readDeviceType(sp.getString(DEVICE_TYPE, sp.getString(DeviceCommon.DEVICE_TYPE, DeviceCommon.DeviceType.UN_KNOW.toString())));
     }
 
-    public static void setDeviceType(String type) {
-        try{
+    public static void readDeviceType(String type) {
+        try {
             deviceType = DeviceType.valueOf(type);
-        }catch (Exception e) {
+        } catch (Exception e) {
             deviceType = DeviceType.UN_KNOW;
         }
+    }
+
+    public static void saveDeviceType(SharedPreferencesManager sp, DeviceType type) {
+        deviceType = type;
+        sp.setString(DEVICE_TYPE, deviceType.toString());
+    }
+
+    public static void readRecordDeviceInfo(String info) {
+        if (info == null) return;
+        // 转成类
+        try {
+            recordDeviceInfo = new Gson().fromJson(info, DeviceInfo.class);
+        } catch (Exception e) {
+        }
+    }
+
+    public static void readRecordDeviceInfo(SharedPreferencesManager sp) {
+        if (sp == null) return;
+        readRecordDeviceInfo(sp.getString(DEVICE_INFO, null));
+    }
+
+    public static void saveRecordDeviceInfo(SharedPreferencesManager sp, DeviceInfo info) {
+        recordDeviceInfo = info;
+        sp.setString(DEVICE_INFO, new Gson().toJson(info));
     }
 
     public enum DeviceType {
