@@ -50,7 +50,7 @@ dependencies {
     implementation deps.dagger.runtime
     implementation deps.dagger.android
     implementation deps.dagger.android_support
-    implementation deps.arouter.api
+    api deps.autosize
     implementation deps.room.runtime
     implementation deps.room.ktx
 //    api deps.hope.utils
@@ -77,6 +77,7 @@ dependencies {
     api deps.autosize
     api deps.swipedelmenulayout
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation deps.arouter.api
     kapt deps.arouter.compiler
     kapt deps.room.compiler
 

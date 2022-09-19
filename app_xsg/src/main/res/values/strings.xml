@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">校史馆中控</string>
+<!--    校史馆中控-->
+    <string name="app_name">测试</string>
 </resources>

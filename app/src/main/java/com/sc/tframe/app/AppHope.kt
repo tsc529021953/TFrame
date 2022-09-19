@@ -1,6 +1,6 @@
 package com.sc.tframe.app
 
-import com.sc.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.app.HopeBaseApp
 import timber.log.Timber
 
 /**

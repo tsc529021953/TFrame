@@ -5,11 +5,11 @@ import android.app.Activity
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
 import android.os.Bundle
-import com.sc.lib_frame.bean.TMessage
-import com.sc.lib_frame.utils.LiveEBUtil
-import com.sc.lib_frame.utils.PermissionUtil
-import com.sc.lib_frame.utils.ViewUtil.Companion.immersionTitle
-import com.sc.lib_frame.utils.json.BaseGsonUtils
+import com.nbhope.lib_frame.bean.TMessage
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.PermissionUtil
+import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
+import com.nbhope.lib_frame.utils.json.BaseGsonUtils
 import com.sc.xwservice.app.AppHope.Companion.TAG
 import com.sc.xwservice.config.MessageConst
 import timber.log.Timber

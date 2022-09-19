@@ -2,7 +2,7 @@ package com.sc.xwservice.app
 
 import android.content.Intent
 import android.os.Build
-import com.sc.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.app.HopeBaseApp
 import com.sc.xwservice.service.InfoService
 import com.xdandroid.hellodaemon.DaemonEnv
 import timber.log.Timber

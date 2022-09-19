@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+        <variable
+                name="vm"
+                type="com.sc.lib_local_device.dao.DeviceInfo" />
+
+        <variable
+            name="single"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_root"
+        android:layout_width="161dp"
+        android:layout_height="107dp"
+        android:background="@drawable/uhome_sence_bg">
+
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:text="@{vm.oName}"
+            android:textColor="#333333"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img"
+            tools:text="开关" />
+
+        <TextView
+            android:id="@+id/tv_room_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="32dp"
+            android:lines="1"
+            android:text="@{vm.info}"
+            tools:text="asef"
+            android:textColor="#999999"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img" />
+
+
+<!--        <TextView-->
+<!--            android:id="@+id/line"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:text="|"-->
+<!--            android:textColor="#999999"-->
+<!--            android:textSize="12sp"-->
+<!--            android:visibility="@{vm.item.online ? View.GONE : View.VISIBLE}"-->
+<!--            app:layout_constraintStart_toEndOf="@id/tv_room_name"-->
+<!--            tools:visibility="gone"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/img" />-->
+
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:ellipsize="end"-->
+<!--            android:lines="1"-->
+<!--            android:text="@string/device_status"-->
+<!--            android:textColor="#ff9800"-->
+<!--            android:textSize="12sp"-->
+<!--            android:visibility="@{vm.item.online ? View.GONE : View.VISIBLE}"-->
+<!--            app:layout_constraintStart_toEndOf="@+id/line"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/img"-->
+<!--            tools:text="关"-->
+<!--            tools:visibility="gone" />-->
+
+<!--        <FrameLayout-->
+<!--            android:id="@+id/layout_check_push"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:clickable="true"-->
+<!--            android:onClick="@{vm::pushModeClick}"-->
+<!--            android:visibility="@{vm.viewStyle.pushMode ? View.VISIBLE : View.GONE}"-->
+<!--            tools:visibility="gone">-->
+
+
+<!--            <CheckBox-->
+<!--                android:id="@+id/check_box_muti"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:button="@drawable/uhome_cb_sm_item_selecter"-->
+<!--                android:checked="@{vm.viewStyle.select}"-->
+<!--                android:clickable="false"-->
+<!--                android:duplicateParentState="true"-->
+<!--                app:isSelect="@{vm.viewStyle.singleSelect}" />-->
+
+<!--        </FrameLayout>-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

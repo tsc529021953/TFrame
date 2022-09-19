@@ -1,6 +1,6 @@
 package com.sc.app_xsg.common
 
-import com.sc.lib_frame.common.BasePath
+import com.nbhope.lib_frame.common.BasePath
 
 /**
  * @author  tsc

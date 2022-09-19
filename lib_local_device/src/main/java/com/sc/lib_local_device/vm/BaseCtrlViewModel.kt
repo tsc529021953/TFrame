@@ -1,8 +1,8 @@
 package com.sc.lib_local_device.vm
 
 import androidx.lifecycle.MutableLiveData
-import com.sc.lib_frame.base.BaseViewModel
-import com.sc.lib_frame.utils.HopeUtils
+import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.utils.HopeUtils
 import com.sc.lib_local_device.dao.DeviceInfo
 import java.util.*
 

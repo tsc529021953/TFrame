@@ -1,6 +1,6 @@
 package com.sc.app_xsg.config
 
-import com.sc.lib_frame.common.BaseMessage
+import com.nbhope.lib_frame.common.BaseMessage
 
 /**
  * @author  tsc

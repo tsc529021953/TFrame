@@ -34,6 +34,17 @@ android {
             //指定需要的os平台
             abiFilters 'armeabi-v7a'
         }
+        if ("samll" == SCREEN_SIZE) {
+            manifestPlaceholders = [
+                    DESIGN_WIDTH : "480",
+                    DESIGN_HEIGHT: "480"
+            ]
+        } else {
+            manifestPlaceholders = [
+                    DESIGN_WIDTH : "853",
+                    DESIGN_HEIGHT: "553"
+            ]
+        }
 //        if ("small" == (device.handleCode ? device.device.screenSize : SCREEN_SIZE)) {
 //            manifestPlaceholders = [
 //                    DESIGN_WIDTH   : 	"480",

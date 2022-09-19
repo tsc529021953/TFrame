@@ -1,0 +1,18 @@
+apply from: "../component_lib.gradle"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api(deps.mina) {
+        exclude module: 'slf4j-api'
+    }
+    implementation deps.slf4j
+    implementation deps.kotlin.stdlib
+    implementation deps.gson
+    implementation deps.timber
+    implementation deps.liveeventbus
+
+    testImplementation deps.junit
+    androidTestImplementation deps.atsl.runner
+    androidTestImplementation deps.espresso.core
+}

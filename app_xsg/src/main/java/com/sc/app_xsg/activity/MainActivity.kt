@@ -8,22 +8,26 @@ import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
+import com.nbhope.app.uhome.util.RGB2HSLUtils
 import com.sc.app_xsg.R
-import com.sc.lib_frame.utils.PermissionUtil
-import com.sc.lib_frame.utils.ViewUtil.Companion.immersionTitle
-import com.sc.lib_frame.utils.json.BaseGsonUtils
+import com.nbhope.lib_frame.utils.PermissionUtil
+import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
+import com.nbhope.lib_frame.utils.json.BaseGsonUtils
 import com.sc.app_xsg.app.AppHope.Companion.TAG
 import com.sc.app_xsg.databinding.ActivityHomeBinding
 import com.sc.app_xsg.databinding.ActivityMainBinding
 import com.sc.app_xsg.vm.HomeViewModel
 import com.sc.app_xsg.vm.MainViewModel
-import com.sc.lib_frame.app.HopeBaseApp
-import com.sc.lib_frame.base.BaseBindingActivity
+import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.sc.lib_local_device.common.DeviceCommon
-import com.sc.lib_frame.common.BasePath
+import com.nbhope.lib_frame.common.BasePath
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
  * @author  tsc
@@ -35,6 +39,7 @@ import timber.log.Timber
  * 3.读取是否有上次记录的设备
  * 4.开启组播发布模块
  */
+@Route(path = BasePath.MAIN_PATH)
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     companion object {
@@ -53,6 +58,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     var isRequestPER = false
 
+    @Inject
+    lateinit var spManager: SharedPreferencesManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isRequestPER = false
@@ -60,11 +68,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         setContentView(R.layout.activity_main)
         immersionTitle(this)
         findViewById<Button>(R.id.view_btn).setOnClickListener {
-//            DeviceCommon.saveDeviceType(AppHope. ,DeviceCommon.DeviceType.View)
+            DeviceCommon.saveDeviceType(spManager ,DeviceCommon.DeviceType.View)
             goHome()
         }
         findViewById<Button>(R.id.ctrl_btn).setOnClickListener {
-            DeviceCommon.deviceType = DeviceCommon.DeviceType.Ctrl
+            DeviceCommon.saveDeviceType(spManager ,DeviceCommon.DeviceType.Ctrl)
             goHome()
         }
 
@@ -79,9 +87,13 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     fun mainInit() {
-        if (DeviceCommon.deviceType != DeviceCommon.DeviceType.UN_KNOW) {
+        Timber.i("$TAG mainInit ${DeviceCommon.deviceType}")
+        if (DeviceCommon.deviceType == DeviceCommon.DeviceType.UN_KNOW) {
             // 隐藏logo界面
-            findViewById<ImageView>(R.id.launcher_iv).visibility = View.GONE
+//            binding.layoutLogo.visibility = View.GONE
+//            binding.launcherIv.visibility = View.GONE
+            findViewById<ConstraintLayout>(R.id.layout_logo).visibility = View.GONE
+            Timber.i("$TAG mainInit?? ${binding.layoutLogo.visibility} ${binding.layoutLogo}")
 
         } else {
             // 打开logo界面
@@ -114,7 +126,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     fun moveBack() {
-        Timber.i("$TAG 回到后台")
         moveTaskToBack(true)
     }
 
@@ -132,5 +143,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         binding.vm = viewModel
     }
 
+    @Inject
     override lateinit var viewModel: MainViewModel
 }

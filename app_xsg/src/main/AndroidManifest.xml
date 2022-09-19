@@ -27,7 +27,7 @@
         </activity>
 
         <service
-                android:name=".service.MainService"
+                android:name="com.sc.lib_local_device.service.MainServiceImpl"
                 android:priority="1000"/>
 
         <receiver

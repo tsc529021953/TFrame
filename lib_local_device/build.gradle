@@ -17,13 +17,15 @@ dependencies {
     testImplementation deps.junit
 
     implementation project(path: ':lib_frame')
+    implementation project(path: ':lib.tcp')
+    implementation project(path: ':phmina')
     implementation deps.dagger.runtime
     implementation deps.dagger.android
     implementation deps.dagger.android_support
     implementation deps.arouter.api
     kapt deps.arouter.compiler
 
-    implementation deps.halo_turbo
-    implementation deps.halo_turbo_mina
-    implementation deps.halo_json_convertor
+//    implementation deps.halo_turbo
+//    implementation deps.halo_turbo_mina
+//    implementation deps.halo_json_convertor
 }

@@ -1,4 +1,4 @@
-package com.sc.lib_frame;
+package com.nbhope.lib_frame;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -20,6 +20,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.sc.lib_frame.test", appContext.getPackageName());
+        assertEquals("com.nbhope.lib_frame.test", appContext.getPackageName());
     }
 }

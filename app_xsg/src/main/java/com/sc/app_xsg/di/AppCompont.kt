@@ -2,9 +2,9 @@ package com.sc.app_xsg.di
 
 import android.app.Application
 import com.sc.app_xsg.app.AppHope
-import com.sc.lib_frame.app.HopeBaseApp
-import com.sc.lib_frame.di.BaseAppComponent
-import com.sc.lib_frame.di.scope.AppScope
+import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.di.BaseAppComponent
+import com.nbhope.lib_frame.di.scope.AppScope
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.DispatchingAndroidInjector

@@ -1,0 +1,6 @@
+package com.nbhope.lib_frame.bus.event
+
+/**
+ *Created by ywr on 2021/11/10 15:52
+ */
+open class BaseEvent

@@ -10,10 +10,10 @@ import android.os.Build
 import android.os.IBinder
 import android.webkit.ValueCallback
 import androidx.lifecycle.Observer
-import com.sc.lib_frame.ITNotice
-import com.sc.lib_frame.bean.TMessage
-import com.sc.lib_frame.utils.LiveEBUtil
-import com.sc.lib_frame.utils.json.BaseGsonUtils
+import com.nbhope.lib_frame.ITNotice
+import com.nbhope.lib_frame.bean.TMessage
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.json.BaseGsonUtils
 import com.sc.lib_weather.bean.WeatherBean
 import com.sc.lib_weather.utils.LocationUtil
 import com.sc.lib_weather.utils.WeatherUtil

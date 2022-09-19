@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.sc.lib_local_device">
-
+    <application>
+        <service
+                android:name=".service.MainServiceImpl"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="com.sc.lib_local_device.service.MainService" />
+            </intent-filter>
+        </service>
+<!--        <meta-data-->
+<!--                android:name="com.nbhope.app_uhome_local.di.GlobalConfiguration"-->
+<!--                android:value="ConfigModule" />-->
+        <meta-data
+                android:name="com.nbhope.app_uhome_local"
+                android:value="PackageName" />
+    </application>
 </manifest>

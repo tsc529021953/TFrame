@@ -31,6 +31,7 @@ dependencies {
 
     implementation deps.kotlin.stdlib
     implementation deps.support.core_ktx
+    implementation project(path: ':phmina')
     testImplementation deps.junit
     androidTestImplementation deps.espresso.core
     implementation deps.support.app_compat

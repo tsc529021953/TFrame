@@ -1,7 +1,7 @@
 package com.sc.lib_local_device.common;
 
 import com.google.gson.Gson;
-import com.sc.lib_frame.utils.SharedPreferencesManager;
+import com.nbhope.lib_frame.utils.SharedPreferencesManager;
 import com.sc.lib_local_device.dao.DeviceInfo;
 
 /**
@@ -38,7 +38,7 @@ public class DeviceCommon {
     }
 
     public static void readRecordDeviceInfo(String info) {
-        if (info == null) return;
+        if (info == null || info == "") return;
         // 转成类
         try {
             recordDeviceInfo = new Gson().fromJson(info, DeviceInfo.class);
@@ -48,7 +48,7 @@ public class DeviceCommon {
 
     public static void readRecordDeviceInfo(SharedPreferencesManager sp) {
         if (sp == null) return;
-        readRecordDeviceInfo(sp.getString(DEVICE_INFO, null));
+        readRecordDeviceInfo(sp.getString(DEVICE_INFO, ""));
     }
 
     public static void saveRecordDeviceInfo(SharedPreferencesManager sp, DeviceInfo info) {

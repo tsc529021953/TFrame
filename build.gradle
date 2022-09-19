@@ -28,6 +28,9 @@ allprojects {
         jcenter()
 
         maven { url 'https://jitpack.io' }
+//        flatDir {
+//            dirs project(':app_uhome_local').file('libs') // 我的aar文件已放置到 lib_ffmpeg 模块的libs目录下
+//        }
     }
 }
 

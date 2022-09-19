@@ -1,8 +1,8 @@
 package com.sc.app_xsg.vm
 
 import androidx.databinding.ObservableBoolean
-import com.sc.lib_frame.base.BaseViewModel
-import com.sc.lib_frame.utils.SharedPreferencesManager
+import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.sc.lib_local_device.common.DeviceCommon
 import com.sc.lib_local_device.vm.BaseLDViewModel
 import io.reactivex.Observable
@@ -20,6 +20,7 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
 
     override fun initData() {
        super.initData()
+        //
     }
 
 }

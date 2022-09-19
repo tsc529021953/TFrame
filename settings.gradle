@@ -1,3 +1,5 @@
+include ':phmina'
+include ':lib.tcp'
 include ':lib.network'
 include ':lib_local_device'
 include ':app_xsg'

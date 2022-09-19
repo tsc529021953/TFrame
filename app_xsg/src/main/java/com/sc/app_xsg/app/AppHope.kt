@@ -2,12 +2,12 @@ package com.sc.app_xsg.app
 
 import android.content.Intent
 import android.os.Build
-import com.sc.lib_frame.app.HopeBaseApp
-import com.sc.app_xsg.service.MainService
+import com.nbhope.lib_frame.app.HopeBaseApp
+import com.sc.lib_local_device.service.MainServiceImpl
 import com.xdandroid.hellodaemon.DaemonEnv
 import timber.log.Timber
 import com.sc.app_xsg.di.DaggerAppComponent
-import com.sc.lib_frame.utils.SharedPreferencesManager
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.sc.lib_local_device.common.DeviceCommon
 import javax.inject.Inject
 
@@ -41,11 +41,11 @@ class AppHope : HopeBaseApp() {
     private fun initService() {
         // 判断服务是否已经起来了 已经起来了则无需再启动
 
-        DaemonEnv.initialize(this, MainService::class.java, 1)
-        var i = Intent(this, MainService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(i)
-        } else this.startService(i)
+//        DaemonEnv.initialize(this, MainServiceImpl::class.java, 1)
+//        var i = Intent(this, MainServiceImpl::class.java)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            this.startForegroundService(i)
+//        } else this.startService(i)
     }
 
     override fun inject() {

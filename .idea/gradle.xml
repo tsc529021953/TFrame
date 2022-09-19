@@ -14,10 +14,12 @@
             <option value="$PROJECT_DIR$/app_xsg" />
             <option value="$PROJECT_DIR$/app_xw" />
             <option value="$PROJECT_DIR$/lib.network" />
+            <option value="$PROJECT_DIR$/lib.tcp" />
             <option value="$PROJECT_DIR$/lib_frame" />
             <option value="$PROJECT_DIR$/lib_local_device" />
             <option value="$PROJECT_DIR$/lib_system" />
             <option value="$PROJECT_DIR$/lib_weather" />
+            <option value="$PROJECT_DIR$/phmina" />
           </set>
         </option>
       </GradleProjectSettings>
