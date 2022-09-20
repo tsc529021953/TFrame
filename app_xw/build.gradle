@@ -4,13 +4,13 @@ apply from: "../build_types.gradle"
 apply from: "../app_types.gradle"
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion "32.0.0"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.sc.xwservice"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 30
         versionCode 1
         versionName "0.1.0-1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

@@ -38,45 +38,53 @@ class TcpServiceHandler(val haloManager: IHaloManager, name: String) : HaloThrea
     private val registerList = CopyOnWriteArrayList<TcpSession>()  //防止同时读写导致崩溃
     private val serviceTag = "TcpServiceHandler"
     private val localSn = haloManager.getLoaclSn()
+
     override fun onMessageReceiver(
         session: ISession?,
         srcMsg: String,
         cmd: String,
         params: JsonElement
     ) {
-        Log.i(tag, "onMessageReceiver$cmd  ,${params.toString()}")
+        Log.i(tag, "XTAG onMessageReceiver$cmd  ,${params.toString()}")
+        haloManager.getHandClietReceiverMsg()?.notifyClientReceiverMsg(cmd, params, null)
         when (cmd) {
-            MinaConstants.CMD_S_REGISTER -> {
-                doRegister(session, params, srcMsg)
+            MinaConstants.CMD_CHANGE_GROUP -> {
+                // 通知切换图组
             }
-            MinaConstants.CMD_S_QURLIST -> {
-                doHandQurList(session, params)
+            MinaConstants.CMD_CHANGE_INDEX -> {
+                // 通知切换图片
             }
-            MinaConstants.CMD_INVITE_COMM -> {
-                doIntiveComm(session, srcMsg, params)
-            }
-            MinaConstants.CMD_ICECANDIDATE_COMM -> {
-                doIntiveComm(session, srcMsg, params)
-            }
-            MinaConstants.CMD_INVITE_COMM_RS -> {
-                doIntiveComm(session, srcMsg, params)
-            }
-            MinaConstants.CMD_T_TEST -> {
-                doTransMsg(session, params)
-            }
-            MinaConstants.CMD_T_MUSIC_CTR_S -> {
-                doMusicCtrSend(session, params)
-            }
-            MinaConstants.CMD_T_MUSIC_ERRPR -> {
-                onMusicPlayError(srcMsg, params)
-            }
-            MinaConstants.CMD_S_QURUNLINK -> {
-                // 本机断开（主机、从机按钮断开）
-                unLinkSomeSession(srcMsg, params)
-            }
-            MinaConstants.CMD_S_NTP_S -> {
-                doNtpTiming(srcMsg, params)
-            }
+//            MinaConstants.CMD_S_REGISTER -> {
+//                doRegister(session, params, srcMsg)
+//            }
+//            MinaConstants.CMD_S_QURLIST -> {
+//                doHandQurList(session, params)
+//            }
+//            MinaConstants.CMD_INVITE_COMM -> {
+//                doIntiveComm(session, srcMsg, params)
+//            }
+//            MinaConstants.CMD_ICECANDIDATE_COMM -> {
+//                doIntiveComm(session, srcMsg, params)
+//            }
+//            MinaConstants.CMD_INVITE_COMM_RS -> {
+//                doIntiveComm(session, srcMsg, params)
+//            }
+//            MinaConstants.CMD_T_TEST -> {
+//                doTransMsg(session, params)
+//            }
+//            MinaConstants.CMD_T_MUSIC_CTR_S -> {
+//                doMusicCtrSend(session, params)
+//            }
+//            MinaConstants.CMD_T_MUSIC_ERRPR -> {
+//                onMusicPlayError(srcMsg, params)
+//            }
+//            MinaConstants.CMD_S_QURUNLINK -> {
+//                // 本机断开（主机、从机按钮断开）
+//                unLinkSomeSession(srcMsg, params)
+//            }
+//            MinaConstants.CMD_S_NTP_S -> {
+//                doNtpTiming(srcMsg, params)
+//            }
         }
     }
 
@@ -194,26 +202,31 @@ class TcpServiceHandler(val haloManager: IHaloManager, name: String) : HaloThrea
             Timber.i("sessionClosed_sessionID:${session.id}  itemData:$item")
             notifyLinkedClientInfo(false)
             registerList.remove(item)
-            if (registerList.size <= 1) {
-                quitSafely()//关闭服务器
-                Timber.i("sessionClosed 服务端连接数量<=1 自动关闭服务端")
-                val params = JsonObject()
-                params.addProperty("state", "Closed")
-                haloManager.getClientInfo().also {
-                    it.group = GroupInfo()
-                    it.linkState = false
-                    // 此处type不会为3，因为在创建服务过后，服务已经变成了2，忙碌模式
-                    //l 需要獲取勿擾模式的值
-                    it.type = if (it.type == 3) it.type else 1
-                }
-                haloManager.getHandClietReceiverMsg()?.notifyServiceReceiverMsg(
-                    MinaConstants.CMD_SERVICE_STATE,
-                    params,
-                    null
-                )
-                haloManager.setTcpService(false)
-            }
+//            if (registerList.size <= 1) {
+//                quitSafely()//关闭服务器
+//                Timber.i("sessionClosed 服务端连接数量<=1 自动关闭服务端")
+//                val params = JsonObject()
+//                params.addProperty("state", "Closed")
+//                haloManager.getClientInfo().also {
+//                    it.group = GroupInfo()
+//                    it.linkState = false
+//                    // 此处type不会为3，因为在创建服务过后，服务已经变成了2，忙碌模式
+//                    //l 需要獲取勿擾模式的值
+//                    it.type = if (it.type == 3) it.type else 1
+//                }
+//                haloManager.getHandClietReceiverMsg()?.notifyServiceReceiverMsg(
+//                    MinaConstants.CMD_SERVICE_STATE,
+//                    params,
+//                    null
+//                )
+//                haloManager.setTcpService(false)
+//            }
         }
+    }
+
+    override fun sessionOpened(session: ISession?) {
+        super.sessionOpened(session)
+        Timber.i("XTAG 有对象连接")
     }
 
     /**

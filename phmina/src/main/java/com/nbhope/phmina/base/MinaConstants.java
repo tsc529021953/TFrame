@@ -51,4 +51,12 @@ public class MinaConstants {
     public static final String CMD_T_TEST = "CMD_T_TEST";   // 消息透传
 
     public static final String CMD_NETWORK_LOST = "CMD_NETWORK_LOST";
+
+    //
+    public static final String CMD_CHANGE_SIGN = "CMD_CHANGE_SIGN";
+    public static final String CMD_CHANGE_GROUP = "CMD_CHANGE_GROUP";
+    public static final String CMD_CHANGE_INDEX = "CMD_CHANGE_INDEX";
+
+    public static final String CMDLOCAL_DISCONNECT = "CMDLOCAL_DISCONNECT";
+    public static final String CMDLOCAL_CONNECT = "CMDLOCAL_CONNECT";
 }

@@ -68,6 +68,7 @@ class TcpClientHandler(
 
     override fun sessionOpened(session: ISession?) {
         super.sessionOpened(session)
+        Timber.i("XTAG Handler sessionOpened")
         mSession?.close()
         mSession = session
         doregister(session)
@@ -79,6 +80,7 @@ class TcpClientHandler(
 
     override fun sessionClosed(session: ISession?) {
         super.sessionClosed(session)
+        Timber.i("XTAG Handler sessionClosed")
         mSession = null
         halomanager.distoryTcpClient()
         var params = JsonObject()

@@ -62,12 +62,15 @@ abstract class HaloThread(name: String) :
 
     override fun messageReceived(session: ISession?, message: Any?) {
         try {
+            Timber.i("XTAG messageReceived $message${message is String} " +
+                    "${message != null} ${this::class.java}")
             if (message is String && message != null) {
                 val receive = JsonParser().parse(message).asJsonObject
                 onMessageReceiver(session, message, receive["cmd"].asString, receive.get("params"))
             }
         } catch (e: Exception) {
-            Timber.e(e.message)
+            Timber.e("XTAG ${e.message}")
+            e.printStackTrace()
         }
     }
 

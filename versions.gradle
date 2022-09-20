@@ -322,8 +322,8 @@ ext.apk_version = apk_version
 
 def build_versions = [:] //环境编译版本
 build_versions.min_sdk = 21
-build_versions.target_sdk = 32
-build_versions.build_tools = "32.0.0"
+build_versions.target_sdk = 30
+build_versions.build_tools = "30.0.2"
 ext.build_versions = build_versions
 ext.is_module = false
 

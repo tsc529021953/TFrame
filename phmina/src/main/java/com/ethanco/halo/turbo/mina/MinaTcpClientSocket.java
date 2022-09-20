@@ -78,9 +78,9 @@ public class MinaTcpClientSocket extends AbstractSocket {
 
         init(config);
         if (connector == null || connector.isDisposing() || connector.isDisposed())return false;
-        ConnectFuture future = connector.connect();
-        future.awaitUninterruptibly();
         try {
+            ConnectFuture future = connector.connect();
+            future.awaitUninterruptibly();
             mSession = future.getSession();
         } catch (Exception e) {
             onStartFailed(e);

@@ -141,6 +141,7 @@ public class MinaTcpServerSocket extends AbstractSocket {
         @Override
         public void messageReceived(IoSession session, Object message) throws Exception {
             super.messageReceived(session, message);
+            Timber.i("XTAG messageReceived " + message);
             MinaTcpServerSocket.this.messageReceived(convertToISession(session, MinaTcpServerSocket.this), receive(message));
         }
 

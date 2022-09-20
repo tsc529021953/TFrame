@@ -8,6 +8,7 @@ import android.os.IBinder
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.google.gson.JsonObject
 import com.nbhope.lib_frame.arouterpath.RouterPath
+import com.nbhope.phmina.base.HaloType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -30,6 +31,18 @@ class MainServiceDelegate : MainService {
 
     override fun connectServer(ip: String) {
         serviceImpl?.connectServer(ip)
+    }
+
+    override fun getStatus(type: HaloType): Boolean {
+        return serviceImpl?.getStatus(type) == true
+    }
+
+    override fun sendMulMessage(msg: String) {
+        serviceImpl?.sendMulMessage(msg)
+    }
+
+    override fun sendClientMessage(msg: String) {
+        serviceImpl?.sendClientMessage(msg)
     }
 
 

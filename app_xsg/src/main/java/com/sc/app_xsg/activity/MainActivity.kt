@@ -9,9 +9,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.Observer
+import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.app.uhome.util.RGB2HSLUtils
+import com.nbhope.app_uhome_local.event.UHomeLocalEvent
 import com.sc.app_xsg.R
 import com.nbhope.lib_frame.utils.PermissionUtil
 import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
@@ -25,7 +28,11 @@ import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.sc.lib_local_device.common.DeviceCommon
 import com.nbhope.lib_frame.common.BasePath
+import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
+import com.nbhope.phmina.base.MinaConstants
+import com.sc.lib_local_device.dao.DeviceInfo
+import com.sc.lib_local_device.service.MainService
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -43,6 +50,8 @@ import javax.inject.Inject
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     companion object {
+        var Instance: MainActivity? = null
+
         var PERMISSIONS = arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -56,6 +65,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         const val MESSAGE = "获取天气信息！"
     }
 
+    @Autowired
+    @JvmField
+    var service: MainService? = null
+
     var isRequestPER = false
 
     @Inject
@@ -63,6 +76,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Instance = this
         isRequestPER = false
         // UI
         setContentView(R.layout.activity_main)
@@ -136,7 +150,16 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun initData() {
+        if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl
+            && DeviceCommon.recordDeviceInfo != null)
+            LiveEBUtil.regist(UHomeLocalEvent::class.java, this, uHomeLocalObserver)
+    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl
+            && DeviceCommon.recordDeviceInfo != null)
+            LiveEBUtil.unRegist(UHomeLocalEvent::class.java, uHomeLocalObserver)
     }
 
     override fun linkViewModel() {
@@ -145,4 +168,17 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     @Inject
     override lateinit var viewModel: MainViewModel
+
+    private val uHomeLocalObserver = Observer<Any> {
+        it as UHomeLocalEvent
+        when (it.cmd) {
+            MinaConstants.CMD_DISCOVER_RS -> {
+                var item = it.data as DeviceInfo
+                if (item.code == DeviceCommon.recordDeviceInfo.code
+                    && item.ip != DeviceCommon.recordDeviceInfo.ip) {
+                    service?.connectServer(item.ip)
+                }
+            }
+        }
+    }
 }

@@ -1,0 +1,19 @@
+<resources>
+
+
+    <style name="sign_icon">
+<!--        <item name="android:layout_gravity">center</item>-->
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="tint">#FF0000</item>
+        <item name="android:src">@drawable/ic_sign</item>
+    </style>
+
+    <style name="xsg_ctrl_icon">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">50dp</item>
+
+    </style>
+
+</resources>

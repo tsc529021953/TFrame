@@ -449,11 +449,41 @@ class HopeUtils private constructor() {
         fun getSN(): String {
             var result = realSN
             if (!isInvalidSN(result)) return result
-
-            //result = getMacAddressByWlan0();
-            result = getGUID(HopeBaseApp.getContext())
+            try {
+                result = getGUID(HopeBaseApp.getContext())
+            } catch (e:Exception) {
+                result = macAddress()!!;
+            }
             return if (!TextUtils.isEmpty(result)) result else ""
 
+        }
+
+        @Throws(SocketException::class)
+        fun macAddress(): String? {
+            var address: String? = "unKnow"
+            // 把当前机器上访问网络的接口存入 Enumeration集合中
+            val interfaces: Enumeration<NetworkInterface> = NetworkInterface.getNetworkInterfaces()
+            while (interfaces.hasMoreElements()) {
+                val netWork: NetworkInterface = interfaces.nextElement()
+                // 如果存在硬件地址并可以使用给定的当前权限访问，则返回该硬件地址（通常是 MAC）。
+                val by = netWork.hardwareAddress
+                if (by == null || by.size == 0) {
+                    continue
+                }
+                val builder = StringBuilder()
+                for (b in by) {
+                    builder.append(String.format("%02X:", b))
+                }
+                if (builder.length > 0) {
+                    builder.deleteCharAt(builder.length - 1)
+                }
+                val mac = builder.toString()
+                // 从路由器上在线设备的MAC地址列表，可以印证设备Wifi的 name 是 wlan0
+                if (netWork.name == "wlan0") {
+                    address = mac
+                }
+            }
+            return address
         }
 
         // 获取手机的唯一标识符: deviceId

@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.Binder
@@ -14,27 +13,24 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.widget.Toast
-import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.lib.halo.HaloManagerImp
 import com.lib.tcp.event.MinaHandlerEvent
 import com.nbhope.app_uhome_local.event.UHomeLocalEvent
-import com.nbhope.lib_frame.ITNotice
 import com.nbhope.lib_frame.app.HopeBaseApp
-import com.nbhope.lib_frame.bean.TMessage
 import com.nbhope.lib_frame.utils.LiveEBUtil
-import com.nbhope.lib_frame.common.BaseMessage
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.NetworkUtil
+import com.nbhope.phmina.base.HaloType
 import com.nbhope.phmina.base.MinaConstants
 import com.nbhope.phmina.bean.data.ClientInfo
 import com.sc.lib_local_device.R
 import com.sc.lib_local_device.common.DeviceCommon
+import com.sc.lib_local_device.dao.CmdItem
 import com.sc.lib_local_device.dao.DeviceInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -85,6 +81,10 @@ class MainServiceImpl : Service() , MainService{
 
     private var networkAvailable = false
 
+    private var clientOpened = false
+
+    private var serverOpened = false
+
     override fun onBind(p0: Intent?): IBinder? {
         return this.mainBinder
     }
@@ -107,6 +107,10 @@ class MainServiceImpl : Service() , MainService{
 //                params.addProperty("state", opened)
 //                notifyInterPhoneMsg(MinaConstants.CMD_SERVICE_STATE, params, null)
                 Timber.i("$TAG ServiceState $opened")
+                serverOpened = opened
+                if (opened)
+                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_CONNECT, ""))
+                else  LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
             }
 
             override fun notifyClientState(opened: Boolean) {
@@ -114,21 +118,40 @@ class MainServiceImpl : Service() , MainService{
 //                params.addProperty("state", opened)
 //                notifyInterPhoneMsg(MinaConstants.CMD_CLIENT_STATE, params, null)
                 Timber.i("$TAG ClientState $opened")
+                clientOpened = opened
+                if (opened)
+                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_CONNECT, ""))
+                else  LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
             }
 
             override fun notifyReceiverMsg(cmd: String, params: JsonElement?, srcMsg: String?) {
 //                notifyInterPhoneMsg(cmd, params, srcMsg)
                 Timber.i("$TAG ReceiverMsg $cmd $srcMsg $params")
-                if (cmd == MinaConstants.CMD_DISCOVER_RS) {
-                    // 当设备查找到
-                    var reciver = Gson().fromJson<ClientInfo>(
-                        params, ClientInfo::class.java
-                    )
-                    if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl &&
-                        reciver.hopeSn != HopeUtils.getSN()) {
-                        // 查找到新设备 通知给界面
-                        var item = DeviceInfo(reciver.hopeSn, reciver.localIp)
-                        LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMD_DISCOVER_RS, item))
+                when (cmd) {
+                    MinaConstants.CMD_DISCOVER_RS -> {
+                        // 当设备查找到
+                        var reciver = Gson().fromJson<ClientInfo>(
+                            params, ClientInfo::class.java
+                        )
+                        if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl &&
+                            reciver.hopeSn != HopeUtils.getSN()) {
+                            // 查找到新设备 通知给界面
+                            var item = DeviceInfo(reciver.hopeSn, reciver.localIp)
+                            LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMD_DISCOVER_RS, item))
+                        }
+                    }
+                    MinaConstants.CMD_CHANGE_GROUP, MinaConstants.CMD_CHANGE_INDEX, MinaConstants.CMD_CHANGE_SIGN -> {
+                        try {
+                            var reciver = Gson().fromJson<CmdItem>(
+                                params, CmdItem::class.java
+                            )
+                            Timber.i("$TAG 接收到控制消息")
+                            if (reciver == null) return
+                            LiveEBUtil.post(UHomeLocalEvent(cmd, reciver))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+
                     }
                 }
             }
@@ -248,6 +271,8 @@ class MainServiceImpl : Service() , MainService{
         }
         networkAvailable = true
         createMultiCast()
+
+        onChangeType()
     }
 
     // 用于创建用于寻找设备的线程 组播
@@ -260,20 +285,41 @@ class MainServiceImpl : Service() , MainService{
 
     override fun onChangeType() {
         // 首先尝试关闭所有
-        mMinaCtrl?.distoryClient()
-        mMinaCtrl?.distoryService()
         if (DeviceCommon.deviceType == DeviceCommon.DeviceType.View) {
             // 创建tcp服务器
+            mMinaCtrl?.distoryClient()
+            Timber.i("$TAG 创建tcp服务器")
             mMinaCtrl?.createTcpService()
         } else {
             // 创建tcp客户端
-
+            mMinaCtrl?.distoryService()
+            // 尝试连接之前那个
+            if (DeviceCommon.recordDeviceInfo != null) {
+                connectServer(DeviceCommon.recordDeviceInfo.ip)
+            }
         }
     }
 
     override fun connectServer(ip: String) {
         mMinaCtrl?.distoryClient()
         mMinaCtrl?.createTcpClient(ip)
+    }
+
+    override fun getStatus(type: HaloType): Boolean {
+        return when (type) {
+            HaloType.TCP_CLIENT -> clientOpened
+            HaloType.TCP_SERVER -> serverOpened
+            else -> mMinaCtrl?.iHaloManager?.isRunning(type) == true
+        }
+    }
+
+    override fun sendMulMessage(msg: String) {
+        mMinaCtrl?.iHaloManager?.mutilSendMsg(msg)
+    }
+
+    override fun sendClientMessage(msg: String) {
+        Timber.i("$TAG sendClientMessage $msg")
+        mMinaCtrl?.iHaloManager?.clientSendMsg(msg)
     }
 
     override fun init(context: Context?) {
