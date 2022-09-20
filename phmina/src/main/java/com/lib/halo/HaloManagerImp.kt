@@ -71,10 +71,14 @@ class HaloManagerImp : IHaloManager {
      * 结束指定的服务
      */
     private fun stopHalo(type: HaloType) {
-        var haloType = haloMap[type]?.get()
-        haloType?.quitSafely()
-        haloMap.remove(type)
-        haloType = null
+        try {
+            var haloType = haloMap[type]?.get()
+            haloType?.quitSafely()
+            haloMap.remove(type)
+            haloType = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 

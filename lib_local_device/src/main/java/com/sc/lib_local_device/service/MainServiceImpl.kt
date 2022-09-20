@@ -108,9 +108,10 @@ class MainServiceImpl : Service() , MainService{
 //                notifyInterPhoneMsg(MinaConstants.CMD_SERVICE_STATE, params, null)
                 Timber.i("$TAG ServiceState $opened")
                 serverOpened = opened
-                if (opened)
-                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_CONNECT, ""))
-                else  LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
+                if (!opened)
+                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
+//                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_CONNECT, ""))
+//                else  LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
             }
 
             override fun notifyClientState(opened: Boolean) {
@@ -134,8 +135,9 @@ class MainServiceImpl : Service() , MainService{
                             params, ClientInfo::class.java
                         )
                         if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl &&
-                            reciver.hopeSn != HopeUtils.getSN()) {
+                            reciver.hopeSn != HopeUtils.getSN() && reciver.deviceType == 1) {
                             // 查找到新设备 通知给界面
+                                Timber.i("XTAG 查找到新设备 ${reciver.localIp} ${reciver.hopeSn}")
                             var item = DeviceInfo(reciver.hopeSn, reciver.localIp)
                             LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMD_DISCOVER_RS, item))
                         }
@@ -159,12 +161,13 @@ class MainServiceImpl : Service() , MainService{
         init()
         appComponent.networkCallback.registNetworkCallback(object : NetworkCallbackModule {
             override fun onAvailable(network: Network?) {
+                Timber.i("$TAG onAvailable")
 //                if (!minaManager.isConnect()) {
 //                    minaManager.startMina()
 //                }
                 networkAvailable = true
                 init()
-                Timber.i("$TAG onAvailable")
+
                 // 联网状态下 判断tcp是否连接 重新连接tcp
             }
 
@@ -176,6 +179,7 @@ class MainServiceImpl : Service() , MainService{
 //                if (minaManager.isConnect()) {
 //                    minaManager.stopMina()
 //                }
+                LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
             }
 
             override fun onCapabilitiesChanged(
@@ -256,19 +260,21 @@ class MainServiceImpl : Service() , MainService{
     private fun init() {
         // 创建组播监听
 //        // 读取一下记录的本地网关ip
-//        Timber.d("LTAG init ${Build.VERSION.SDK_INT >= Build.VERSION_CODES.M} $uHomeLocalIP ${minaManager.isConnect()}")
+        Timber.d("XTAG init ${Build.VERSION.SDK_INT >= Build.VERSION_CODES.M}")
 //        if (uHomeLocalIP == null || uHomeLocalIP == "") {
 //            Timber.d("LTAG 未读取到记录的网关ip")
 //            // 弹出弹框，用于输入ip
 //            return
 //        }
 //        minaManager.init(PORT, uHomeLocalIP!!)
-        if (!NetworkUtil.isNetworkAvailable(baseContext)) {
+        if (!NetworkUtil.isNetworkConnected(baseContext)) {
 //            // 当前网络不可用
             networkAvailable = true
+            Timber.d("XTAG 当前无可用网络")
             Toast.makeText(baseContext, "当前无可用网络！", Toast.LENGTH_SHORT).show()
             return
         }
+        Timber.i("XTAG init view")
         networkAvailable = true
         createMultiCast()
 
@@ -301,6 +307,7 @@ class MainServiceImpl : Service() , MainService{
     }
 
     override fun connectServer(ip: String) {
+        Timber.i("XTAG connectServer $ip")
         mMinaCtrl?.distoryClient()
         mMinaCtrl?.createTcpClient(ip)
     }
@@ -314,6 +321,7 @@ class MainServiceImpl : Service() , MainService{
     }
 
     override fun sendMulMessage(msg: String) {
+        Timber.i("XTAG sendMulMessage $msg")
         mMinaCtrl?.iHaloManager?.mutilSendMsg(msg)
     }
 

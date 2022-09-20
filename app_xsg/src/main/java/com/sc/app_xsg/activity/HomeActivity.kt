@@ -81,11 +81,6 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
                 // adpater
                 initAdapter()
             }
-            if (service?.getStatus(HaloType.TCP_CLIENT) == true) {
-                Timber.i("XTAG 客户端已经连接成功")
-            } else {
-                Timber.i("XTAG 客户端已经连接成功")
-            }
         } else {
             // View
             binding.rvDevice.visibility = View.GONE
@@ -127,6 +122,8 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
         binding.layoutSign.visibility = View.VISIBLE
         binding.layoutView.visibility = View.GONE
         viewModel.image.set(null)
+        viewModel.picIndex = -1
+        viewModel.picGroup = -1
     }
 
     private fun showImageView() {
@@ -180,6 +177,10 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
             // 尝试连接
             service!!.connectServer(deviceInfo.ip)
             Timber.i("XTAG 连接 ${deviceInfo.ip}")
+            // 有记录的设备信息 关闭整个界面
+            binding.rvDevice.visibility = View.GONE
+            // 根据当前的连接状态，
+            binding.layoutMain.visibility = View.VISIBLE
         }
         adapter?.loadMoreModule?.setOnLoadMoreListener {
             Timber.i("LTAG ????????")
@@ -243,7 +244,7 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
                     devices[index].code = item.code
                     adapter?.notifyItemChanged(devices.size)
                 }
-                if (item.code == DeviceCommon.recordDeviceInfo.code) {
+                if (DeviceCommon.recordDeviceInfo != null && item.code == DeviceCommon.recordDeviceInfo.code) {
                     if (item.ip != DeviceCommon.recordDeviceInfo.ip ||
                         service?.getStatus(HaloType.TCP_CLIENT) != true
                     ) {
@@ -261,7 +262,7 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
                 var i = it.data as CmdItem
                 hideMain()
                 showImageView()
-                viewModel.loadAllImages(i.group)
+                viewModel.loadAllImages(i.group, i.index)
             }
             MinaConstants.CMD_CHANGE_SIGN -> {
                 var i = it.data as CmdItem

@@ -8,6 +8,18 @@ import java.net.NetworkInterface
 import java.net.SocketException
 
 object NetworkUtil {
+    fun isNetworkConnected(context: Context?): Boolean {
+        if (context != null) {
+            val mConnectivityManager: ConnectivityManager = context
+                .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val mNetworkInfo: NetworkInfo? = mConnectivityManager.getActiveNetworkInfo()
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable()
+            }
+        }
+        return false
+    }
+
     fun getIp():String?{
         try {
             val en = NetworkInterface.getNetworkInterfaces()

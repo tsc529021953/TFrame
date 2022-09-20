@@ -11,6 +11,7 @@ import com.google.gson.JsonParser
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.phmina.base.Config
 import com.nbhope.phmina.base.MinaConstants
+import com.nbhope.phmina.bean.data.ClientInfo
 import com.nbhope.phmina.bean.data.Cmd
 import com.nbhope.phmina.bean.request.DiscoverQueryParams
 import com.nbhope.phmina.bean.request.IntiveLinkParams
@@ -137,11 +138,12 @@ class MulticastHandler(private val haloManager: IHaloManager, name: String) :
         when (cmd) {
             MinaConstants.CMD_DISCOVER -> {
                 // 自己的
-                Timber.i("发送自身设备信息 ${haloManager.getClientInfo().hopeSn}" +
-                        " ${haloManager.getClientInfo().localIp} ${HopeUtils.getIP()}")
+//                Timber.i("发送自身设备信息 ${haloManager.getClientInfo().hopeSn}" +
+//                        " ${haloManager.getClientInfo().localIp} ${HopeUtils.getIP()}")
+                Timber.i("XTAG 发送自身设备信息 ${haloManager.getClientInfo().localIp}")
                 sendMsg(
                     session,
-                    gson.toJson(Cmd(MinaConstants.CMD_DISCOVER_RS, haloManager.getClientInfo())),
+                    gson.toJson(Cmd(MinaConstants.CMD_DISCOVER_RS, haloManager.getClientInfo().also { it.deviceType = 1 })),
                     ""
                 )
             }
@@ -205,10 +207,14 @@ class MulticastHandler(private val haloManager: IHaloManager, name: String) :
     }
 
     fun startscal() {
-        var cmd = Cmd(MinaConstants.CMD_DISCOVER, DiscoverQueryParams().also { item ->
-            item.hopeSn = localSn
-        })
+        var da = ClientInfo()
+        val cmd = Cmd(MinaConstants.CMD_DISCOVER, da)
+        Timber.i("XTAG startscal 发送自身设备信息 ${da.localIp}")
         sendMsg(mSession, Gson().toJson(cmd), "")
+//        var cmd = Cmd(MinaConstants.CMD_DISCOVER, DiscoverQueryParams().also { item ->
+//            item.hopeSn = localSn
+//        })
+//        sendMsg(mSession, Gson().toJson(cmd), "")
     }
 
     override fun isRunning(): Boolean {

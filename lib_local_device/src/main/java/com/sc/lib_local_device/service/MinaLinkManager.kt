@@ -117,15 +117,21 @@ abstract class MinaLinkManager(val iHaloManager: IHaloManager) : IHaloManager.Ha
      * 当服务端开启成功后发起邀请
      */
     override fun notifyServiceReceiverMsg(cmd: String, params: JsonElement?, srcMsg: String?) {
+        Timber.i("XTAG notifyServiceReceiverMsg $cmd")
         when (cmd) {
             MinaConstants.CMD_SERVICE_STATE -> { //服务端状态
                 var data = params?.asJsonObject
                 val state = data?.get("state")?.asString
-                if (state == "Opened") {
-                    intiveLinkTo(linkInfo?.tagSn, Utils.getLANIP())  //邀请连接
-                } else if (state == "Closed") {
-                }
+//                if (state == "Opened") {
+//                    intiveLinkTo(linkInfo?.tagSn, Utils.getLANIP())  //邀请连接
+//                } else if (state == "Closed") {
+//                }
                 notifyTcpServiceState(state == "Opened")
+            }
+            MinaConstants.CMD_CLIENT_STATE -> {
+                var data = params?.asJsonObject
+                val state = data?.get("state")?.asString
+                notifyClientState(state == "Opened")
             }
             else -> {
                 notifyReceiverMsg(cmd, params, srcMsg)

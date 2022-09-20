@@ -62,6 +62,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
         const val REQUEST_CODE = 10086
 
+        const val LOAD_TIMER: Long = 5000
+
         const val MESSAGE = "获取天气信息！"
     }
 
@@ -117,7 +119,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
                 Timber.i("$TAG 启动动画显示完成 ${DeviceCommon.deviceType} ${BasePath.HOME_PATH}")
                 // 跳转界面
                 goHome()
-            }, 1000)
+            }, LOAD_TIMER)
         }
     }
 

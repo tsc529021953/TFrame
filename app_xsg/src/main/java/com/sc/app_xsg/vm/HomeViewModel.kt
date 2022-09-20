@@ -43,9 +43,9 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
 
     var image = ObservableField<Drawable>()
 
-    var picIndex = 0
+    var picIndex = -1
 
-    var picGroup = 0
+    var picGroup = -1
 
     var callback: Handler.Callback? = null
 
@@ -57,6 +57,7 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
     }
 
     fun onSignClick(group: Int) {
+        picGroup = group
         Timber.i("XTAG onSignClick $group ${image.get()}")
         if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl) {
             // 发送控制信息给服务端
@@ -94,8 +95,8 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
                 Timber.i("XTAG group ${files != null} ${files?.isNotEmpty()}")
                 if (files != null && files.isNotEmpty()) {
                     callback?.handleMessage(Message().also { it.what = files.size })
-                    if (index > 0 && index < files.size -1) picIndex = index
-                    picIndex = files.size / 2
+                    picIndex = if (index >= 0 && index < files.size) index
+                    else files.size / 2
                     for (i in files.indices) {
                         val inputStream: InputStream = am.open(IMAGES_PATH + group.toString() + "/" + files!![i])
                         var bitmap = BitmapFactory.decodeStream(inputStream)
@@ -107,10 +108,10 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
                             image.set(BitmapDrawable(bitmap))
                         }
                     }
-                    if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl) {
-                        // 发送控制信息给服务端
-                        sendIndex()
-                    }
+//                    if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl) {
+//                        // 发送控制信息给服务端
+//                        sendIndex()
+//                    }
                 } else {
                     callback?.handleMessage(Message().also { it.what = 0 })
                 }
@@ -133,6 +134,7 @@ class HomeViewModel @Inject constructor(val spManager: SharedPreferencesManager)
         var da = CmdItem()
         da.group = picGroup
         da.index = picIndex
+        Timber.i("XTAG sendGroup $da")
         val cmd = Cmd(MinaConstants.CMD_CHANGE_GROUP, da)
         service?.sendClientMessage(Gson().toJson(cmd))
     }

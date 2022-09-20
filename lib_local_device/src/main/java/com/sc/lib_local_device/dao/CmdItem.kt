@@ -9,5 +9,9 @@ class CmdItem() {
     open var group  = 0
 
     open var index  = 0
+    override fun toString(): String {
+        return "CmdItem(group=$group, index=$index)"
+    }
+
 
 }

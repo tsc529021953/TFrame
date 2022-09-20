@@ -202,7 +202,7 @@ class TcpServiceHandler(val haloManager: IHaloManager, name: String) : HaloThrea
             Timber.i("sessionClosed_sessionID:${session.id}  itemData:$item")
             notifyLinkedClientInfo(false)
             registerList.remove(item)
-//            if (registerList.size <= 1) {
+            if (registerList.size <= 1) {
 //                quitSafely()//关闭服务器
 //                Timber.i("sessionClosed 服务端连接数量<=1 自动关闭服务端")
 //                val params = JsonObject()
@@ -220,13 +220,28 @@ class TcpServiceHandler(val haloManager: IHaloManager, name: String) : HaloThrea
 //                    null
 //                )
 //                haloManager.setTcpService(false)
-//            }
+
+                val params = JsonObject()
+                params.addProperty("state", "Closed")
+                haloManager.getHandClietReceiverMsg()?.notifyServiceReceiverMsg(
+                    MinaConstants.CMD_CLIENT_STATE,
+                    params,
+                    null
+                )
+            }
         }
     }
 
     override fun sessionOpened(session: ISession?) {
         super.sessionOpened(session)
         Timber.i("XTAG 有对象连接")
+        val params = JsonObject()
+        params.addProperty("state", "Opened")
+        haloManager.getHandClietReceiverMsg()?.notifyServiceReceiverMsg(
+            MinaConstants.CMD_CLIENT_STATE,
+            params,
+            null
+        )
     }
 
     /**
