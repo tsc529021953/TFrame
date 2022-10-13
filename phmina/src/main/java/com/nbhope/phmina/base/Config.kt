@@ -8,14 +8,14 @@ package com.nbhope.phmina.base
  * @since 2017/2/7
  */
 object Config {
-    val MINA_CLIENT_PORT=11421
-    val SYNC_SERVICE_PORT=11423
+    val MINA_CLIENT_PORT=11424
+    val SYNC_SERVICE_PORT=11425
     
     
     //TCP 服务端 端口号
-    val MINA_SERVICE_PORT = 11420
+    val MINA_SERVICE_PORT = 11426
     //组播 源端口号
-    val MINA_MULTI_PORT=11422
+    val MINA_MULTI_PORT=11427
 
     //TCP 缓存大小
     val tcpBufferSize = 2048

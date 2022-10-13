@@ -139,6 +139,7 @@ class TcpClientHandler(
     }
 
     override fun getHalo(): Halo {
+        Timber.i("XTAG TcpClientHandler 连接服务")
         return Halo.Builder()
             .setMode(Mode.MINA_NIO_TCP_CLIENT)
             .setBufferSize(Config.tcpBufferSize)
