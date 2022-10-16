@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.net.wifi.WifiManager
 import android.os.*
 import android.widget.Toast
 import com.google.gson.Gson
@@ -74,6 +75,8 @@ class MainServiceImpl : Service() , MainService{
     private val minaManager = MainMinaManager()
 
     private lateinit var wakeLock: PowerManager.WakeLock
+
+    private lateinit var multicastLock: WifiManager.MulticastLock
 
     // 组播
     private var mMinaCtrl: MinaLinkManager? = null
@@ -254,12 +257,15 @@ class MainServiceImpl : Service() , MainService{
             PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.SCREEN_DIM_WAKE_LOCK,
             "speech::WakeAndLock"
         )
+        multicastLock = (this.getSystemService(Context.WIFI_SERVICE) as WifiManager).createMulticastLock("multicast.test")
+        multicastLock.acquire()
     }
 
     override fun onDestroy() {
         scope.cancel()
         stopTimer()
         mMinaCtrl?.distoryAll()
+        multicastLock?.release()
         LiveEBUtil.unRegist(
             RemoteMessageEvent::class.java,
             LiveRemoteObserver.liveRemoteMusicObserver

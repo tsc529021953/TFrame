@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.sc.tframe">
 
+
+
     <application
             android:name=".app.AppHope"
             android:allowBackup="true"
