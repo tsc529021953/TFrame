@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.sc.lib_local_device">
 
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <!--此模块主要用于wifip2p相关 设备查找 设备连接 文件传输-->
+
 
     <application>
         <service
