@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:tools="http://schemas.android.com/tools"
+>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="166dp"
+                  android:layout_height="100dp"
+                  android:background="@drawable/info_item_selector"
+                  android:id="@+id/it_ly"
+    >
+
+        <TextView android:layout_width="166dp"
+                  android:layout_height="100dp"
+                  android:gravity="center"
+                  android:textSize="25sp"
+                  tools:text="测试"
+                  android:id="@+id/title_tv"
+                  />
+        
+    </LinearLayout>
+</layout>

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HE检测</string>
+    <string name="fail">失败</string>
+    <string name="success">成功</string>
+</resources>

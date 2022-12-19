@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:sharedUserId="android.uid.system"
+          xmlns:tools="http://schemas.android.com/tools" package="com.sc.hetest">
+    <!--    android:sharedUserId="android.uid.system"-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!--   相机 -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <application
+            android:name=".app.AppHope"
+            android:allowBackup="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.TFrame">
+        <activity android:name=".activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+            </intent-filter>
+        </activity>
+
+<!--        <activity android:name=".activity.MicActivity">-->
+<!--                        <intent-filter>-->
+<!--                            <action android:name="android.intent.action.MAIN"/>-->
+
+<!--                            <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--                        </intent-filter>-->
+<!--        </activity>-->
+
+        <activity android:name=".activity.HGActivity"/>
+        <activity android:name=".activity.ComActivity"/>
+        <activity android:name=".activity.BGLActivity"/>
+        <activity android:name=".activity.LCDActivity"/>
+        <activity android:name=".activity.VerInfoActivity"/>
+        <activity android:name=".activity.HornActivity"/>
+        <activity android:name=".activity.MicActivity"/>
+        <activity android:name=".activity.WIFIActivity"/>
+        <activity android:name=".activity.BTActivity"/>
+        <activity android:name=".activity.MemoryActivity"/>
+        <activity android:name=".activity.CamActivity"/>
+        <activity android:name=".activity.TouchActivity"/>
+        <activity android:name=".activity.USBCamActivity"/>
+        <meta-data
+                android:name="com.sc.hetest"
+                android:value="PackageName"/>
+
+
+
+        <receiver android:name=".receiver.StartReceiver"
+                  android:enabled="true"
+                  android:exported="true"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.provide.Telephony.SECRET_CODE"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

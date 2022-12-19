@@ -42,6 +42,7 @@ import java.security.MessageDigest
 import java.util.*
 import kotlin.experimental.and
 
+
 /**
  * ================================================
  * 一些框架常用的工具
@@ -669,6 +670,54 @@ class HopeUtils private constructor() {
         //判断Activity是否Destroy
         fun isDestroy(activity: Activity?): Boolean {
             return activity == null || activity.isFinishing ||  activity.isDestroyed
+        }
+
+        fun getVerName(context: Context): String {
+            var verName = ""
+            try {
+                verName = context.getPackageManager().
+                getPackageInfo(context.getPackageName(), 0).versionName;
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return verName;
+        }
+
+
+        public fun isSystemApp(pkgName: String, context: Context): Boolean {
+            val isSystemApp: Boolean
+            val pm: PackageManager = context.packageManager
+            //下面是一个系统级权限
+            val permission = PackageManager.PERMISSION_GRANTED ==
+                    pm.checkPermission("android.permission.OVERRIDE_WIFI_CONFIG", pkgName)
+            isSystemApp = permission
+            return isSystemApp
+        }
+
+        /**
+         * 根据包名判断app是否具有系统签名
+         * @param context 上下文
+         * @param packageName app包名
+         * @return true 有系统签名; false 没有系统签名
+         */
+        fun isSystemSign(context: Context, packageName: String? = null): Boolean {
+            val packageManager = context.packageManager
+            val uid1: Int = getUid(context)
+            val systemUID = 1000
+            return packageManager.checkSignatures(uid1, systemUID) == PackageManager.SIGNATURE_MATCH
+        }
+
+        fun getUid(context: Context, packageName: String? = null): Int {
+            val name = packageName ?: context.packageName
+            var uid = 0
+            try {
+                val pm = context.packageManager
+                val ai = pm.getApplicationInfo(name, PackageManager.GET_META_DATA)
+                uid = ai.uid
+            } catch (e: PackageManager.NameNotFoundException) {
+                e.printStackTrace()
+            }
+            return uid
         }
     }
 }

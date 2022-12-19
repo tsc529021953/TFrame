@@ -1,5 +1,6 @@
 package com.sc.tframe.app
 
+import android.app.Application
 import com.nbhope.lib_frame.app.HopeBaseApp
 import timber.log.Timber
 
@@ -9,7 +10,7 @@ import timber.log.Timber
  * @version 0.0.0-1
  * @description
  */
-class AppHope : HopeBaseApp() {
+class AppHope : Application() {
     override fun onCreate() {
         super.onCreate()
 

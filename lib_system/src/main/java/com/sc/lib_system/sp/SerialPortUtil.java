@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.List;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * author: sc
  * date: 2022/1/16
@@ -29,13 +31,24 @@ public class SerialPortUtil {
 
     private static final int IBAUD = 19200;
 
+    public static int[] BAUDS = {
+         300,600,1200,2400,4800,9600,14400,19200,28800,38400,57600,115200,230400
+    };
+
     SerialPortFinder serialPortFinder;
 
     SerialHelper serialHelper;
 //    SerialPort serialHelper;
 
-    String sp;
-    int iBaud;
+    public String sp;
+
+    public int iBaud;
+
+    IDataReceived iDataReceived;
+
+    public void setiDataReceived(IDataReceived iDataReceived) {
+        this.iDataReceived = iDataReceived;
+    }
 
     public String[] getSpList() {
         if (serialPortFinder == null)
@@ -112,10 +125,12 @@ public class SerialPortUtil {
     }
 
 
+
     void onDataReceivedFun(ComBean paramComBean){
         String msg = null;
         try {
             msg = new String(paramComBean.bRec, "UTF-8");
+            if (iDataReceived != null) iDataReceived.onDataReceived(msg);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -137,6 +152,24 @@ public class SerialPortUtil {
         }
     }
 
+    public static String toHex(String src) {
+        if (isEmpty(src)) {
+            return "";
+        }
+        src = src.replaceAll("\\s+", "").replaceAll("[^0-9a-fA-Z\\*]", "");
+        char[] chars = src.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        int i = 0, len = chars.length % 2 == 0 ? chars.length : chars.length - 1;
+        for (; i < len; i++) {
+            sb.append(chars[i]);
+            sb.append(chars[++i]);
+            sb.append(" ");
+        }
+        if (i < chars.length) {
+            sb.append(chars[i]);
+        }
+        return sb.toString().trim();
+    }
 
     void close() {
         if (serialHelper != null && serialHelper.isOpen())
@@ -151,6 +184,10 @@ public class SerialPortUtil {
 
     public void dispose() {
         close();
+    }
+
+    public interface IDataReceived{
+        void onDataReceived(String paramComBean);
     }
 
 }

@@ -1,0 +1,39 @@
+apply from: "../component_lib.gradle"
+
+android {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.retrofit.runtime
+
+    implementation deps.timber
+
+    implementation deps.support.app_compat
+    implementation deps.support.design
+    testImplementation deps.espresso.core
+    testImplementation deps.atsl.ext_junit
+    testImplementation deps.junit
+
+    // CameraX core library
+    def camerax_version = '1.1.0-beta01'
+    api "androidx.camera:camera-core:$camerax_version"
+
+    // CameraX Camera2 extensions
+    api "androidx.camera:camera-camera2:$camerax_version"
+
+    // CameraX Lifecycle library
+    api "androidx.camera:camera-lifecycle:$camerax_version"
+
+    // CameraX View class
+    api "androidx.camera:camera-view:$camerax_version"
+
+
+    // CameraX Extensions library
+    api "androidx.camera:camera-extensions:$camerax_version"
+}
