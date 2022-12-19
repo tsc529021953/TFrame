@@ -1,5 +1,7 @@
 package com.sc.app_xsg.activity
 
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,6 +25,7 @@ import com.sc.app_xsg.databinding.ActivityHomeBinding
 import com.sc.app_xsg.vm.HomeViewModel
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.common.BasePath
+import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
@@ -102,6 +105,23 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
                 binding.swipeDevice.isRefreshing = false
             }
         }
+        (application as HopeBaseApp).getAppComponent().networkCallback.registNetworkCallback(object : NetworkCallbackModule {
+            override fun onAvailable(network: Network?) {
+                viewModel.refreshData()
+            }
+
+            override fun onLost(network: Network?) {
+                viewModel.refreshData()
+            }
+
+            override fun onCapabilitiesChanged(
+                network: Network?,
+                networkCapabilities: NetworkCapabilities
+            ) {
+
+            }
+
+        })
     }
 
     override fun initData() {
@@ -226,6 +246,7 @@ class HomeActivity : BaseBindingActivity<ActivityHomeBinding, HomeViewModel>() {
         when (it.cmd) {
             MinaConstants.CMD_DISCOVER_RS -> {
                 var item = it.data as DeviceInfo
+                if (item.code == HopeUtils.getSN()) return@Observer
                 binding.swipeDevice.isRefreshing = false
                 Timber.i("$TAG 设备更新！${adapter == null}")
                 var dev = devices.find { d -> d.code == item.code }

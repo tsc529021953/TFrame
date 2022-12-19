@@ -8,10 +8,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Network
 import android.net.NetworkCapabilities
-import android.os.Binder
-import android.os.Build
-import android.os.IBinder
-import android.os.PowerManager
+import android.net.wifi.WifiManager
+import android.os.*
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -25,6 +23,7 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.NetworkUtil
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.phmina.base.HaloType
 import com.nbhope.phmina.base.MinaConstants
 import com.nbhope.phmina.bean.data.ClientInfo
@@ -32,11 +31,11 @@ import com.sc.lib_local_device.R
 import com.sc.lib_local_device.common.DeviceCommon
 import com.sc.lib_local_device.dao.CmdItem
 import com.sc.lib_local_device.dao.DeviceInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.*
 import timber.log.Timber
+import java.lang.Thread.sleep
 import java.lang.ref.WeakReference
+import java.util.*
 import java.util.concurrent.Executors
 
 /**
@@ -64,6 +63,7 @@ class MainServiceImpl : Service() , MainService{
 
         private const val COMMAND_TUYA = "DUI.SmartHome."
 
+        const val HEART_TIMER: Long = 15000
     }
 
     private var thread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -76,6 +76,8 @@ class MainServiceImpl : Service() , MainService{
 
     private lateinit var wakeLock: PowerManager.WakeLock
 
+    private lateinit var multicastLock: WifiManager.MulticastLock
+
     // 组播
     private var mMinaCtrl: MinaLinkManager? = null
 
@@ -85,6 +87,8 @@ class MainServiceImpl : Service() , MainService{
 
     private var serverOpened = false
 
+    lateinit var spManager: SharedPreferencesManager
+
     override fun onBind(p0: Intent?): IBinder? {
         return this.mainBinder
     }
@@ -93,6 +97,7 @@ class MainServiceImpl : Service() , MainService{
         super.onCreate()
         Timber.d("LTAG onCreate")
         val appComponent = (application as HopeBaseApp).getAppComponent()
+        spManager = appComponent.sharedPreferencesManager
         // 读取一下记录的本地网关ip
         // 此处回调为开始的设备查找信息+后来的控制信息传递
         mMinaCtrl = object : MinaLinkManager(HaloManagerImp().also {
@@ -120,9 +125,19 @@ class MainServiceImpl : Service() , MainService{
 //                notifyInterPhoneMsg(MinaConstants.CMD_CLIENT_STATE, params, null)
                 Timber.i("$TAG ClientState $opened")
                 clientOpened = opened
-                if (opened)
+                if (opened) {
+                    // 关闭定时器
+                    if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl) {
+                        stopTimer()
+                    }
                     LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_CONNECT, ""))
-                else  LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
+                }
+                else {
+                    // 开启定时器
+                    if (DeviceCommon.deviceType == DeviceCommon.DeviceType.Ctrl)
+                        startTimer()
+                    LiveEBUtil.post(UHomeLocalEvent(MinaConstants.CMDLOCAL_DISCONNECT, ""))
+                }
             }
 
             override fun notifyReceiverMsg(cmd: String, params: JsonElement?, srcMsg: String?) {
@@ -158,7 +173,7 @@ class MainServiceImpl : Service() , MainService{
                 }
             }
         }
-        init()
+//        init()
         appComponent.networkCallback.registNetworkCallback(object : NetworkCallbackModule {
             override fun onAvailable(network: Network?) {
                 Timber.i("$TAG onAvailable")
@@ -201,7 +216,7 @@ class MainServiceImpl : Service() , MainService{
         var builder: Notification.Builder? = Notification.Builder(this)
         builder!!.setSmallIcon(R.mipmap.ic_home).setWhen(System.currentTimeMillis())
         builder.setContentTitle("KeepAppAlive")
-        builder.setContentText("SpeechService is running...")
+        builder.setContentText("XSGService is running...")
 //        startForeground(SPEECH_NOTICE_ID, builder.build())
 //        // 如果觉得常驻通知栏体验不好
 //        // 可以通过启动CancelNoticeService，将通知移除，oom_adj值不变
@@ -242,11 +257,15 @@ class MainServiceImpl : Service() , MainService{
             PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.SCREEN_DIM_WAKE_LOCK,
             "speech::WakeAndLock"
         )
+        multicastLock = (this.getSystemService(Context.WIFI_SERVICE) as WifiManager).createMulticastLock("multicast.test")
+        multicastLock.acquire()
     }
 
     override fun onDestroy() {
         scope.cancel()
+        stopTimer()
         mMinaCtrl?.distoryAll()
+        multicastLock?.release()
         LiveEBUtil.unRegist(
             RemoteMessageEvent::class.java,
             LiveRemoteObserver.liveRemoteMusicObserver
@@ -257,7 +276,7 @@ class MainServiceImpl : Service() , MainService{
         super.onDestroy()
     }
 
-    private fun init() {
+    fun init() {
         // 创建组播监听
 //        // 读取一下记录的本地网关ip
         Timber.d("XTAG init ${Build.VERSION.SDK_INT >= Build.VERSION_CODES.M}")
@@ -307,9 +326,26 @@ class MainServiceImpl : Service() , MainService{
     }
 
     override fun connectServer(ip: String) {
-        Timber.i("XTAG connectServer $ip")
-        mMinaCtrl?.distoryClient()
-        mMinaCtrl?.createTcpClient(ip)
+        GlobalScope.launch (Dispatchers.IO){
+
+            val status = mMinaCtrl?.iHaloManager?.isRunning(HaloType.TCP_CLIENT)
+            Timber.i("XTAG connectServer $ip $status")
+            if (status == null) return@launch
+            if (status!!) {
+                if (mMinaCtrl?.iHaloManager?.getCurrentTcpServiceIp() != ip)
+                {
+                    mMinaCtrl?.distoryClient()
+                    sleep(500)
+                }
+            }
+            mMinaCtrl?.createTcpClient(ip)
+            // 存储信息
+            if (DeviceCommon.recordDeviceInfo != null && DeviceCommon.recordDeviceInfo.ip != ip) {
+                DeviceCommon.recordDeviceInfo.ip = ip
+                DeviceCommon.saveRecordDeviceInfo(spManager, DeviceCommon.recordDeviceInfo)
+            }
+            Timber.i("XTAG connectServer end $ip ${mMinaCtrl?.iHaloManager?.getCurrentTcpServiceIp()}")
+        }
     }
 
     override fun getStatus(type: HaloType): Boolean {
@@ -338,6 +374,42 @@ class MainServiceImpl : Service() , MainService{
         fun getSpeechService(): MainServiceImpl {
             return WeakReference(this@MainServiceImpl).get()!!
         }
+    }
+
+
+    private fun startTimer() {
+        if (posTimer != null && posTimerTask != null) return
+        posTimer = Timer()
+        posTimerTask = object : TimerTask() {
+            override fun run() {
+                // 间隔时间到了 尝试一次重新连接
+                if (networkAvailable) connectServer(DeviceCommon.recordDeviceInfo.ip)
+            }
+        }
+        posTimer?.schedule(posTimerTask, 0, HEART_TIMER)
+    }
+
+    var lastHeartTimer: Long = 0
+    var heartFailCount = 0
+
+    val POSITION = 10086
+    var posTimer: Timer? = null
+    var posTimerTask: TimerTask? = null
+    var posHandler = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            if (msg.what == POSITION) {
+                // 传递给主线程更新
+//                receiveRemotePosition(gtCurrentPosition())
+            }
+        }
+    }
+
+    private fun stopTimer() {
+        posTimer?.cancel()
+        posTimer = null
+        posTimerTask?.cancel()
+        posTimerTask = null
     }
 
 }

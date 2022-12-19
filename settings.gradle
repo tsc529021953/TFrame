@@ -1,5 +1,7 @@
 include ':lib_camera'
 include ':lib_audio'
+include ':lib_wifip2p'
+include ':lib_local_online'
 include ':phmina'
 include ':lib.tcp'
 include ':lib.network'

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.sc.lib_local_device">
+
+    <!--此模块主要用于wifip2p相关 设备查找 设备连接 文件传输-->
+
+
     <application>
         <service
                 android:name=".service.MainServiceImpl"

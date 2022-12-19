@@ -69,7 +69,8 @@ class MainServiceDelegate : MainService {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             serviceImpl = (service as MainServiceImpl.MainBinder).getSpeechService()
-            Timber.d("LTAG onServiceConnected")
+            Timber.d("XTAG onServiceConnected")
+            serviceImpl?.init()
         }
     }
 
