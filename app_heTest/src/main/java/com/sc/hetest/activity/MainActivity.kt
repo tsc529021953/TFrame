@@ -135,16 +135,21 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(){
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        initData()
+    }
+
     override fun initData() {
-        // 获取
-        var wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val point = Point()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            wm.defaultDisplay.getRealSize(point)
-        } else {
-            wm.defaultDisplay.getSize(point)
-        }
-        Timber.i("HETAG screen $point $state $path")
+//        // 获取
+//        var wm = getSystemService(WINDOW_SERVICE) as WindowManager
+//        val point = Point()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//            wm.defaultDisplay.getRealSize(point)
+//        } else {
+//            wm.defaultDisplay.getSize(point)
+//        }
+//        Timber.i("HETAG screen $point $state $path")
 
         infoList = ArrayList<InfoItem>()
         pageMap.forEach { info ->
