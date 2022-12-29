@@ -58,6 +58,7 @@ dependencies {
     implementation deps.support.core_ktx
 
     implementation deps.support.app_compat
+    implementation project(path: ':lib_system')
     androidTestImplementation deps.support.app_compat
     implementation deps.support.design
     androidTestImplementation deps.support.design

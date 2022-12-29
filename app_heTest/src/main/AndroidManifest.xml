@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          android:sharedUserId="android.uid.system"
+
           xmlns:tools="http://schemas.android.com/tools" package="com.sc.hetest">
     <!--    android:sharedUserId="android.uid.system"-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -33,20 +33,20 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
         <activity android:name=".activity.MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN"/>-->
+<!--&lt;!&ndash;                <category android:name="android.intent.category.DEFAULT"/>&ndash;&gt;-->
 <!--                <category android:name="android.intent.category.LAUNCHER"/>-->
-            </intent-filter>
+<!--            </intent-filter>-->
         </activity>
 
-<!--        <activity android:name=".activity.MicActivity">-->
-<!--                        <intent-filter>-->
-<!--                            <action android:name="android.intent.action.MAIN"/>-->
+        <activity android:name=".activity.BTActivity">
+                        <intent-filter>
+                            <action android:name="android.intent.action.MAIN"/>
 
-<!--                            <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--                        </intent-filter>-->
-<!--        </activity>-->
+                            <category android:name="android.intent.category.LAUNCHER"/>
+                        </intent-filter>
+        </activity>
 
         <activity android:name=".activity.HGActivity"/>
         <activity android:name=".activity.ComActivity"/>
@@ -56,7 +56,7 @@
         <activity android:name=".activity.HornActivity"/>
         <activity android:name=".activity.MicActivity"/>
         <activity android:name=".activity.WIFIActivity"/>
-        <activity android:name=".activity.BTActivity"/>
+<!--        <activity android:name=".activity.BTActivity"/>-->
         <activity android:name=".activity.MemoryActivity"/>
         <activity android:name=".activity.CamActivity"/>
         <activity android:name=".activity.TouchActivity"/>
