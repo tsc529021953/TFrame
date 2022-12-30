@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
+import com.sc.lib_system.bean.DeviceBean;
 
 import java.util.ArrayList;
 
@@ -72,6 +73,7 @@ public class BluetoothUtils {
             }else if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())){
                 // 搜索完成
                 dev_mac_adress = "";
+                Log.i(TAG,deviceBeans.size() + "搜索完成");
                 bluetoothInterface.getBluetoothList(deviceBeans);
                 deviceBeans.clear();
             }
@@ -130,18 +132,5 @@ public class BluetoothUtils {
 
     }
 
-    public class DeviceBean{
-        public String name;
 
-        public String address;
-
-        public DeviceBean(String name, String address) {
-            this.name = name;
-            this.address = address;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

@@ -36,7 +36,7 @@
                     android:background="@drawable/info_item_shape_default"
             />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_weight="1"
@@ -44,13 +44,14 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/info_item_shape_default"
+                    android:id="@+id/list_srl"
             >
                 <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:id="@+id/list_rv"
                 />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout

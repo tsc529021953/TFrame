@@ -35,6 +35,13 @@ public class AudioUtil {
 
     private Handler.Callback onMicVolumeCallBack;
 
+    /**
+     * 更新话筒状态
+     *
+     */
+    private int BASE = 1;
+    private int SPACE = 100;// 间隔取样时间
+
     public void setOnMicVolumeCallBack(Handler.Callback onMicVolumeCallBack) {
         this.onMicVolumeCallBack = onMicVolumeCallBack;
     }
@@ -115,12 +122,13 @@ public class AudioUtil {
                 int read = mInAudioRecord.read(mInBytes, 0, mInBuffSize);
                 if (onMicVolumeCallBack != null) {
                     long v = 0;
-                    for (int tmp : mInBytes)
+                    for (short tmp : mInBytes)
                         v += tmp * tmp;
                     double vol = 10 * Math.log10(v / (double) read);
                     Message message = new Message();
 //                    message.what = VOICE_VOLUME;
-                    message.arg1 = (int) (vol * 50 + 3000);
+                    message.obj = vol;
+//                            (int) (vol * 50 + 3000);
                     onMicVolumeCallBack.handleMessage(message);
                 }
                 bytes = mInBytes.clone();
@@ -132,6 +140,17 @@ public class AudioUtil {
             }
         }
     }
+
+//    private void updateMicStatus() {
+//        if (mInAudioRecord != null) {
+//            double ratio = (double)mInAudioRecord.getMaxAmplitude() /BASE;
+//            double db = 0;// 分贝
+//            if (ratio > 1)
+//                db = 20 * Math.log10(ratio);
+//            Log.d(TAG,"分贝值："+db);
+//            mHandler.postDelayed(mUpdateMicStatusTimer, SPACE);
+//        }
+//    }
 
 
     //放音
@@ -147,7 +166,7 @@ public class AudioUtil {
                 while (mFlag) {
                     mOutBytes = mInLinkedList.getFirst();
                     bytes = mOutBytes.clone();
-                    mOutAudioTrack.write(bytes, 0, bytes.length);
+//                    mOutAudioTrack.write(bytes, 0, bytes.length);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
