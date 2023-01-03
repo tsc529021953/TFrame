@@ -89,16 +89,16 @@ class MicActivity : BaseBindingActivity<ActivityMicBinding, MicViewModel>() {
         isInit = true
         Timber.i("HETAG initAudio")
         viewModel.viewModelScope.launch {
-//            var fd = assets.openFd(HornActivity.MUSIC_NAME)
-//            SilentPlayer.play(
-//                fd,
-//                AudioFocusManager(this@MicActivity),
-//                true,
-//                object : AudioFocusManager.OnAudioFocusChangeListener {
-//                    override fun onAudioFocusChange(focusChange: Int) {
-//                        releaseMediaPlayer()
-//                    }
-//                })
+            var fd = assets.openFd(HornActivity.MUSIC_NAME)
+            SilentPlayer.play(
+                fd,
+                AudioFocusManager(this@MicActivity),
+                true,
+                object : AudioFocusManager.OnAudioFocusChangeListener {
+                    override fun onAudioFocusChange(focusChange: Int) {
+                        releaseMediaPlayer()
+                    }
+                })
             audioUtil = AudioUtil()
             audioUtil?.setOnMicVolumeCallBack(object : Handler.Callback{
                 override fun handleMessage(msg: Message): Boolean {

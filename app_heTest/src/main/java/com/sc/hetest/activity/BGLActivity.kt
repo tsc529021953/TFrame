@@ -44,6 +44,10 @@ class BGLActivity : BaseBindingActivity<ActivityBglBinding, LightViewModel>() {
 
     var runnable : Runnable? = null
 
+    var handle : Handler? = null
+
+    var recordLight: Int? = null
+
     override fun subscribeUi() {
         binding.failTv.setOnClickListener {
             SPUtils.getInstance().put(HEPath.BG_LIGHT_PATH, InfoItem.STATE_FAIL)
@@ -97,35 +101,37 @@ class BGLActivity : BaseBindingActivity<ActivityBglBinding, LightViewModel>() {
         viewModel.initData()
         val info = StringBuilder()
         if (HopeUtils.isSystemSign(this)) {
-            info.append("将定时5s为您调节亮度")
+
             mPictureHelper = PictureHelper()
-            val light = mPictureHelper?.backlight
+            recordLight = mPictureHelper?.backlight
             binding.lightSb.max = 100
-            viewModel.lightStr.set(light.toString())
-            viewModel.light.set(light!!)
-            singleLight = 10
+            viewModel.lightStr.set(recordLight.toString())
+            viewModel.light.set(recordLight!!)
+            singleLight = 5
+            info.append("将定时1s为您调节亮度，您打开时的亮度是$recordLight")
         } else {
             info.append("App非系统签名，将无法控制亮度！\n")
             // 获取亮度
             // 获取系统亮度
             binding.lightSb.max = 255
-            val light = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS);
-            viewModel.lightStr.set(light.toString())
-            viewModel.light.set(light!!)
-            singleLight = 25
+            recordLight = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS);
+            viewModel.lightStr.set(recordLight.toString())
+            viewModel.light.set(recordLight!!)
+            singleLight = 12
         }
         changeLight(0)
         viewModel.info.set(info.toString())
-        var handle = Handler()
+        handle = Handler()
         runnable = Runnable {
             if (viewModel.light.get() + singleLight > binding.lightSb.max) {
-                changeLight(0)
+                changeLight(binding.lightSb.max)
+                return@Runnable
             } else {
                 changeLight(viewModel.light.get() + singleLight)
             }
-            handle.postDelayed(runnable!!, 5000)
+            handle?.postDelayed(runnable!!, 1000)
         }
-        handle.postDelayed(runnable!!, 5000)
+        handle?.postDelayed(runnable!!, 1000)
 //        viewModel.viewModelScope.launch(Dispatchers.Main) {
 //            delay(5000)
 //            viewModel.info.set("关闭屏幕")
@@ -143,5 +149,12 @@ class BGLActivity : BaseBindingActivity<ActivityBglBinding, LightViewModel>() {
         binding.vm = viewModel
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (runnable!= null)
+            handle?.removeCallbacks(runnable!!)
+//        if (recordLight != null)
+//            changeLight(recordLight!!)
+    }
 
 }

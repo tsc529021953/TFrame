@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
+          android:sharedUserId="android.uid.system"
           xmlns:tools="http://schemas.android.com/tools" package="com.sc.hetest">
     <!--    android:sharedUserId="android.uid.system"-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -36,8 +36,8 @@
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-<!--                <category android:name="android.intent.category.DEFAULT"/>-->
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
             </intent-filter>
         </activity>
 
