@@ -74,7 +74,7 @@
         >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.provide.Telephony.SECRET_CODE"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
             </intent-filter>
         </receiver>
 

@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent= new Intent();
-                intent.setAction("android.provide.Telephony.SECRET_CODE");
+                intent.setAction("android.provider.Telephony.SECRET_CODE");
                 intent.setData( Uri.parse("android secret code://66"));
                 intent.setComponent(new ComponentName("com.sc.hetest","com.sc.hetest.receiver.StartReceiver"));
                 sendBroadcast(intent);

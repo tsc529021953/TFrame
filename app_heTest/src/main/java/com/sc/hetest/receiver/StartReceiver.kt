@@ -12,7 +12,7 @@ import com.sc.hetest.activity.MainActivity
  * @version 0.0.0-1
  * @description
  * Intent intent= new Intent(;
-intent.setAction("android.provide.Telephony.SECRET_CODE");
+intent.setAction("android.provider.Telephony.SECRET_CODE");
 intent.setData(Uri.parse("android secret code://66"))
 sendBroadcast(intent);
  */
@@ -22,7 +22,7 @@ class StartReceiver: BroadcastReceiver() {
 
         const val BOOT_COMPLETED = Intent.ACTION_BOOT_COMPLETED
 
-        const val SECRET_CODE = "android.provide.Telephony.SECRET_CODE"
+        const val SECRET_CODE = "android.provider.Telephony.SECRET_CODE"
 
     }
 
