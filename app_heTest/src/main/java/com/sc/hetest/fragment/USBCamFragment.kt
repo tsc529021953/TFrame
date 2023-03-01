@@ -82,9 +82,9 @@ class USBCamFragment :
 
     private fun getCameraRequest(): CameraRequest {
         return CameraRequest.Builder()
-            .setFrontCamera(false) // only for camera1/camera2
-//            .setPreviewWidth(640)  // initial camera preview width
-//            .setPreviewHeight(360) // initial camera preview height
+//            .setFrontCamera(false) // only for camera1/camera2
+            .setPreviewWidth(640)  // initial camera preview width
+            .setPreviewHeight(360) // initial camera preview height
             .create()
     }
 

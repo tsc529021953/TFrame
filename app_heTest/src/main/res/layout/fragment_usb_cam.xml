@@ -27,7 +27,7 @@
 <!--                android:id="@+id/name_sp"-->
 <!--        />-->
 
-        <TextureView
+        <com.jiangdg.ausbc.widget.AspectRatioTextureView
                 android:layout_width="640dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

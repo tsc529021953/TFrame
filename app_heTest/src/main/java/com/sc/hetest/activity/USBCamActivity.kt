@@ -2,18 +2,18 @@ package com.sc.hetest.activity
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.content.ComponentName
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.viewModelScope
 import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
 import com.blankj.utilcode.util.SPUtils
 import com.nbhope.lib_frame.base.BaseBindingActivity
-import com.nbhope.lib_frame.common.BasePath
 import com.nbhope.lib_frame.utils.PermissionUtil
 import com.sc.hetest.R
 import com.sc.hetest.bean.InfoItem
@@ -63,6 +63,12 @@ class USBCamActivity : BaseBindingActivity<ActivityUsbCamBinding, InfoViewModel>
             requestPermissions(PERMISSIONS, 10086)
             viewModel.info.set("正在申请摄像头相关权限")
         }
+
+//        val intent = Intent()
+//        intent.action = "android.provider.Telephony.SECRET_CODE"
+//        intent.data = Uri.parse("android secret code://66")
+//        intent.component = ComponentName("com.sc.hetest", "com.sc.hetest.receiver.StartReceiver")
+//        sendBroadcast(intent)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
