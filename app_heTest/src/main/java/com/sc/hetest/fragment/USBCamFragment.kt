@@ -1,6 +1,8 @@
 package com.sc.hetest.fragment
 
 import android.R
+import android.content.Context
+import android.hardware.usb.UsbDevice
 import android.os.Handler
 import android.os.Message
 import android.view.Gravity
@@ -15,6 +17,7 @@ import com.jiangdg.ausbc.MultiCameraClient
 import com.jiangdg.ausbc.base.CameraFragment
 import com.jiangdg.ausbc.base.MultiCameraFragment
 import com.jiangdg.ausbc.callback.ICameraStateCallBack
+import com.jiangdg.ausbc.camera.CameraUVC
 import com.jiangdg.ausbc.camera.CameraUvcStrategy
 import com.jiangdg.ausbc.camera.bean.CameraRequest
 import com.jiangdg.ausbc.render.effect.EffectBlackWhite
@@ -47,7 +50,7 @@ class USBCamFragment :
 
     private var showIndex = -1
 
-    private var cameras = ArrayList<MultiCameraClient.Camera>()
+    private var cameras = ArrayList<MultiCameraClient.ICamera>()
 //
 //    override fun getCameraView(): IAspectRatio? {
 //        return AspectRatioTextureView(requireContext())
@@ -85,17 +88,17 @@ class USBCamFragment :
             .create()
     }
 
-    override fun onCameraAttached(camera: MultiCameraClient.Camera) {
+    override fun onCameraAttached(camera: MultiCameraClient.ICamera) {
         // a camera be attached
         Timber.i("HETAG onCameraAttached $camera")
     }
 
-    override fun onCameraDetached(camera: MultiCameraClient.Camera) {
+    override fun onCameraDetached(camera: MultiCameraClient.ICamera) {
         // a camera be detached
         Timber.i("HETAG onCameraDetached $camera")
     }
 
-    override fun onCameraConnected(camera: MultiCameraClient.Camera) {
+    override fun onCameraConnected(camera: MultiCameraClient.ICamera) {
         // a camera be connected
         Timber.i("HETAG onCameraConnected $camera")
         if (!cameras.contains(camera))
@@ -114,19 +117,23 @@ class USBCamFragment :
         }
     }
 
-    override fun onCameraDisConnected(camera: MultiCameraClient.Camera) {
+    override fun onCameraDisConnected(camera: MultiCameraClient.ICamera) {
         Timber.i("HETAG onCameraDisConnected $camera")
         // a camera be disconnected
     }
 
 
     override fun onCameraState(
-        self: MultiCameraClient.Camera,
+        self: MultiCameraClient.ICamera,
         code: ICameraStateCallBack.State,
         msg: String?
     ) {
         Timber.i("HETAG onCameraState $code $msg $self")
         // a camera be opened or closed or error
+    }
+
+    override fun generateCamera(ctx: Context, device: UsbDevice): MultiCameraClient.ICamera {
+        return CameraUVC(ctx, device)
     }
 
     override fun getRootView(inflater: LayoutInflater, container: ViewGroup?): View {
