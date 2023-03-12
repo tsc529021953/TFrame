@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.hetest"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 6
-        versionName "0.1.0-6"
+        versionCode 7
+        versionName "0.1.0-7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -87,5 +87,6 @@ dependencies {
     implementation project(path: ':lib_system')
 //    3.2.10
 //    implementation 'com.github.jiangdongguo.AndroidUSBCamera:libausbc:3.3.3'
-    implementation 'com.github.jiangdongguo.AndroidUSBCamera:libausbc:master-SNAPSHOT'
+//    implementation 'com.github.jiangdongguo.AndroidUSBCamera:libausbc:master-SNAPSHOT'
+    implementation 'com.github.jiangdongguo.AndroidUSBCamera:libausbc:3.3.3'
 }

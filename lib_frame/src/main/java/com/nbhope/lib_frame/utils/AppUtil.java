@@ -142,6 +142,18 @@ public final class AppUtil {
         context.startActivity(intent);
     }
 
+    public static boolean startApp(Context context, String packageName) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            Intent it = packageManager.getLaunchIntentForPackage(packageName);
+            context.startActivity(it);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+
     /**
      * 启动其他应用
      *

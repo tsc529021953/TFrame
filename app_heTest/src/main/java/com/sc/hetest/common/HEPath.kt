@@ -21,4 +21,6 @@ object HEPath {
     const val SPORT_PATH = "/sport/base"
     const val USB_CAM_PATH = "/usb_cam/base"
     const val HG_PATH = "/hg/base"
+    const val FG_PATH = "/4g/base"
+    const val SCAN_PATH = "/scan/base"
 }

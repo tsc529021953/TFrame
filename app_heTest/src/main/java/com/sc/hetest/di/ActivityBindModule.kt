@@ -65,4 +65,12 @@ abstract class ActivityBindModule {
     @ContributesAndroidInjector
     abstract fun contributeBGLActivity(): BGLActivity
 
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributeFGActivity(): FGActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributeScanActivity(): ScanActivity
+
 }

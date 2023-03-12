@@ -36,8 +36,8 @@
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-<!--                <category android:name="android.intent.category.LAUNCHER"/>-->
+<!--                <category android:name="android.intent.category.DEFAULT"/>-->
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
@@ -62,6 +62,10 @@
         <activity android:name=".activity.CamActivity"/>
         <activity android:name=".activity.TouchActivity"/>
         <activity android:name=".activity.USBCamActivity"/>
+        <activity android:name=".activity.FGActivity"/>
+        <activity android:name=".activity.ScanActivity"
+                  android:windowSoftInputMode="stateAlwaysHidden"
+        />
         <meta-data
                 android:name="com.sc.hetest"
                 android:value="PackageName"/>

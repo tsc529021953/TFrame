@@ -22,6 +22,24 @@ android {
 
     ndkVersion '21.0.6113669'
 
+    signingConfigs {
+        def path = ''
+//        if (isBuildModule.toBoolean())
+        path = '../app_heTest/';
+        debug {
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+        release {
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+    }
+
 }
 
 dependencies {

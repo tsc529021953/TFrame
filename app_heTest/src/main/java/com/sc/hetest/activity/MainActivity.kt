@@ -17,6 +17,7 @@ import com.chad.library.adapter.base.animation.AlphaInAnimation
 import com.chad.library.adapter.base.listener.OnItemLongClickListener
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.common.BasePath
+import com.nbhope.lib_frame.utils.AppUtil
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
@@ -62,6 +63,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(){
 //        "运动检测" to HEPath.SPORT_PATH,
         "USB摄像头" to HEPath.USB_CAM_PATH,
 //        "货柜检测" to HEPath.HG_PATH
+        "4G模块" to HEPath.FG_PATH,
+        "扫码器" to HEPath.SCAN_PATH,
     )
 
     private var infoList: ArrayList<InfoItem>? = null
