@@ -18,6 +18,8 @@ import com.sc.hetest.databinding.ActivityVerInfoBinding
 import com.sc.hetest.vm.HornViewModel
 import com.sc.hetest.vm.MainViewModel
 import com.sc.hetest.vm.VerInfoViewModel
+import com.xbh.sdk3.Audio.AudioHelper
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -32,6 +34,9 @@ class HornActivity : BaseBindingActivity<ActivityHornBinding, HornViewModel>(){
     }
 
     override var layoutId: Int = R.layout.activity_horn
+
+    var audioHelper = AudioHelper()
+
     override fun subscribeUi() {
         binding.failTv.setOnClickListener {
             SPUtils.getInstance().put(HEPath.HORN_PATH, InfoItem.STATE_FAIL)
@@ -45,6 +50,9 @@ class HornActivity : BaseBindingActivity<ActivityHornBinding, HornViewModel>(){
 
     override fun initData() {
         viewModel.initData()
+        viewModel.volume = audioHelper.volume
+        audioHelper.volume = 100
+        Timber.i("KTAG volume ${audioHelper.volume} ${viewModel.volume}")
         var fd = assets.openFd(MUSIC_NAME)
         SilentPlayer.play(
             fd,
@@ -80,6 +88,7 @@ class HornActivity : BaseBindingActivity<ActivityHornBinding, HornViewModel>(){
 
     override fun onDestroy() {
         super.onDestroy()
+        audioHelper.volume = viewModel.volume
         releaseMediaPlayer()
     }
 }

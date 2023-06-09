@@ -15,6 +15,8 @@ class HornViewModel @Inject constructor(val spManager: SharedPreferencesManager)
 
     var musicInfo = ObservableField<String>("")
 
+    var volume = 0
+
     fun initData() {
 
     }

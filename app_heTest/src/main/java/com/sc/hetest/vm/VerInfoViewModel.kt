@@ -31,6 +31,7 @@ class VerInfoViewModel @Inject constructor(val spManager: SharedPreferencesManag
         info.append("LCM版本：${Build.DISPLAY}" + "" + "\n")
         info.append("MAC：" + DeviceUtils.getMacAddress() + "\n")
         info.append("SN：" + HopeUtils.getSN() + "\n")
+        info.append("硬件版本：" + "V1.0" + "")
         deviceInfo.set(info.toString())
     }
 
