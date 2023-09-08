@@ -111,6 +111,7 @@ versions.location = "4.0"
 versions.xstream = "1.4.18"
 versions.ip2region = "2.6.5"
 versions.auc = "1.31.1"
+versions.gif = "1.2.27"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -315,6 +316,7 @@ hope.utils = "com.nbhope.lib:utils:$versions.hope_utils"
 deps.hope = hope
 
 deps.auc = "com.blankj:utilcodex:$versions.auc"
+deps.gif = "pl.droidsonroids.gif:android-gif-drawable:$versions.gif"
 
 ext.deps = deps
 

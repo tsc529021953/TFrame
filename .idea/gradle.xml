@@ -10,10 +10,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/app_heTest" />
-            <option value="$PROJECT_DIR$/app_xsg" />
-            <option value="$PROJECT_DIR$/app_xw" />
+            <option value="$PROJECT_DIR$/app_xsyg_nft" />
             <option value="$PROJECT_DIR$/lib.network" />
             <option value="$PROJECT_DIR$/lib.tcp" />
             <option value="$PROJECT_DIR$/lib_audio" />

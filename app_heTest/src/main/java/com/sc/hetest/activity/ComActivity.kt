@@ -128,7 +128,7 @@ class ComActivity : BaseBindingActivity<ActivityComBinding, ComViewModel>(){
                     viewModel.spUtil.writeHex(msg)
                 else  viewModel.spUtil.writeStr(msg)
             } else {
-                toast("尚未打卡串口！")
+                toast("尚未打开串口！")
             }
         }
         binding.infoTv.movementMethod = ScrollingMovementMethod()
