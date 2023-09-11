@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="file_height">350dp</dimen>
-    <dimen name="item_home_img_width">220dp</dimen>
+<!--    <dimen name=""-->
+    <dimen name="file_height">400dp</dimen>
+    <dimen name="item_home_img_width">180dp</dimen>
+    <dimen name="item_home_img_height">140dp</dimen>
 </resources>

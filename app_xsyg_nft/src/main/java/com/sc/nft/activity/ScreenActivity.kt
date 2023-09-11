@@ -101,8 +101,8 @@ class ScreenActivity : BaseBindingActivity<ActivityScreenBinding, BaseViewModel>
         var height = AutoSizeConfig.getInstance().screenHeight - hb * 200
         var x = Random().nextInt(width.toInt()) //display.width
         var y = Random().nextInt(height.toInt()) // display.height
-        Timber.i("NTAG 移动位置！$x , $y ${AutoSizeConfig.getInstance().screenWidth} " +
-                "${AutoSizeConfig.getInstance().screenHeight} $wb $hb ${display.width} ${display.height}")
+//        Timber.i("NTAG 移动位置！$x , $y ${AutoSizeConfig.getInstance().screenWidth} " +
+//                "${AutoSizeConfig.getInstance().screenHeight} $wb $hb ${display.width} ${display.height}")
         binding.screenIv .setTranslationX(x.toFloat())
         binding.screenIv .setTranslationY(y.toFloat())
 //        binding.screenIv.scrollTo(x, y)

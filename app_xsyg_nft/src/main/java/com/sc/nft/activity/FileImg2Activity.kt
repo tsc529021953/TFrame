@@ -1,12 +1,17 @@
 package com.sc.nft.activity
 
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
+import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.arouterpath.RouterPath
 import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.widget.WrapGridLayoutManager
 import com.sc.nft.R
 import com.sc.nft.adapter.FileImgAdapter
+import com.sc.nft.bean.FileImgBean
 import com.sc.nft.databinding.ActivityFileImg2Binding
 import com.sc.nft.vm.MainViewModel
+import com.sc.nft.weight.GridSpaceItemDecoration
 
 /**
  * author: sc
@@ -21,7 +26,19 @@ class FileImg2Activity : NFTBaseActivity<ActivityFileImg2Binding, BaseViewModel>
 
     override fun subscribeUi() {
         super.subscribeUi()
-        binding.titleTv.text = MainViewModel.getInstance().fileImg2
+        binding.titleTv.text = MainViewModel.getInstance().fileImg2.name
+        binding.vm = MainViewModel.getInstance()
+
+        val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, 2, true)
+        binding.imgIv.layoutManager = layoutManager
+        binding.imgIv.addItemDecoration(GridSpaceItemDecoration(2 , 0, 0))
+        adapter = FileImgAdapter(MainViewModel.getInstance().fileImg2List, object : FileImgAdapter.FileImgCallback{
+            override fun onItemClick(item: FileImgBean) {
+                MainViewModel.getInstance().clickFileImg3(item)
+                ARouter.getInstance().build(RouterPath.activity_nft_file3).navigation()
+            }
+        })
+        binding.imgIv.adapter = adapter
     }
 
     override var viewModel: BaseViewModel = BaseViewModel()
