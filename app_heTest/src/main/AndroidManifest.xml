@@ -72,7 +72,7 @@
 
 
 
-        <receiver android:name=".receiver.StartReceiver"
+        <com.sc.nft.receiver android:name=".com.sc.nft.receiver.StartReceiver"
                   android:enabled="true"
                   android:exported="true"
         >
@@ -80,7 +80,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.provider.Telephony.SECRET_CODE"/>
             </intent-filter>
-        </receiver>
+        </com.sc.nft.receiver>
 
     </application>
 

@@ -21,7 +21,7 @@ class LockScreenHelper {
         fun postTouchEvent(context: Context) {
             executeDebounce {
                 val intent = Intent(TOUCH_EVENT)
-//                intent.setClassName(context, "com.luzx.base.receiver.DropMenuEventReceiver")
+//                intent.setClassName(context, "com.luzx.base.com.sc.nft.receiver.DropMenuEventReceiver")
                 //调用Context的sendBroadcast()方法，将广播发送出去。所有监听这条广播的接收器就都会接收到这条广播。
                 context.sendBroadcast(intent)
             }
@@ -29,7 +29,7 @@ class LockScreenHelper {
 
         fun postResumeEvent(context: Context) {
             val intent = Intent(RESUME_EVENT)
-//            intent.setClassName(context, "com.luzx.base.receiver.DropMenuEventReceiver")
+//            intent.setClassName(context, "com.luzx.base.com.sc.nft.receiver.DropMenuEventReceiver")
             //调用Context的sendBroadcast()方法，将广播发送出去。所有监听这条广播的接收器就都会接收到这条广播。
             context.sendBroadcast(intent)
         }

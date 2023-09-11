@@ -142,7 +142,7 @@ class HopeAudioRecorder {
                     //process is what you will do with the data...not defined here
 
 
-//                    receiver?.onVolume(buffer)
+//                    com.sc.nft.receiver?.onVolume(buffer)
 
 
                     if (stopped) {

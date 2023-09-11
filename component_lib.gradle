@@ -34,7 +34,13 @@ android {
             //指定需要的os平台
             abiFilters 'armeabi-v7a'
         }
-        if ("samll" == SCREEN_SIZE) {
+        if (CODE == "XSYG_NFT") {
+            manifestPlaceholders = [
+                    DESIGN_WIDTH : "960",
+                    DESIGN_HEIGHT: "540"
+            ]
+        }
+        else if ("samll" == SCREEN_SIZE) {
             manifestPlaceholders = [
                     DESIGN_WIDTH : "480",
                     DESIGN_HEIGHT: "480"

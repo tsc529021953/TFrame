@@ -21,7 +21,6 @@ object RouterPath {
     const val uhome_modify_pwd_path = "/uhome/modify_pwd"
 
 
-
     const val interphone_path = "/interphone/hall"
 
 
@@ -61,4 +60,10 @@ object RouterPath {
 
     const val dual_panel_path = "/index/dual_panel"
 
+    // nft
+    const val service_nft = "/service/nft"
+    const val activity_nft_main = "/activity/nft_main"
+    const val activity_nft_screen = "/activity/nft_screen"
+    const val activity_nft_file2 = "/activity/nft_file2"
+    const val activity_nft_file3 = "/activity/nft_file3"
 }

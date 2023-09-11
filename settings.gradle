@@ -10,7 +10,7 @@ include ':lib_system'
 include ':lib_weather'
 include ':lib_frame'
 
-//include ':app'
+include ':app'
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'

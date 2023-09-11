@@ -25,13 +25,13 @@ object MainReceiverHelper {
         when (receiver.enum) {
             MinaEventEnum.SESSION_CLOSE -> {
                 // 连接断开
-//                LiveEBUtil.post(UHomeLocalEvent(MessageConsts.UHOME_LOCAL_DISCONNECT, receiver))
+//                LiveEBUtil.post(UHomeLocalEvent(MessageConsts.UHOME_LOCAL_DISCONNECT, com.sc.nft.receiver))
             }
             MinaEventEnum.SESSION_OPEN -> {
-//                LiveEBUtil.post(UHomeLocalEvent(MessageConsts.UHOME_LOCAL_CONNECT, receiver))
+//                LiveEBUtil.post(UHomeLocalEvent(MessageConsts.UHOME_LOCAL_CONNECT, com.sc.nft.receiver))
             }
             else -> {
-//                receiver.message?.apply {
+//                com.sc.nft.receiver.message?.apply {
 //                    val jsonBody = this.getMessageBody()?.let {
 //                        JsonParser().parse(it).asJsonObject
 //                    } ?: return

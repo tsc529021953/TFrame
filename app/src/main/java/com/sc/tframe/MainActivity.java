@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent= new Intent();
                 intent.setAction("android.provider.Telephony.SECRET_CODE");
                 intent.setData( Uri.parse("android secret code://66"));
-                intent.setComponent(new ComponentName("com.sc.hetest","com.sc.hetest.receiver.StartReceiver"));
+                intent.setComponent(new ComponentName("com.sc.hetest","com.sc.hetest.com.sc.nft.receiver.StartReceiver"));
                 sendBroadcast(intent);
 //                Toast.makeText(this, "打开测试app", Toast.LENGTH_LONG).show();
             }

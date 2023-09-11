@@ -108,7 +108,7 @@ open class HopeBaseApp : Application(), App {
             Timber.plant(FileLoggingTree())
         } else {
             // ThreadAwareDebugTree
-            Timber.plant(Timber.DebugTree())
+            Timber.plant(ThreadAwareDebugTree())
         }
     }
 

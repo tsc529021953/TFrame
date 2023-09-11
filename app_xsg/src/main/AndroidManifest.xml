@@ -30,13 +30,13 @@
                 android:name="com.sc.lib_local_device.service.MainServiceImpl"
                 android:priority="1000"/>
 
-        <receiver
-                android:name=".receiver.StartReceiver"
+        <com.sc.nft.receiver
+                android:name=".com.sc.nft.receiver.StartReceiver"
                 android:enabled="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
-        </receiver>
+        </com.sc.nft.receiver>
 
         <meta-data
                 android:name="com.sc.app_xsg"

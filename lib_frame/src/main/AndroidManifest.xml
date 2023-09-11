@@ -15,12 +15,12 @@
         <meta-data
                 android:name="design_height_in_dp"
                 android:value="${DESIGN_HEIGHT}" />
-<!--        <receiver android:name=".guard.BootReceiver"-->
+<!--        <com.sc.nft.receiver android:name=".guard.BootReceiver"-->
 <!--                  android:enabled="true"-->
 <!--                  android:exported="true">-->
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
 <!--            </intent-filter>-->
-<!--        </receiver>-->
+<!--        </com.sc.nft.receiver>-->
     </application>
 </manifest>

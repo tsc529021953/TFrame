@@ -2,7 +2,7 @@
 <configuration debug='false'>
 
     <!--声明一个属性,用来指定log文件存放的路径-->
-    <property name="LOG_DIR" value="/sdcard/Android/data/com.sc.tframe/cache" />
+    <property name="LOG_DIR" value="/sdcard/Android/data/com.sc.nft/cache" />
 
     <!--声明一个时间戳-->
     <timestamp datePattern="yyyyMMdd" key="today" />
@@ -30,7 +30,7 @@
     <appender name="RollLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
 <!--        <file>${LOG_DIR}/player.current.log</file>-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/tframe.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/nft.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>

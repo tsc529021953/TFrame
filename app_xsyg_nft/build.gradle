@@ -14,18 +14,29 @@ android {
         versionCode 1
         versionName "0.0.0-1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.getName())
+            }
+        }
+
+        ndk{
+            abiFilters 'armeabi-v7a','arm64-v8a'
+        }
     }
 
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    dataBinding {
+        enabled = true
+    }
 
-    ndkVersion '21.0.6113669'
 
     signingConfigs {
         def path = ''
 //        if (isBuildModule.toBoolean())
-        path = '/';
+        path = '../app_xsyg_nft/';
         debug {
             storeFile file(path + project.property('keyStore'))
             storePassword project.property('keyStorePassword')
@@ -40,8 +51,9 @@ android {
         }
     }
 
-
-
+//    configurations {
+//        all*.exclude group: 'com.google.code.gson'
+//    }
 }
 
 dependencies {
@@ -59,5 +71,16 @@ dependencies {
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core
 
+    implementation deps.arouter.api
+    kapt deps.arouter.compiler
+
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+
     implementation deps.gif
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.auc
 }

@@ -2,9 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.sc.nft">
 
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
+            android:requestLegacyExternalStorage="true"
             android:name=".app.AppHope"
             android:allowBackup="true"
             android:icon="@mipmap/logo"
@@ -12,13 +16,39 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity"
+                  android:screenOrientation="landscape"
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".activity.ScreenActivity"/>
+        <activity android:name=".activity.FileImg2Activity"/>
+        <activity android:name=".activity.FileImg3Activity"/>
+
+        <meta-data
+                android:name="com.sc.nft"
+                android:value="PackageName"/>
+
+        <receiver android:name="com.sc.nft.receiver.StartReceiver"
+                  android:enabled="true"
+                  android:exported="true"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".service.MainServiceImpl" android:exported="true" android:priority="1000">
+            <intent-filter>
+                <action android:name="com.sc.nft.service.MainService" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

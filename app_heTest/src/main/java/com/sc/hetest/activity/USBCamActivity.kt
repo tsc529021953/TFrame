@@ -67,7 +67,7 @@ class USBCamActivity : BaseBindingActivity<ActivityUsbCamBinding, InfoViewModel>
 //        val intent = Intent()
 //        intent.action = "android.provider.Telephony.SECRET_CODE"
 //        intent.data = Uri.parse("android secret code://66")
-//        intent.component = ComponentName("com.sc.hetest", "com.sc.hetest.receiver.StartReceiver")
+//        intent.component = ComponentName("com.sc.hetest", "com.sc.hetest.com.sc.nft.receiver.StartReceiver")
 //        sendBroadcast(intent)
     }
 
