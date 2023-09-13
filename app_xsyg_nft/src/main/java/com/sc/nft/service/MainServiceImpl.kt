@@ -53,7 +53,7 @@ class MainServiceImpl : Service() , MainService{
 
         private const val COMMAND_TUYA = "DUI.SmartHome."
 
-        const val HEART_TIMER: Long = 120000
+        const val HEART_TIMER: Long = 12000000
     }
 
     private var thread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()

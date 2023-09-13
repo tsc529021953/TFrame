@@ -23,8 +23,26 @@
                 android:text="@{vm.fileImg3Title}"
         />
 
+        <com.sc.nft.weight.ScalableLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@+id/title_tv"
+                app:layout_constraintBottom_toTopOf="@+id/content_bg"
+        >
+
+            <pl.droidsonroids.gif.GifImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/img_iv"
+                    android:scaleType="fitCenter"
+
+            />
+
+        </com.sc.nft.weight.ScalableLayout>
+
         <ScrollView android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="300dp"
+                    android:id="@+id/content_bg"
                     app:layout_constraintBottom_toBottomOf="parent"
         >
             <TextView

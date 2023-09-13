@@ -11,6 +11,7 @@ import com.nbhope.lib_frame.utils.FileUtil
 import com.sc.nft.bean.FileImgBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import pl.droidsonroids.gif.GifDrawable
 import timber.log.Timber
 import java.io.File
 import java.io.FileFilter

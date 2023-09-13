@@ -48,7 +48,7 @@ public class ZoomOnlyImageView extends FrameLayout
 
     //初始化参数
     private void init(Context context) {
-        setScaleType(ScaleType.MATRIX);//允许imageview缩放
+//        setScaleType(ScaleType.MATRIX);//允许imageview缩放
         scaleGestureDetector = new ScaleGestureDetector(new WeakReference<Context>(context).get(),
                 new WeakReference<ZoomOnlyImageView>(this).get());
         mMatrix = new Matrix();
@@ -73,9 +73,9 @@ public class ZoomOnlyImageView extends FrameLayout
 
     @Override
     public boolean onScale(ScaleGestureDetector detector) {//OnScaleGestureListener里的方法
-        if (getDrawable() == null) {
-            return true;
-        }
+//        if (getDrawable() == null) {
+//            return true;
+//        }
         //获取本次的缩放值
         float scale = detector.getScaleFactor();
         Log.i("zhangdi", "scaleFactor = "+scale);
@@ -87,7 +87,7 @@ public class ZoomOnlyImageView extends FrameLayout
             //detector.getFocusX()缩放手势中心的x坐标，detector.getFocusY()y坐标
 //            mMatrix.postScale(scale, scale, detector.getFocusX(), detector.getFocusY());
             mMatrix.postScale(scale, scale, getWidth()/2, getHeight()/2);
-            setImageMatrix(mMatrix);
+//            setImageMatrix(mMatrix);
             makeDrawableCenter();
         }
         return true;
@@ -177,14 +177,14 @@ public class ZoomOnlyImageView extends FrameLayout
     private void makeDrawableCenter() {
 
         RectF rect = new RectF();
-        Drawable d = getDrawable();
-        if (d != null) {
-            rect.set(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());//设置rect的初始四个角值是图片的四个顶点值
-            Log.i("zhangdi", "bitmapWidth = "+d.getIntrinsicWidth()+", bitmapHeight = "+d.getIntrinsicHeight());
-            mMatrix.mapRect(rect);//获取通过当前矩阵变换后的四个角值
-            Log.i("zhangdi", "matrixWidth = "+rect.width()+", matrixHeight = "+rect.height());
-            Log.i("zhangdi", "bmLeft: "+rect.left+" bmRight: "+rect.right+" bmTop: "+rect.top+" bmBottom: "+rect.bottom);
-        }
+//        Drawable d = getDrawable();
+//        if (d != null) {
+//            rect.set(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());//设置rect的初始四个角值是图片的四个顶点值
+//            Log.i("zhangdi", "bitmapWidth = "+d.getIntrinsicWidth()+", bitmapHeight = "+d.getIntrinsicHeight());
+//            mMatrix.mapRect(rect);//获取通过当前矩阵变换后的四个角值
+//            Log.i("zhangdi", "matrixWidth = "+rect.width()+", matrixHeight = "+rect.height());
+//            Log.i("zhangdi", "bmLeft: "+rect.left+" bmRight: "+rect.right+" bmTop: "+rect.top+" bmBottom: "+rect.bottom);
+//        }
 
         int width = getWidth();
         int height = getHeight();
@@ -225,14 +225,14 @@ public class ZoomOnlyImageView extends FrameLayout
 
         if (dx != 0 || dy != 0) {
             mMatrix.postTranslate(dx, dy);
-            setImageMatrix(mMatrix);
+//            setImageMatrix(mMatrix);
         }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        setImageDrawable(null);
+//        setImageDrawable(null);
         scaleGestureDetector = null;
     }
 }

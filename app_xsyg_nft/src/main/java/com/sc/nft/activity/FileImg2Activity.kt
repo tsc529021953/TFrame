@@ -32,7 +32,7 @@ class FileImg2Activity : NFTBaseActivity<ActivityFileImg2Binding, BaseViewModel>
         var count = if (size > 2) {
             if (size % 3 == 0) 3 else 4
         } else 2
-//        count = 2
+        count = 2
         val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, count, true)
         binding.imgIv.layoutManager = layoutManager
         binding.imgIv.addItemDecoration(GridSpaceItemDecoration(count , 0, 0))

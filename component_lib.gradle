@@ -36,8 +36,8 @@ android {
         }
         if (CODE == "XSYG_NFT") {
             manifestPlaceholders = [
-                    DESIGN_WIDTH : "960",
-                    DESIGN_HEIGHT: "540"
+                    DESIGN_WIDTH : "540",
+                    DESIGN_HEIGHT: "960"
             ]
         }
         else if ("samll" == SCREEN_SIZE) {

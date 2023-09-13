@@ -17,7 +17,6 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
         <activity android:name=".activity.MainActivity"
-                  android:screenOrientation="landscape"
         >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

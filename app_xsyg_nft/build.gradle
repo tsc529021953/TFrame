@@ -54,6 +54,29 @@ android {
 //    configurations {
 //        all*.exclude group: 'com.google.code.gson'
 //    }
+    //开发用 MMdd  打包提测 MMddHH 因为精确到小时 跨小时就不能自动安装apk
+    def timeForDebugFileFormater = "MMddHH"
+    def timeForReleaseFileFormater = "MMdd"
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def buildTypeName = variant.buildType.name
+
+            def timeFormater
+            if ("debug".equalsIgnoreCase(buildTypeName)) {
+                timeFormater = timeForDebugFileFormater
+            } else {
+                timeFormater = timeForReleaseFileFormater
+            }
+            def tmp = "XSYG_NFT_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            println(tmp)
+            outputFileName = tmp
+        }
+    }
+}
+
+static def releaseTime(String formater) {
+    return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
 }
 
 dependencies {
