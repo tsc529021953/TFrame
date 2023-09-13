@@ -1,9 +1,11 @@
 package com.sc.nft.vm
 
 import android.os.Environment
+import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.FileUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.FileUtil
 import com.sc.nft.bean.FileImgBean
@@ -33,19 +35,81 @@ class MainViewModel : BaseViewModel() {
 
     var fileImg1List = ArrayList<FileImgBean>()
     var fileImg2List = ArrayList<FileImgBean>()
-    var fileImg3List = ArrayList<FileImgBean>()
+//    var fileImg3List = ArrayList<FileImgBean>()
 
     var fileImg2 = FileImgBean()
     var fileImg2Content = ObservableField<String>("")
     var fileImg3 = FileImgBean()
+    var fileImg3Title = ObservableField<String>("")
+    var fileImg3Content = ObservableField<String>("")
+    var fileImg3Img = ObservableField<String>("")
 
-    private val mFilter = FileFilter { pathname ->
+    var imgFiles: List<File> = ArrayList<File>()
+    var textFiles: List<File> = ArrayList<File>()
+    var fileIndex = 0;
+
+    private val mFilter2 = FileFilter { pathname ->
+        val ex = pathname.name.lowercase()
+        ex.endsWith(".txt")
+    }
+    private val mFilter3 = FileFilter { pathname ->
         Timber.i("NTAG pathname $pathname")
-        pathname.name.endsWith(".txt")
+        val ex = pathname.name.lowercase()
+        ex.endsWith(".jpg") || ex.endsWith(".png") || ex.endsWith(".gif")
     }
 
-    fun clickFileImg3(file: FileImgBean?) {
+    fun clickFileImg3(file: FileImgBean?, index: Int = 0) {
+        if (file == null) return
+        Timber.i("NTAG clickFileImg3 $index ${file.filename} ${file.name}")
+        fileIndex = index
+        fileImg3 = file!!
+        fileImg3Title.set(fileImg3.name)
+        val path =
+            Environment.getExternalStorageDirectory().absolutePath + BASE_PATH + "/" + fileImg2.filename + "/" + fileImg3.filename
+        val f = File(path)
+        if (!f.exists()) { //判断路径是否存在
+            Timber.i("NTAG getDirs !exists")
+        }
+        imgFiles = FileUtils.listFilesInDirWithFilter(path, mFilter3, false)
+        fileImg3Img.set("")
+        Timber.i("NTAG fs ${imgFiles.size}")
+        if (imgFiles.size > 0) {
+            fileImg3Img.set(imgFiles[0].absolutePath)
+        }
 
+        textFiles = FileUtils.listFilesInDirWithFilter(path, mFilter2, false)
+        fileImg3Content.set("")
+        Timber.i("NTAG fs ${textFiles.size}")
+        if (textFiles.size > 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                FileUtil.readFile(textFiles[0].absolutePath)?.also {
+                    fileImg3Content.set(it)
+                }
+            }
+        }
+    }
+
+    fun goHome() {
+
+    }
+
+    fun next(view: View) {
+        val index = fileIndex + 1
+        val max = MainViewModel.getInstance().fileImg2List.size
+        if (index >= max) {
+            ToastUtils.showShort("已到最后一个！")
+            return
+        }
+        clickFileImg3(fileImg2List[index], index)
+    }
+
+    fun prev(view: View) {
+        val index = fileIndex - 1
+        if (index < 0) {
+            ToastUtils.showShort("已到最开始位置！")
+            return
+        }
+        clickFileImg3(fileImg2List[index], index)
     }
 
     fun clickFileImg2(file: FileImgBean?) {
@@ -67,8 +131,9 @@ class MainViewModel : BaseViewModel() {
                 fileImg2List.add(imgs2)
             }
         }
-        val fs = FileUtils.listFilesInDirWithFilter(path, mFilter, false)
+        val fs = FileUtils.listFilesInDirWithFilter(path, mFilter2, false)
         Timber.i("NTAG fs ${fs.size}")
+        fileImg2Content.set("")
         if (fs.size > 0) {
             viewModelScope.launch(Dispatchers.IO) {
                 FileUtil.readFile(fs[0].absolutePath)?.also {

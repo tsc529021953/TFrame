@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import me.jessyan.autosize.AutoSizeConfig;
+import me.jessyan.autosize.utils.AutoSizeUtils;
 import timber.log.Timber;
 
 /**
@@ -44,14 +46,23 @@ public class GridSpaceItemDecoration extends RecyclerView.ItemDecoration {
         int position = parent.getChildAdapterPosition(view); // 获取view 在adapter中的位置。
         int column = position % mSpanCount; // view 所在的列
         int screenWidth = parent.getLayoutParams().width;
+        int width = view.getLayoutParams().width;
+        int interval = (screenWidth - width * mSpanCount) / (mSpanCount - 1);
 //                view.getResources().getDisplayMetrics().widthPixels;
-        Timber.i("NTAG column " + column + " " + (outRect.right) + " " + (view.getLayoutParams().width) + " " + screenWidth);
+        Log.e(TAG,"NTAG column " + mSpanCount + " " + column + " " + (interval) + " " + (view.getLayoutParams().width) + " " + screenWidth);
 
         if (column == 0) {
             outRect.left = 0;
+            outRect.right = width;
         } else if (column == mSpanCount - 1) {
-            outRect.left = screenWidth / 2 - view.getLayoutParams().width;
-//            outRect.right = screenWidth / 2;
+            outRect.left = screenWidth / mSpanCount - width;
+//            outRect.right = screenWidth ;
+//            outRect.left = screenWidth - width;
+//            outRect.right = screenWidth;
+
+        } else {
+            outRect.left = (width + interval) * column
+            - screenWidth / mSpanCount * column;
         }
 
 //        outRect.left = column * mColumnSpacing / mSpanCount; // column * (列间距 * (1f / 列数))
@@ -59,11 +70,13 @@ public class GridSpaceItemDecoration extends RecyclerView.ItemDecoration {
 
         Log.e(TAG, "position:" + position
                 + "    columnIndex: " + column
-                + "    left,right ->" + outRect.left + "," + outRect.right);
+                + "    left,right ->" + outRect.left + "," + outRect.right
+                + " " +  view.getResources().getDisplayMetrics().scaledDensity
+        );
 
         // 如果position > 行数，说明不是在第一行，则不指定行高，其他行的上间距为 top=mRowSpacing
-        if (position >= mSpanCount) {
-            outRect.top = mRowSpacing; // item top
-        }
+//        if (position >= mSpanCount) {
+//            outRect.top = mRowSpacing; // item top
+//        }
     }
 }
