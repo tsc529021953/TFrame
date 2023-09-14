@@ -9,6 +9,7 @@ import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.FileUtil
+import com.sc.nft.bean.FileBean
 import com.sc.nft.bean.FileImgBean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,16 +34,72 @@ class MainViewModel : BaseViewModel() {
         }
 
         const val BASE_PATH = "/TImages/"
+
+        const val FILENAME = "filename"
+        const val FILE = "file"
+        const val NAME = "name"
+        const val INDEX = "index"
+        const val TYPE = "type"
+
+        const val TYPE_UN_INIT = -1
+        const val TYPE_FIRST = 1
+        const val TYPE_FILE = 2
+        const val TYPE_IMAGE = 3
     }
 
     var fileImgType = ObservableInt(0)
     var fileImgTitle = ObservableField<String>("")
     var fileImgItem: FileImgBean? = null
 
+    var fileBean: FileBean? = null
+    var fileImgList = ArrayList<FileImgBean>()
+
+    fun load(fileBean: FileBean?, callBack: ((fileBean: FileBean) -> Unit)) {
+        if (fileBean == null) return
+        if (fileBean.loaded) {
+            callBack.invoke(fileBean)
+            return
+        }
+        fileBean.files.clear()
+        viewModelScope.launch(Dispatchers.IO) {
+            val f = File(fileBean.file)
+            if (!f.exists()) {
+                Timber.e("NTAG 路径不存在 ${fileBean.file}")
+                return@launch
+            }
+            val images = FileUtils.listFilesInDirWithFilter(fileBean.file, mFilter3, false)
+            val texts = FileUtils.listFilesInDirWithFilter(fileBean.file, mFilter2, false)
+            if (texts.size > 0) {
+                FileUtil.readFile(texts[0].absolutePath)?.also {
+                    fileBean.text.set(it)
+                }
+            }
+            if (fileBean.type.get() == 1 || images.size <= 0) {
+                // 目录类
+                if (fileBean.type.get() != 1) fileBean.type.set(TYPE_FILE)
+                var files: Array<out File> = f.listFiles()
+                if (!files.isNullOrEmpty()) {
+                    for (_file in files) {
+                        Timber.i("NTAG _file ${_file.absolutePath} ${_file.name}")
+                        if (_file.isDirectory) {
+                            var file = FileImgBean(_file.name.substring(1), filename = _file.name, file = _file.absolutePath)
+                            fileBean.files.add(file)
+                        }
+                    }
+                }
+            } else {
+                // 按图片来
+                fileBean.type.set(TYPE_IMAGE)
+                fileBean.image = images[0].absolutePath
+            }
+            fileBean.loaded = true
+            callBack.invoke(fileBean)
+        }
+    }
 
     fun clickFileImg(file: FileImgBean?, index: Int = 0) {
         if (file == null) return
-        Timber.i("NTAG clickFileImg3 $index ${file.filename} ${file.name}")
+        Timber.i("NTAG clickFileImg $index ${file.filename} ${file.name}")
         fileIndex = index
         fileImg3 = file!!
         fileImgTitle.set(file.name)
@@ -194,7 +251,7 @@ class MainViewModel : BaseViewModel() {
         for (_file in files) {
             Timber.i("NTAG _file ${_file.absolutePath} ${_file.name}")
             if (_file.isDirectory) {
-                var imgs1 = FileImgBean(_file.name.substring(1), filename = _file.name)
+                var imgs1 = FileImgBean(_file.name.substring(1), filename = _file.name, file = _file.absolutePath)
                 fileImg1List.add(imgs1)
             }
         }

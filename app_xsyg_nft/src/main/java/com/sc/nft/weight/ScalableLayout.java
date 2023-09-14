@@ -147,7 +147,7 @@ public class ScalableLayout extends FrameLayout {
         }
     }
 
-    private void restoreOriginalState() {
+    public void restoreOriginalState() {
         Animation scaleAnimation = new ScaleAnimation(scaleFactor, 1.0f, scaleFactor, 1.0f,
                 Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleAnimation.setDuration(300);

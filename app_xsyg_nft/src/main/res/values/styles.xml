@@ -8,7 +8,7 @@
         <item name="android:layout_marginTop">@dimen/in_title_margin</item>
         <item name="android:layout_marginStart">@dimen/in_title_margin</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">@dimen/item_title_in_text_size</item>
         <item name="android:maxWidth">260dp</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -21,7 +21,7 @@
         <item name="android:layout_marginStart">@dimen/in_content_margin</item>
         <item name="android:layout_marginEnd">@dimen/in_content_margin</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">@dimen/item_content_text_size</item>
     </style>
 
     <style name="right_menu_style">

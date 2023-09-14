@@ -1,10 +1,7 @@
 package com.sc.nft.di
 
 import com.nbhope.lib_frame.di.scope.ActivityScope
-import com.sc.nft.activity.FileImg2Activity
-import com.sc.nft.activity.FileImg3Activity
-import com.sc.nft.activity.MainActivity
-import com.sc.nft.activity.ScreenActivity
+import com.sc.nft.activity.*
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -19,6 +16,10 @@ abstract class ActivityBindModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract fun contributeScreenActivity(): ScreenActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributeFileImgActivity(): FileImgActivity
 
     @ActivityScope
     @ContributesAndroidInjector

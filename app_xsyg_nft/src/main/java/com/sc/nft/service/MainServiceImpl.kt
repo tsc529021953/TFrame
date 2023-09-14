@@ -11,14 +11,12 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.*
 import com.alibaba.android.arouter.launcher.ARouter
+import com.nbhope.lib_frame.app.AppManager
 import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.arouterpath.RouterPath
-import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallbackModule
-import com.nbhope.lib_frame.utils.HopeUtils
-import com.nbhope.lib_frame.utils.NetworkUtil
-import com.nbhope.lib_frame.utils.SharedPreferencesManager
+import com.nbhope.lib_frame.utils.*
 import com.sc.nft.R
 import com.sc.nft.vm.MainViewModel
 import kotlinx.coroutines.*
@@ -53,7 +51,7 @@ class MainServiceImpl : Service() , MainService{
 
         private const val COMMAND_TUYA = "DUI.SmartHome."
 
-        const val HEART_TIMER: Long = 12000000
+        const val HEART_TIMER: Long = 120000
     }
 
     private var thread = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
@@ -186,7 +184,8 @@ class MainServiceImpl : Service() , MainService{
                 override fun run() {
                     // 间隔时间到了 尝试一次重新连接
                     Timber.i("NTAG 锁屏")
-                    ARouter.getInstance().build(RouterPath.activity_nft_screen).navigation()
+                    if (AppManager.appManager?.currentActivityIsTop == true)
+                        ARouter.getInstance().build(RouterPath.activity_nft_screen).navigation()
                 }
             }
         }

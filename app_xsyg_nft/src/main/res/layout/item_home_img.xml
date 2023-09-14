@@ -22,6 +22,7 @@
                   android:textColor="@color/white"
                   android:text="@{vm.name}"
                   tools:text="测试"
+                  android:textSize="@dimen/item_content_text_size"
         />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

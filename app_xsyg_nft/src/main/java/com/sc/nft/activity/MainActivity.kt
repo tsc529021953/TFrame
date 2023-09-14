@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.blankj.utilcode.util.PermissionUtils
+import com.nbhope.lib_frame.app.AppManager
 import com.nbhope.lib_frame.arouterpath.RouterPath
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.base.BaseViewModel
@@ -17,6 +18,10 @@ import com.sc.nft.bean.FileImgBean
 import com.sc.nft.databinding.ActivityMainBinding
 import com.sc.nft.vm.MainViewModel
 import com.sc.nft.weight.GridSpaceItemDecoration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -40,6 +45,7 @@ class MainActivity : NFTBaseActivity<ActivityMainBinding, BaseViewModel>() {
     private var adapter: FileImgAdapter? = null
 
     override fun subscribeUi() {
+        super.subscribeUi()
         immersionTitle(this)
         if (!hasPermission()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -56,14 +62,34 @@ class MainActivity : NFTBaseActivity<ActivityMainBinding, BaseViewModel>() {
             override fun onItemClick(item: FileImgBean) {
 //                MainViewModel.getInstance().clickFileImg2(item)
 //                ARouter.getInstance().build(RouterPath.activity_nft_file2).navigation()
-                MainViewModel.getInstance().fileImgType.set(1)
-                MainViewModel.getInstance().fileImgItem = item
-                MainViewModel.getInstance().clickFileImg(item)
-                ARouter.getInstance().build(RouterPath.activity_nft_file2).navigation()
+//                MainViewModel.getInstance().fileImgType.set(1)
+//                MainViewModel.getInstance().fileImgItem = item
+//                MainViewModel.getInstance().clickFileImg(item)
+
+                navigation(item)
             }
         })
         binding.imgIv.adapter = adapter
-        super.subscribeUi()
+
+//        if (MainViewModel.getInstance().fileImg1List.size > 2) {
+//            val item = MainViewModel.getInstance().fileImg1List[2]
+//            navigation(item)
+////            GlobalScope.launch(Dispatchers.IO) {
+////                delay(8000)
+////                AppManager.appManager?.killAll()
+////            }
+//        }
+
+    }
+
+    fun navigation(item: FileImgBean) {
+        ARouter.getInstance().build(RouterPath.activity_nft_file)
+            .withString(MainViewModel.FILENAME, item.filename)
+            .withString(MainViewModel.FILE, item.file)
+            .withString(MainViewModel.NAME, item.name)
+            .withInt(MainViewModel.TYPE, MainViewModel.TYPE_FIRST)
+//            .withInt(MainViewModel.INDEX, MainViewModel.TYPE_FIRST)
+            .navigation(this@MainActivity)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

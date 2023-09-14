@@ -8,4 +8,8 @@
     <dimen name="right_menu_item_size">30dp</dimen>
     <dimen name="in_title_margin">30dp</dimen>
     <dimen name="in_content_margin">30dp</dimen>
+
+    <dimen name="item_title_text_size">40sp</dimen>
+    <dimen name="item_title_in_text_size">25sp</dimen>
+    <dimen name="item_content_text_size">20sp</dimen>
 </resources>

@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.ScreenActivity"/>
+        <activity android:name=".activity.FileImgActivity"/>
         <activity android:name=".activity.FileImg2Activity"/>
         <activity android:name=".activity.FileImg3Activity"/>
 
