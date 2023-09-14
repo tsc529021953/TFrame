@@ -1,6 +1,7 @@
 package com.sc.nft.weight;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.view.*;
@@ -8,8 +9,10 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
+import timber.log.Timber;
 
-public class ScalableLayout extends FrameLayout {
+public class ScalableLayout extends FrameLayout implements RotationGestureDetector.OnRotationGestureListener
+        , RotateGestureDetector .OnRotateGestureListener {
 
     private static final int INVALID_POINTER_ID = -1;
     private float scaleFactor = 1.0f;
@@ -18,6 +21,8 @@ public class ScalableLayout extends FrameLayout {
     private ScaleGestureDetector scaleGestureDetector;
     private boolean isDoubleTap = false;
     private PointF pivotPoint = new PointF(0, 0);
+
+    private RotationGestureDetector mRotationDetector;
 
     public ScalableLayout(Context context) {
         super(context);
@@ -32,26 +37,43 @@ public class ScalableLayout extends FrameLayout {
     private void init(Context context) {
         scaleGestureDetector = new ScaleGestureDetector(context, new ScaleListener());
         setOnTouchListener(new TouchListener());
+        mRotationDetector = new RotationGestureDetector( this, this);
     }
 
+
     @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        // Layout child views according to scaleFactor and rotationDegrees
-        int childCount = getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            View child = getChildAt(i);
-            int childWidth = child.getMeasuredWidth();
-            int childHeight = child.getMeasuredHeight();
-            int childLeft = (getWidth() - childWidth) / 2;
-            int childTop = (getHeight() - childHeight) / 2;
-            int childRight = childLeft + childWidth;
-            int childBottom = childTop + childHeight;
-            child.layout(childLeft, childTop, childRight, childBottom);
-            child.setScaleX(scaleFactor);
-            child.setScaleY(scaleFactor);
-            child.setRotation(rotationDegrees);
-        }
+    protected void dispatchDraw(Canvas canvas) {
+        View child = getChildAt(0);
+        canvas.save();
+        //        canvas.rotate(rotationDegrees, pivotPoint.x, pivotPoint.y); // 以指定点为中心旋转
+//        canvas.scale(scaleFactor, scaleFactor);
+//        canvas.concat(mMatrix);
+        child.setScaleX(scaleFactor);
+        child.setScaleY(scaleFactor);
+        child.setRotation(rotationDegrees);
+//        child.draw(canvas);
+                super.dispatchDraw(canvas);
+        canvas.restore();
     }
+
+//    @Override
+//    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//        // Layout child views according to scaleFactor and rotationDegrees
+//        int childCount = getChildCount();
+//        for (int i = 0; i < childCount; i++) {
+//            View child = getChildAt(i);
+//            int childWidth = child.getMeasuredWidth();
+//            int childHeight = child.getMeasuredHeight();
+//            int childLeft = (getWidth() - childWidth) / 2;
+//            int childTop = (getHeight() - childHeight) / 2;
+//            int childRight = childLeft + childWidth;
+//            int childBottom = childTop + childHeight;
+//            child.layout(childLeft, childTop, childRight, childBottom);
+//            child.setScaleX(scaleFactor);
+//            child.setScaleY(scaleFactor);
+//            child.setRotation(rotationDegrees);
+//        }
+//    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -65,6 +87,26 @@ public class ScalableLayout extends FrameLayout {
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
         setMeasuredDimension(width, height);
+    }
+
+    @Override
+    public void onRotation(RotationGestureDetector rotationDetector) {
+        rotationDegrees = rotationDetector.getAngle();
+    }
+
+    @Override
+    public void onRotate(float angle) {
+//        rotationDegrees = angle;
+    }
+
+    @Override
+    public void onRotateBegin(float initialAngle) {
+
+    }
+
+    @Override
+    public void onRotateEnd() {
+
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -87,6 +129,7 @@ public class ScalableLayout extends FrameLayout {
 
         @Override
         public boolean onTouch(View view, MotionEvent event) {
+            mRotationDetector.onTouchEvent(event);
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     activePointerId = event.getPointerId(0);
@@ -95,13 +138,17 @@ public class ScalableLayout extends FrameLayout {
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (activePointerId != INVALID_POINTER_ID) {
+
+//                        if (upX != event.getX() && upY != event.getY())
+//                            rotationDegrees -= angleBetweenLines(downX, downY, pivotPoint.x, pivotPoint.y
+//                                    , event.getX(), event.getY(), pivotPoint.x, pivotPoint.y) * 0.05;
                         upX = event.getX();
                         upY = event.getY();
-                        rotationDegrees -= angleBetweenLines(downX, downY, pivotPoint.x, pivotPoint.y, upX, upY, pivotPoint.x, pivotPoint.y) * 0.05;
                         float distance = calculateDistance(downX, downY, upX, upY);
                         if (distance > TOUCH_DISTANCE_THRESHOLD) {
                             isDoubleTap = false;
                         }
+                        invalidate();
                     }
                     break;
                 case MotionEvent.ACTION_POINTER_UP:
@@ -168,6 +215,21 @@ public class ScalableLayout extends FrameLayout {
                                     float startX2, float startY2, float endX2, float endY2) {
         float angle1 = (float) Math.atan2(endY1 - startY1, endX1 - startX1);
         float angle2 = (float) Math.atan2(endY2 - startY2, endX2 - startX2);
+//        Timber.i("NTAG degress " + (float) Math.toDegrees(angle1 - angle2));
         return (float) Math.toDegrees(angle1 - angle2);
+//        float angle = ((float) Math.toDegrees(angle1 - angle2)) % 360;
+////        if (angle < -180.f) angle += 360.0f;
+////        if (angle > 180.f) angle -= 360.0f;
+//        return angle;
+    }
+
+    private float angleBetweenLines(PointF fPoint, PointF sPoint, PointF nFpoint, PointF nSpoint) {
+        float angle1 = (float) Math.atan2((fPoint.y - sPoint.y), (fPoint.x - sPoint.x));
+        float angle2 = (float) Math.atan2((nFpoint.y - nSpoint.y), (nFpoint.x - nSpoint.x));
+
+        float angle = ((float) Math.toDegrees(angle1 - angle2)) % 360;
+        if (angle < -180.f) angle += 360.0f;
+        if (angle > 180.f) angle -= 360.0f;
+        return -angle;
     }
 }

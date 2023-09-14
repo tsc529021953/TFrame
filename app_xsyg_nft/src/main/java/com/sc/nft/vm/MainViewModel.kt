@@ -79,6 +79,7 @@ class MainViewModel : BaseViewModel() {
                 if (fileBean.type.get() != 1) fileBean.type.set(TYPE_FILE)
                 var files: Array<out File> = f.listFiles()
                 if (!files.isNullOrEmpty()) {
+//                    files.reverse()
                     for (_file in files) {
                         Timber.i("NTAG _file ${_file.absolutePath} ${_file.name}")
                         if (_file.isDirectory) {
@@ -86,6 +87,7 @@ class MainViewModel : BaseViewModel() {
                             fileBean.files.add(file)
                         }
                     }
+                    fileBean.files.reverse()
                 }
             } else {
                 // 按图片来

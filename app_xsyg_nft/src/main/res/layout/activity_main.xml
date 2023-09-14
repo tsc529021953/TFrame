@@ -46,7 +46,7 @@
                 android:paddingBottom="@dimen/in_content_margin"
         />
 
-<!--        <com.sc.nft.weight.SmoothRotationViewGroup-->
+<!--        <com.sc.nft.weight.ScalableLayout-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="match_parent"-->
 <!--                android:layout_margin="50dp"-->
@@ -59,7 +59,7 @@
 <!--                    android:src="@mipmap/logo_move"-->
 <!--            />-->
 
-<!--        </com.sc.nft.weight.SmoothRotationViewGroup>-->
+<!--        </com.sc.nft.weight.ScalableLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

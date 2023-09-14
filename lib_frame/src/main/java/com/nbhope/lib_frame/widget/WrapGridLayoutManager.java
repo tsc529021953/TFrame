@@ -38,4 +38,10 @@ public class WrapGridLayoutManager extends GridLayoutManager {
     public boolean canScrollVertically() {
         return mSv;
     }
+
+    @Override
+    protected boolean isLayoutRTL() {
+//        return super.isLayoutRTL();
+        return true;
+    }
 }

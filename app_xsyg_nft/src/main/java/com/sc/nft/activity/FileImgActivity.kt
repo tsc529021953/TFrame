@@ -96,10 +96,10 @@ class FileImgActivity : NFTBaseActivity<ActivityFileImgBinding, BaseViewModel>()
             finish()
         }
         binding.nextIv.setOnClickListener {
-            next(it)
+            prev(it)
         }
         binding.prevIv.setOnClickListener {
-            prev(it)
+            next(it)
         }
 
         val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, 2, LinearLayoutManager.VERTICAL
