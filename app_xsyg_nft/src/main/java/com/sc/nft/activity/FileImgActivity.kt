@@ -12,8 +12,10 @@ import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.constants.GlobalScopeUtils
 import com.sc.nft.R
 import com.sc.nft.adapter.FileImgAdapter
+import com.sc.nft.bean.FileImgBean
 import com.sc.nft.databinding.ActivityFileImg2Binding
 import com.sc.nft.databinding.ActivityFileImg3Binding
+import com.sc.nft.databinding.ActivityFileImgBinding
 import com.sc.nft.vm.MainViewModel
 import kotlinx.coroutines.delay
 import pl.droidsonroids.gif.GifDrawable
@@ -23,15 +25,21 @@ import timber.log.Timber
  * author: sc
  * date: 2023/9/10
  */
-@Route(path = RouterPath.activity_nft_file3)
-class FileImg3Activity : NFTBaseActivity<ActivityFileImg3Binding, BaseViewModel>() {
+@Route(path = RouterPath.activity_nft_file)
+class FileImgActivity : NFTBaseActivity<ActivityFileImgBinding, BaseViewModel>() {
 
-    override var layoutId: Int = R.layout.activity_file_img_3
+    override var layoutId: Int = R.layout.activity_file_img
 
     private var adapter: FileImgAdapter? = null
 
+    private var type = -1
+    private var item: FileImgBean? = null
+
     override fun subscribeUi() {
         super.subscribeUi()
+
+        type = MainViewModel.getInstance().fileImgType.get()
+        item = MainViewModel.getInstance().fileImgItem
 
         binding.vm = MainViewModel.getInstance()
         binding.homeIv.setOnClickListener {
@@ -41,8 +49,13 @@ class FileImg3Activity : NFTBaseActivity<ActivityFileImg3Binding, BaseViewModel>
         binding.backIv.setOnClickListener {
             finish()
         }
-        MainViewModel.getInstance().fileImg3Img.addOnPropertyChangedCallback(callBack)
-        imgLoad()
+//        MainViewModel.getInstance().fileImg3Img.addOnPropertyChangedCallback(callBack)
+//        imgLoad()
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        MainViewModel.getInstance().clickFileImg(item, type = type)
     }
 
     fun imgLoad() {
@@ -78,7 +91,7 @@ class FileImg3Activity : NFTBaseActivity<ActivityFileImg3Binding, BaseViewModel>
 
     override fun onDestroy() {
         super.onDestroy()
-        MainViewModel.getInstance().fileImg3Img.removeOnPropertyChangedCallback(callBack)
+//        MainViewModel.getInstance().fileImg3Img.removeOnPropertyChangedCallback(callBack)
     }
 
 }

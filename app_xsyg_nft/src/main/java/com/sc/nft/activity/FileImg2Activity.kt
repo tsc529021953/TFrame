@@ -3,6 +3,7 @@ package com.sc.nft.activity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
+import com.nbhope.lib_frame.app.AppManager
 import com.nbhope.lib_frame.arouterpath.RouterPath
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.widget.WrapGridLayoutManager
@@ -33,7 +34,8 @@ class FileImg2Activity : NFTBaseActivity<ActivityFileImg2Binding, BaseViewModel>
             if (size % 3 == 0) 3 else 4
         } else 2
         count = 2
-        val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, count, true)
+        val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, count, LinearLayoutManager.VERTICAL
+            , true)
         binding.imgIv.layoutManager = layoutManager
         binding.imgIv.addItemDecoration(GridSpaceItemDecoration(count , 0, 0))
         adapter = FileImgAdapter(MainViewModel.getInstance().fileImg2List, object : FileImgAdapter.FileImgCallback{
@@ -44,7 +46,7 @@ class FileImg2Activity : NFTBaseActivity<ActivityFileImg2Binding, BaseViewModel>
         })
         binding.imgIv.adapter = adapter
         binding.backIv.setOnClickListener {
-            finish()
+            AppManager.appManager?.killAll("com.sc.nft.activity.MainActivity")
         }
     }
 

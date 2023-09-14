@@ -64,6 +64,7 @@ object RouterPath {
     const val service_nft = "/service/nft"
     const val activity_nft_main = "/activity/nft_main"
     const val activity_nft_screen = "/activity/nft_screen"
+    const val activity_nft_file = "/activity/nft_file"
     const val activity_nft_file2 = "/activity/nft_file2"
     const val activity_nft_file3 = "/activity/nft_file3"
 }

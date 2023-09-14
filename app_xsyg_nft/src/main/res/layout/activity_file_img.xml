@@ -3,6 +3,7 @@
 
     <data>
         <variable name="vm" type="com.sc.nft.vm.MainViewModel"/>
+        <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,7 +21,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="象山渔港·数字典藏"
-                android:text="@{vm.fileImg3Title}"
         />
 
         <com.sc.nft.weight.ScalableLayout
@@ -29,6 +29,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/title_tv"
                 app:layout_constraintBottom_toTopOf="@+id/content_bg"
                 android:layout_marginTop="@dimen/in_content_margin"
+                android:visibility="@{vm.fileImgType == 3 ? View.VISIBLE: View.GONE}"
         >
 
             <pl.droidsonroids.gif.GifImageView
@@ -45,15 +46,42 @@
                     android:layout_height="300dp"
                     android:id="@+id/content_bg"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="@{vm.fileImgType == 3 ? View.VISIBLE: View.GONE}"
         >
             <TextView
                     style="@style/in_content_style"
                     tools:text="cec"
-                    android:text="@{vm.fileImg3Content}"
+                    android:id="@+id/content_2_tv"
                     android:layout_marginBottom="@dimen/in_content_margin"
             />
         </ScrollView>
 
+
+        <ScrollView android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/content_ly"
+                    app:layout_constraintTop_toBottomOf="@+id/title_tv"
+                    android:visibility="@{vm.fileImgType != 3 ? View.VISIBLE: View.GONE}"
+        >
+            <TextView
+                    style="@style/in_content_style"
+                    tools:text="cec"
+                    android:id="@+id/content_3_tv"
+            />
+        </ScrollView>
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="450dp"
+                android:layout_height="0dp"
+                android:id="@+id/img_rv"
+                app:layout_constraintTop_toBottomOf="@+id/content_ly"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingTop="@dimen/in_content_margin"
+                android:paddingBottom="@dimen/in_content_margin"
+                android:visibility="@{vm.fileImgType != 3 ? View.VISIBLE: View.GONE}"
+        />
 
         <LinearLayout
                 style="@style/right_menu_style"
@@ -71,6 +99,7 @@
                     style="@style/right_menu_item_style"
                     android:id="@+id/back_iv"
                     android:src="@mipmap/ic_up"
+                    android:visibility="@{vm.fileImgType != 1 ? View.VISIBLE: View.GONE}"
             />
 
             <ImageView
@@ -78,6 +107,7 @@
                     android:id="@+id/prev_iv"
                     android:src="@mipmap/ic_prev"
                     android:onClick="@{vm.prev}"
+                    android:visibility="@{vm.fileImgType != 1 ? View.VISIBLE: View.GONE}"
             />
 
             <ImageView
@@ -85,6 +115,7 @@
                     android:id="@+id/next_iv"
                     android:src="@mipmap/ic_next"
                     android:onClick="@{vm.next}"
+                    android:visibility="@{vm.fileImgType != 1 ? View.VISIBLE: View.GONE}"
             />
 
         </LinearLayout>

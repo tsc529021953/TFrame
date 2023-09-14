@@ -48,12 +48,17 @@ class MainActivity : NFTBaseActivity<ActivityMainBinding, BaseViewModel>() {
                 init()
             }
         } else init()
-        val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, 2, true)
+        val layoutManager: LinearLayoutManager = WrapGridLayoutManager(this, 2, LinearLayoutManager.VERTICAL
+            , true)
         binding.imgIv.layoutManager = layoutManager
         binding.imgIv.addItemDecoration(GridSpaceItemDecoration(2 , 0, 0))
         adapter = FileImgAdapter(MainViewModel.getInstance().fileImg1List, object : FileImgAdapter.FileImgCallback{
             override fun onItemClick(item: FileImgBean) {
-                MainViewModel.getInstance().clickFileImg2(item)
+//                MainViewModel.getInstance().clickFileImg2(item)
+//                ARouter.getInstance().build(RouterPath.activity_nft_file2).navigation()
+                MainViewModel.getInstance().fileImgType.set(1)
+                MainViewModel.getInstance().fileImgItem = item
+                MainViewModel.getInstance().clickFileImg(item)
                 ARouter.getInstance().build(RouterPath.activity_nft_file2).navigation()
             }
         })

@@ -3,6 +3,7 @@ package com.sc.nft.vm
 import android.os.Environment
 import android.view.View
 import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import androidx.lifecycle.viewModelScope
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -32,6 +33,42 @@ class MainViewModel : BaseViewModel() {
         }
 
         const val BASE_PATH = "/TImages/"
+    }
+
+    var fileImgType = ObservableInt(0)
+    var fileImgTitle = ObservableField<String>("")
+    var fileImgItem: FileImgBean? = null
+
+
+    fun clickFileImg(file: FileImgBean?, index: Int = 0) {
+        if (file == null) return
+        Timber.i("NTAG clickFileImg3 $index ${file.filename} ${file.name}")
+        fileIndex = index
+        fileImg3 = file!!
+        fileImgTitle.set(file.name)
+        val path =
+            Environment.getExternalStorageDirectory().absolutePath + BASE_PATH + "/" + fileImg2.filename + "/" + fileImg3.filename
+        val f = File(path)
+        if (!f.exists()) { //判断路径是否存在
+            Timber.i("NTAG getDirs !exists")
+        }
+        imgFiles = FileUtils.listFilesInDirWithFilter(path, mFilter3, false)
+        fileImg3Img.set("")
+        Timber.i("NTAG fs ${imgFiles.size}")
+        if (imgFiles.size > 0) {
+            fileImg3Img.set(imgFiles[0].absolutePath)
+        }
+
+        textFiles = FileUtils.listFilesInDirWithFilter(path, mFilter2, false)
+        fileImg3Content.set("")
+        Timber.i("NTAG fs ${textFiles.size}")
+        if (textFiles.size > 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                FileUtil.readFile(textFiles[0].absolutePath)?.also {
+                    fileImg3Content.set(it)
+                }
+            }
+        }
     }
 
     var fileImg1List = ArrayList<FileImgBean>()

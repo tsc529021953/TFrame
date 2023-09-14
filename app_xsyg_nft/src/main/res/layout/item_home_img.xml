@@ -13,7 +13,7 @@
             android:layout_height="160dp"
             android:id="@+id/bg_ly"
             android:background="@drawable/item_home_img_shape"
-            android:layout_marginBottom="50dp"
+            android:layout_marginTop="50dp"
     >
 
         <TextView android:layout_width="match_parent"
