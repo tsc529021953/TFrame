@@ -3,6 +3,7 @@ package com.sc.xwservice.app
 import android.content.Intent
 import android.os.Build
 import com.nbhope.lib_frame.app.HopeBaseApp
+import com.sc.xwservice.di.DaggerAppComponent
 import com.sc.xwservice.service.InfoService
 import com.xdandroid.hellodaemon.DaemonEnv
 import timber.log.Timber
@@ -24,6 +25,15 @@ class AppHope : HopeBaseApp() {
 
         Timber.i("$TAG 初始化 准备开启服务！")
         initService()
+    }
+
+    override fun inject() {
+        super.inject()
+        val component = DaggerAppComponent.builder().appComponent(getAppComponent()).build()
+        Timber.d("$packageName $component")
+        component.inject(this)
+        getInjectors()[packageName] = component.androidInjector
+        Timber.d("DaggerAppComponent 注入")
     }
 
     fun initService() {

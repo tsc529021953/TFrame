@@ -86,12 +86,14 @@ android {
             debuggable true
 
 
-//            if (SERVER == TEST_SERVER) {
-//                buildConfigField "String", "SOCKET_IP", "\"${TEST_SOCKET_URL}\""
-//                buildConfigField "int", "SOCKET_PORT", "${TEST_SERVER_TCP_PORT}"
-//                buildConfigField "String", "HTTP_IP", "\"${TEST_SERVER_URL}\""
-//                buildConfigField "int", "HTTP_PORT", "${TEST_SERVER_HTTP_PORT}"
-//            } else if (SERVER == PRETEST_SERVER) {
+            if (CODE == "XS_CC") {
+                buildConfigField "String", "HTTP_IP", "\"${XS_CC_SERVER_URL}\""
+                buildConfigField "int", "HTTP_PORT", "${XS_CC_SERVER_HTTP_PORT}"
+            } else {
+                buildConfigField "String", "HTTP_IP", "\"${SERVER_URL}\""
+                buildConfigField "int", "HTTP_PORT", "${SERVER_HTTP_PORT}"
+            }
+//            else if (SERVER == PRETEST_SERVER) {
 //                buildConfigField "String", "SOCKET_IP", "\"${PRETEST_SOCKET_URL}\""
 //                buildConfigField "int", "SOCKET_PORT", "${PRETEST_SERVER_TCP_PORT}"
 //                buildConfigField "String", "HTTP_IP", "\"${PRETEST_SERVER_URL}\""
@@ -103,6 +105,7 @@ android {
 //                buildConfigField "int", "HTTP_PORT", "${PRODUCT_SERVER_HTTP_PORT}"
 //            }
 //
+            buildConfigField "Boolean", "IS_HTTP", "${IS_HTTP}"
 //            buildConfigField "Boolean", "IS_JENKINS", "${IS_JENKINS}"
 //            buildConfigField "String", "SERVER", "\"${SERVER}\""
 //
@@ -143,6 +146,13 @@ android {
             signingConfig signingConfigs.release
 //            debuggable false
 
+            if (CODE == "XS_CC") {
+                buildConfigField "String", "HTTP_IP", "\"${XS_CC_SERVER_URL}\""
+                buildConfigField "int", "HTTP_PORT", "${XS_CC_SERVER_HTTP_PORT}"
+            } else {
+                buildConfigField "String", "HTTP_IP", "\"${SERVER_URL}\""
+                buildConfigField "int", "HTTP_PORT", "${SERVER_HTTP_PORT}"
+            }
 //            if (SERVER == TEST_SERVER) {
 //                buildConfigField "String", "SOCKET_IP", "\"${TEST_SOCKET_URL}\""
 //                buildConfigField "int", "SOCKET_PORT", "${TEST_SERVER_TCP_PORT}"
@@ -160,6 +170,7 @@ android {
 //                buildConfigField "int", "HTTP_PORT", "${PRODUCT_SERVER_HTTP_PORT}"
 //            }
 //
+            buildConfigField "Boolean", "IS_HTTP", "${IS_HTTP}"
 //            buildConfigField "Boolean", "IS_JENKINS", "${IS_JENKINS}"
 //            buildConfigField "String", "SERVER", "\"${SERVER}\""
 //

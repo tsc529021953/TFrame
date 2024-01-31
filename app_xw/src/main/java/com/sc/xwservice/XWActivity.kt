@@ -5,11 +5,14 @@ import android.app.Activity
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
 import android.os.Bundle
+import android.widget.TextView
+import androidx.lifecycle.Observer
 import com.nbhope.lib_frame.bean.TMessage
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.PermissionUtil
 import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
 import com.nbhope.lib_frame.utils.json.BaseGsonUtils
+import com.sc.lib_weather.utils.LocationUtil
 import com.sc.xwservice.app.AppHope.Companion.TAG
 import com.sc.xwservice.config.MessageConst
 import timber.log.Timber
@@ -37,6 +40,8 @@ class XWActivity : Activity() {
 
     var isRequestPER = false
 
+    var infoTv: TextView? = null;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isRequestPER = false
@@ -49,6 +54,16 @@ class XWActivity : Activity() {
                 return
             }
         }
+        infoTv = findViewById(R.id.info_tv)
+        LiveEBUtil.registForever(TMessage::class.java, Observer<Any> {
+            it as TMessage
+            if (it.cmd == MessageConst.SCREEN_DATA_GET){
+                this.runOnUiThread {
+                    infoTv?.text = it.data
+                }
+            }
+//            weatherListener?.registerListener(this, weatherCB)
+        })
     }
 
     override fun onResume() {

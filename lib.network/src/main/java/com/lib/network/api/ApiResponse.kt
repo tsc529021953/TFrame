@@ -16,7 +16,9 @@
 
 package com.lib.network.api
 
+import com.google.gson.Gson
 import retrofit2.Response
+import timber.log.Timber
 
 /**
  * Common class used by API responses.
@@ -32,9 +34,10 @@ sealed class ApiResponse<T> {
         fun <T> create(response: Response<HopeResponse<T>>): ApiResponse<T> {
             return if (response.isSuccessful) {
                 val body = response.body()
+                Timber.i("C_TAG response.code() ${if (body != null) Gson().toJson(body) else null}")
                 if (body == null || response.code() == 204) {
                     ApiEmptyResponse()
-                } else if (body.code != 100000) {
+                } else if (body.code != 100000 && body.code != 0) {
                     ApiErrorResponse(body.message ?: "unknown error", body.code ?: 0)
                 } else if (body.`object` == null && body.list == null && body.rows == null) {
                     ApiEmptyResponse()

@@ -35,14 +35,18 @@ class HopeDynConfig() {
      this.tary = TraySpManager(context)
     }
 
-
+    fun getHttp(): String? {
+        return if (BuildConfig.IS_HTTP) "http" else "https"
+    }
     fun getHttpIp(): String?{
 //        Timber.d("HopeDyn getHttpIp:${BuildConfig.HTTP_IP}")
-       return tary?.getString("HTTP_IP","127.0.0.1")
+//        tary?.getString("HTTP_IP","127.0.0.1")
+        return BuildConfig.HTTP_IP
     }
     fun getHttpPort(): Int? {
 //        Timber.d("HopeDyn getHttpPort:${BuildConfig.HTTP_PORT}")
-        return tary?.getInt("HTTP_PORT",8085)
+//        return tary?.getInt("HTTP_PORT",8087)
+        return BuildConfig.HTTP_PORT
     }
     fun socketIp(): String? = tary?.getString("SOCKET_IP","127.0.0.1")
     // BuildConfig.SOCKET_PORT

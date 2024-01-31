@@ -1,0 +1,64 @@
+<!--debug属性用来决定是否打印logback的日志信息-->
+<configuration debug='false'>
+
+    <!--声明一个属性,用来指定log文件存放的路径-->
+    <property name="LOG_DIR" value="/sdcard/Android/data/com.sc.xs_cc/cache" />
+
+    <!--声明一个时间戳-->
+    <timestamp datePattern="yyyyMMdd" key="today" />
+
+    <!--用于在控制台输出的Appender-->
+        <appender name="LOGCAT" class="ch.qos.logback.classic.android.LogcatAppender">
+            <encoder>
+<!--                <pattern>%-5relative [%thread][%file:%M:%line] - %msg%n</pattern>-->
+                <pattern>%msg%n</pattern>
+            </encoder>
+        </appender>
+
+    <!-- Create a file appender for TRACE-level messages -->
+    <!--    <appender name="TraceLog" class="ch.qos.logback.core.FileAppender">-->
+
+    <!--        <file>${LOG_DIR}/trace.log</file>-->
+    <!--        &lt;!&ndash;log追加到文件,否则覆盖文件&ndash;&gt;-->
+    <!--        <append>true</append>-->
+    <!--        <encoder>-->
+    <!--            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level - %msg%n</pattern>-->
+    <!--        </encoder>-->
+    <!--    </appender>-->
+
+    <!--    &lt;!&ndash;声明一个RollingFileAppender&ndash;&gt;-->
+    <appender name="RollLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--        <file>${LOG_DIR}/player.current.log</file>-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/xs_cc.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{MM-dd HH:mm:ss.SSS} [%thread] %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+        <!--<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/roll.%d{yyyy-MM-dd}.log</fileNamePattern>
+            &lt;!&ndash;最大保存7天的日志&ndash;&gt;
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+
+        &lt;!&ndash;文件大于10mb,切换文件&ndash;&gt;
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>-->
+
+
+
+    <!--指定logtest采用BASE_ROLL_FILE声明的RollingFileAppender输出日志-->
+    <!--    <logger name="logtest">-->
+    <!--        <appender-ref ref="RollLog" />-->
+    <!--    </logger>-->
+
+    <!--     Write TRACE (and higher-level) messages to the log file-->
+    <root level="TRACE">
+        <appender-ref ref="LOGCAT" />
+        <appender-ref ref="RollLog" />
+    </root>
+
+</configuration>

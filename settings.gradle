@@ -14,5 +14,6 @@ include ':app'
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'
-include ':app_xsyg_nft'
+//include ':app_xsyg_nft' // 象山nft
+//include ':app_center_control'
 rootProject.name = "TFrame"

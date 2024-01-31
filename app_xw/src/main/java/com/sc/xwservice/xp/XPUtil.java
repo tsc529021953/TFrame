@@ -1,7 +1,11 @@
 package com.sc.xwservice.xp;
 
 import android.os.Handler;
+import com.nbhope.lib_frame.bean.TMessage;
+import com.nbhope.lib_frame.bus.event.BaseEvent;
+import com.nbhope.lib_frame.utils.LiveEBUtil;
 import com.sc.lib_system.sp.SerialPortUtil;
+import com.sc.xwservice.config.MessageConst;
 import com.sc.xwservice.util.DateUtil;
 import com.sc.xwservice.xp.bean.XPBean;
 import timber.log.Timber;
@@ -86,11 +90,12 @@ public class XPUtil {
             writeNum("hour_val", xpBean.hour + "");
         }
         xpBean.minutes = date.get(Calendar.MINUTE);
-        if (xpBean.minutes != recordBean.minutes) {
+//        xpBean.minutes = xpBean.minutes < 2 ? 60 + xpBean.minutes - 2 : xpBean.minutes - 2;
+//        if (xpBean.minutes != recordBean.minutes) {
             writeStr("minutes", xpBean.minutes < 10 ? "0" + xpBean.minutes : xpBean.minutes + "");
             writeNum("minutes_val", xpBean.minutes + "");
             Timber.d("刷新分钟 " + xpBean.minutes);
-        }
+//        }
         xpBean.second = date.get(Calendar.SECOND);
         if (xpBean.second != recordBean.second)
             writeStr("second_val", xpBean.second + "");
@@ -117,6 +122,7 @@ public class XPUtil {
             writePic("main", xpBean.weatherIndex + "");
         Timber.d("刷新数据！" + xpBean.toString());
         recordBean.copy(xpBean);
+//        LiveEBUtil.post(new TMessage(MessageConst.SCREEN_DATA_GET, xpBean.toString()));
     }
 
     public void write(String key, String value){

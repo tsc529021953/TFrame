@@ -9,5 +9,6 @@ package com.sc.xwservice.config
 object MessageConst {
 
     const val PERMISSION_GET = "PERMISSION_GET" //权限取得
+    const val SCREEN_DATA_GET = "SCREEN_DATA_GET" // 屏参获取
 
 }

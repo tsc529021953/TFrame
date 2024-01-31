@@ -14,6 +14,11 @@ android {
         versionCode 1
         versionName "0.1.0-1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.getName())
+            }
+        }
     }
 
     kotlinOptions {
@@ -42,4 +47,10 @@ dependencies {
     androidTestImplementation deps.espresso.core
 
     implementation deps.hellodaemon
+
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
 }

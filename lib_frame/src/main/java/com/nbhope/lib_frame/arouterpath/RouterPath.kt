@@ -60,6 +60,9 @@ object RouterPath {
 
     const val dual_panel_path = "/index/dual_panel"
 
+    // app
+    const val activity_main = "/activity/main"
+
     // nft
     const val service_nft = "/service/nft"
     const val activity_nft_main = "/activity/nft_main"

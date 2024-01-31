@@ -1,5 +1,6 @@
 package com.lib.network.utils
 
+import com.google.gson.Gson
 import okhttp3.*
 import timber.log.Timber
 import java.lang.Exception
@@ -15,9 +16,10 @@ class LoggingInterceptor : Interceptor {
         //这个chain里面包含了request和response，所以你要什么都可以从这里拿
         val request: Request = chain.request()
         val t1 = System.nanoTime() //请求发起的时间
-        Timber.tag("OkHttp").i(String.format("发送请求 %s", request.url()))
+        Timber.tag("OkHttp").i(String.format("发送请求 %s", "${request.url()}"))
         val body = request.body()
-        if (body is FormBody){
+        if (body is FormBody && body.size() > 0){
+            Timber.tag("OkHttp").i(String.format("body %s", "${body.size()} ${Gson().toJson(body)}"))
             for(i in 0..body.size()){
                 if (body.encodedName(i) == "dat"){
                     val decodeBody = try {

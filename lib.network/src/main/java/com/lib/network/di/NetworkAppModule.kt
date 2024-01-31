@@ -32,7 +32,7 @@ class NetworkAppModule {
     fun provideApiService(client: OkHttpClient): ApiService = Retrofit.Builder()
             .client(client)
 //            .baseUrl("http://192.168.2.9:8080/")
-            .baseUrl("https://${HopeDynConfig.instence.getHttpIp()}:${HopeDynConfig.instence.getHttpPort()}/")
+            .baseUrl("${HopeDynConfig.instence.getHttp()}://${HopeDynConfig.instence.getHttpIp()}:${HopeDynConfig.instence.getHttpPort()}/")
             .addConverterFactory(GsonConverterFactory.create())
 //        .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()

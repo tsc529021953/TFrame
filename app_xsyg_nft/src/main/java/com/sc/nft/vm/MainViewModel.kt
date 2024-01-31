@@ -78,6 +78,7 @@ class MainViewModel : BaseViewModel() {
                 // 目录类
                 if (fileBean.type.get() != 1) fileBean.type.set(TYPE_FILE)
                 var files: Array<out File> = f.listFiles()
+                files.reverse()
                 if (!files.isNullOrEmpty()) {
                     for (_file in files) {
                         Timber.i("NTAG _file ${_file.absolutePath} ${_file.name}")
@@ -248,6 +249,7 @@ class MainViewModel : BaseViewModel() {
         }
         Timber.i("NTAG getDirs exists ${f.absolutePath} ${f.list()} ${f.listFiles()}")
         val files: Array<out File> = f.listFiles() ?: return
+        files.reverse()
         for (_file in files) {
             Timber.i("NTAG _file ${_file.absolutePath} ${_file.name}")
             if (_file.isDirectory) {

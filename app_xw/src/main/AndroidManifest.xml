@@ -22,13 +22,13 @@
 
         <service android:name=".service.InfoService" android:priority="1000"/>
 
-        <com.sc.nft.receiver android:name=".com.sc.nft.receiver.StartReceiver"
+        <receiver android:name=".receiver.StartReceiver"
                   android:enabled="true"
         >
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
-        </com.sc.nft.receiver>
+        </receiver>
     </application>
 
 </manifest>
