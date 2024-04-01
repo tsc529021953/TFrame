@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/lib.tcp" />
             <option value="$PROJECT_DIR$/lib_audio" />
             <option value="$PROJECT_DIR$/lib_camera" />
+            <option value="$PROJECT_DIR$/lib_float" />
             <option value="$PROJECT_DIR$/lib_frame" />
             <option value="$PROJECT_DIR$/lib_local_device" />
             <option value="$PROJECT_DIR$/lib_local_online" />

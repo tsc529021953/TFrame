@@ -25,12 +25,12 @@ android {
     signingConfigs {
         def path = ''
 //        if (isBuildModule.toBoolean())
-        path = '../app_heTest/';
+        path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStore'))
-            storePassword project.property('keyStorePassword')
-            keyAlias project.property('keyAlias')
-            keyPassword project.property('keyAliasPassword')
+            storeFile file(path + project.property('keyStoreA133'))
+            storePassword project.property('keyStorePassword_HOPE')
+            keyAlias project.property('keyAlias_HOPE')
+            keyPassword project.property('keyAliasPassword_HOPE')
         }
         release {
             storeFile file(path + project.property('keyStore'))
@@ -55,6 +55,7 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
+    implementation project(path: ':lib_float')
     testImplementation deps.junit
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core

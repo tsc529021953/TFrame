@@ -9,6 +9,7 @@ include ':lib_local_device'
 include ':lib_system'
 include ':lib_weather'
 include ':lib_frame'
+include ':lib_float'
 
 include ':app'
 //include ':app_xw'
