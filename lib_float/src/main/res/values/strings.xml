@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="icon_pen">&#xe601;</string>
+    <string name="icon_eraser">&#xe600;</string>
+    <string name="icon_close">&#xe604;</string>
+</resources>

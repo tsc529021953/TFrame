@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="float_icon_width">44dp</dimen>
+    <dimen name="float_line_width">36dp</dimen>
+    <dimen name="float_line_padding">5dp</dimen>
+    <dimen name="float_line_bg_radius">3dp</dimen>
+    <dimen name="float_line_icon_size">36dp</dimen>
+    <dimen name="float_line_text_size">28sp</dimen>
+</resources>

@@ -13,5 +13,9 @@ interface IPaintService {
     fun init(context: Context)
     fun showFloat()
     fun hideFloat(delayMillis: Long)
+    fun showLine()
+    fun hideLine()
+    fun showDraw()
+    fun hideDraw()
 
 }

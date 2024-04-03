@@ -57,4 +57,20 @@ class PaintServiceDelegate : IPaintService {
     override fun hideFloat(delayMillis: Long) {
 
     }
+
+    override fun showLine() {
+
+    }
+
+    override fun hideLine() {
+
+    }
+
+    override fun showDraw() {
+
+    }
+
+    override fun hideDraw() {
+
+    }
 }

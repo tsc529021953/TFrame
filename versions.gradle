@@ -112,6 +112,7 @@ versions.xstream = "1.4.18"
 versions.ip2region = "2.6.5"
 versions.auc = "1.31.1"
 versions.gif = "1.2.27"
+versions.floatx = "2.0.4"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -304,6 +305,7 @@ deps.stetho_okhttp3 = "com.facebook.stetho:stetho-okhttp3:$versions.stetho"
 deps.RangeSeekBar = "com.github.Jay-Goo:RangeSeekBar:$versions.range_seekbar"
 deps.ffmpeg="com.yyl.ffmpeg:ffmpeg_cmd:$versions.ffmpeg"
 deps.toast="com.hjq:toast:$versions.toast"
+deps.floatx="io.github.petterpx:floatingx:$versions.floatx"
 
 // 服务后台保活
 deps.hellodaemon = "com.xdandroid:hellodaemon:$versions.hellodaemon"

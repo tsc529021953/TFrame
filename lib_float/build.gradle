@@ -6,6 +6,14 @@ android {
             dirs 'libs'
         }
     }
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            def buildTypeName = variant.buildType.name
+            if ("release".equalsIgnoreCase(buildTypeName)){
+                outputFileName = "lib_float_${defaultConfig.versionName}.aar"
+            }
+        }
+    }
 }
 
 dependencies {
@@ -20,5 +28,6 @@ dependencies {
     testImplementation deps.espresso.core
     testImplementation deps.atsl.ext_junit
     testImplementation deps.junit
-//    implementation project(path: ':lib_frame')
+    implementation project(path: ':lib_frame')
+    implementation deps.floatx
 }

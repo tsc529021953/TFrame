@@ -13,7 +13,12 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import com.nbhope.lib_frame.widget.IconFontView
+import com.petterp.floatingx.FloatingX
+import com.petterp.floatingx.assist.FxGravity
+import com.petterp.floatingx.assist.FxScopeType
 import com.sc.lib_float.R
 import com.sc.lib_float.inter.IPaintService
 import timber.log.Timber
@@ -37,9 +42,13 @@ class PaintServiceImpl : Service(), IPaintService {
 
     private val mBinder: IBinder = PaintBinder()
 
-    private var rootView: View? = null
-
     lateinit var mainHandler: MainHandler
+
+    /*view 版块*/
+    private var rootView: View? = null
+    private var iconIv: ImageView? = null
+    private var line1Ly: View? = null
+    private var line2Ly: View? = null
 
     override fun onBind(p0: Intent?): IBinder? {
         return this.mBinder
@@ -99,43 +108,56 @@ class PaintServiceImpl : Service(), IPaintService {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initFloat() {
-        var windowManager: WindowManager? =
-            getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        } else {
-            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-        }
-        layoutParams.format = PixelFormat.RGBA_8888
-        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
-        layoutParams.flags =
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
-        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-        layoutParams.x = 0
-        var point: Point? = Point()
-        (windowManager!!.defaultDisplay.getSize(point))
-        layoutParams.y = point!!.y - layoutParams.height + 50
+//        var windowManager: WindowManager? =
+//            getSystemService(Context.WINDOW_SERVICE) as WindowManager
+//        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//        } else {
+//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
+//        }
+//        layoutParams.format = PixelFormat.RGBA_8888
+//        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
+//        layoutParams.flags =
+//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
+//        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
+//        layoutParams.x = 0
+//        var point: Point? = Point()
+//        (windowManager!!.defaultDisplay.getSize(point))
+//        layoutParams.y = point!!.y - layoutParams.height + 50
+//
+//        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
+//        if (Settings.canDrawOverlays(this)) {
+//            rootView = View.inflate(baseContext, R.layout.paint_float_button, null)
+////            tvContent = rootView!!.findViewById(R.id.content)
+////            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
+////            ivVoice = rootView!!.findViewById(R.id.iv_voice)
+////            rootView!!.setOnClickListener {
+////                stopSpeech(it)
+////            }
+//            windowManager.addView(rootView, layoutParams)
+//            showFloat()
+//        }
+//
+////        hideFloat(0)
+//        Timber.d("dialog, hideFloat1")
+//        point = null
+//        windowManager = null
+//        layoutParams = null
 
-        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
-        if (Settings.canDrawOverlays(this)) {
-            rootView = View.inflate(baseContext, R.layout.paint_float_button, null)
-//            tvContent = rootView!!.findViewById(R.id.content)
-//            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
-//            ivVoice = rootView!!.findViewById(R.id.iv_voice)
-//            rootView!!.setOnClickListener {
-//                stopSpeech(it)
+        FloatingX.install {
+            setContext(application)
+            setLayout(R.layout.paint_float_button)
+            // 系统浮窗记得声明权限
+            setScopeType(FxScopeType.SYSTEM_AUTO)
+            setGravity(FxGravity.LEFT_OR_BOTTOM)
+//            setOnClickListener {
+//                Timber.i("FTAG click $it")
+//                // 如果显示，则隐藏
 //            }
-            windowManager.addView(rootView, layoutParams)
-            showFloat()
         }
-
-//        hideFloat(0)
-        Timber.d("dialog, hideFloat1")
-        point = null
-        windowManager = null
-        layoutParams = null
+        showFloat()
     }
 
     override fun init(context: Context) {
@@ -149,12 +171,33 @@ class PaintServiceImpl : Service(), IPaintService {
 //            mVoiceOut?.dialogOpen()
 //            return
 //        }
-        if (rootView!!.visibility == View.GONE)
+        if (!FloatingX.control().isShow())
             mainHandler.sendEmptyMessage(MSG_FLOAT_SHOW)
     }
 
     override fun hideFloat(delayMillis: Long) {
+        if (!FloatingX.control().isShow()) return
+        mainHandler.sendEmptyMessage(MSG_FLOAT_HIDE)
+    }
 
+    override fun showLine() {
+        if (!FloatingX.control().isShow()) return
+        mainHandler.sendEmptyMessage(MSG_LINE_SHOW)
+    }
+
+    override fun hideLine() {
+        if (!FloatingX.control().isShow()) return
+        mainHandler.sendEmptyMessage(MSG_LINE_HIDE)
+    }
+
+    override fun showDraw() {
+        if (!FloatingX.control().isShow()) return
+        mainHandler.sendEmptyMessage(MSG_DRAW_SHOW)
+    }
+
+    override fun hideDraw() {
+        if (!FloatingX.control().isShow()) return
+        mainHandler.sendEmptyMessage(MSG_DRAW_HIDE)
     }
 
     private val MSG_FLOAT_SHOW = 100
@@ -163,18 +206,55 @@ class PaintServiceImpl : Service(), IPaintService {
     private val MSG_FLOAT_VOICE = 103
     private val MSG_FLOAT_SCROLL = 104
     private val MSG_FLOAT_STOP_SCROLL = 105
+    private val MSG_LINE_SHOW = 106
+    private val MSG_LINE_HIDE = 107
+    private val MSG_DRAW_SHOW = 108
+    private val MSG_DRAW_HIDE = 109
 
     inner class MainHandler(looper: Looper) : Handler(looper) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MSG_FLOAT_HIDE -> {
-                    rootView?.visibility = View.GONE
+                    FloatingX.control().hide()
                     mainHandler.removeMessages(MSG_FLOAT_HIDE)
                 }
                 MSG_FLOAT_SHOW -> {
-                    rootView?.visibility = View.VISIBLE
+                    FloatingX.control().show()
+                    initView()
+                    mainHandler.removeMessages(MSG_FLOAT_SHOW)
+                }
+                MSG_LINE_SHOW -> {
+                    if (line1Ly != null) {
+                        iconIv?.visibility = View.GONE
+                        line1Ly?.visibility = View.VISIBLE
+                    }
+                    mainHandler.removeMessages(MSG_LINE_SHOW)
+                }
+                MSG_LINE_HIDE -> {
+                    if (line1Ly != null) {
+                        iconIv?.visibility = View.VISIBLE
+                        line1Ly?.visibility = View.GONE
+                    }
+                    mainHandler.removeMessages(MSG_LINE_HIDE)
                 }
             }
+        }
+    }
+
+    fun initView() {
+        if (rootView == null) {
+            rootView = FloatingX.control().getView()
+            if (rootView != null) {
+                iconIv = rootView!!.findViewById(R.id.icon_iv)
+                iconIv?.setOnClickListener {
+                    showLine()
+                }
+                line1Ly = rootView!!.findViewById(R.id.line1_ly)
+                rootView!!.findViewById<IconFontView>(R.id.close_tv).setOnClickListener {
+                    hideLine()
+                }
+            }
+            Timber.i("FTAG rootView $rootView")
         }
     }
 }

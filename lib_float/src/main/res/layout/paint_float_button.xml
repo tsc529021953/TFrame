@@ -1,27 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone"
-                tools:visibility="visible"
-                android:clickable="false"
-                android:background="#00000000">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:visibility="visible"
+              tools:visibility="visible"
+              android:clickable="false"
+              android:orientation="horizontal"
+              android:background="#00000000">
 
-    <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="-3dp"
-            android:background="#000000"
-            android:orientation="horizontal"
-            android:paddingStart="50dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="30dp"
-            android:paddingBottom="5dp"
+    <!--    <RelativeLayout-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="60dp"-->
+    <!--            android:layout_alignParentBottom="true"-->
+    <!--            android:layout_marginBottom="-3dp"-->
+    <!--            android:background="#000000"-->
+    <!--            android:orientation="horizontal"-->
+    <!--            android:paddingStart="50dp"-->
+    <!--            android:paddingTop="5dp"-->
+    <!--            android:paddingEnd="30dp"-->
+    <!--            android:paddingBottom="5dp"-->
+    <!--    >-->
+
+
+    <!--    </RelativeLayout>-->
+
+    <ImageView android:layout_width="@dimen/float_icon_width"
+               android:layout_height="36dp"
+               android:id="@+id/icon_iv"
+               android:src="@mipmap/paint"
+               android:padding="2dp"
+               android:clickable="true"
+    />
+
+    <LinearLayout style="@style/float_line_style"
+                  android:id="@+id/line1_ly"
+                  android:orientation="vertical"
+                  android:visibility="gone"
+                  tools:visibility="visible"
     >
 
+        <com.nbhope.lib_frame.widget.IconFontView
+                style="@style/float_line_icon_style"
+                android:id="@+id/pen_tv"
+                android:text="@string/icon_pen"
+        />
 
-    </RelativeLayout>
-</RelativeLayout>
+        <com.nbhope.lib_frame.widget.IconFontView
+                style="@style/float_line_icon_style"
+                android:id="@+id/eraser_tv"
+                android:text="@string/icon_eraser"
+        />
+
+        <com.nbhope.lib_frame.widget.IconFontView
+                style="@style/float_line_icon_style"
+                android:id="@+id/close_tv"
+                android:text="@string/icon_close"
+        />
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/float_line_style"
+                  android:id="@+id/line2_ly"
+                  android:orientation="vertical"
+                  android:visibility="visible"
+                  tools:visibility="visible"
+                  android:layout_marginStart="@dimen/float_line_padding"
+    >
+
+    </LinearLayout>
+
+</LinearLayout>

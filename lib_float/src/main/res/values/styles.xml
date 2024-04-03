@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:app="http://schemas.android.com/apk/res-auto">
+    <style name="float_line_style">
+        <item name="android:layout_width">@dimen/float_line_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/shape_float_line_bg</item>
+        <item name="android:paddingTop">@dimen/float_line_padding</item>
+        <item name="android:paddingBottom">@dimen/float_line_padding</item>
+    </style>
+
+    <style name="float_line_icon_style">
+        <item name="android:layout_width">@dimen/float_line_icon_size</item>
+        <item name="android:layout_height">@dimen/float_line_icon_size</item>
+        <item name="android:textSize">@dimen/float_line_text_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>
