@@ -51,23 +51,27 @@ public class GridSpaceItemDecoration extends RecyclerView.ItemDecoration {
 //                view.getResources().getDisplayMetrics().widthPixels;
         Log.e(TAG,"NTAG column " + mSpanCount + " " + column + " " + (interval) + " " + (view.getLayoutParams().width) + " " + screenWidth);
 
-        if (column == 0) {
-            outRect.left = 0;
-            outRect.right = width;
-        } else if (column == mSpanCount - 1) {
-            outRect.left = screenWidth / mSpanCount - width;
-//            outRect.right = screenWidth ;
-//            outRect.left = screenWidth - width;
-//            outRect.right = screenWidth;
-
+        if (column ==  mSpanCount - 1) {
+//            outRect.left = 0;
+            outRect.right = screenWidth / mSpanCount - width;
+        } else if (column == 0) {
+//            outRect.left = screenWidth / mSpanCount - width;
+//            outRect.right = screenWidth / mSpanCount ;
+            outRect.right = 0;
         } else {
             outRect.left = (width + interval) * column
             - screenWidth / mSpanCount * column;
         }
-
-//        outRect.left = column * mColumnSpacing / mSpanCount; // column * (列间距 * (1f / 列数))
-//        outRect.right = mColumnSpacing - (column + 1) * mColumnSpacing / mSpanCount; // 列间距 - (column + 1) * (列间距 * (1f /列数))
-
+//        if (column ==  0) {
+//            outRect.left = 0;
+//            outRect.right = width;
+//        } else if (column == mSpanCount - 1) {
+//            outRect.left = screenWidth / mSpanCount - width;
+////            outRect.right = screenWidth / mSpanCount ;
+//        } else {
+//            outRect.left = (width + interval) * column
+//                    - screenWidth / mSpanCount * column;
+//        }
         Log.e(TAG, "position:" + position
                 + "    columnIndex: " + column
                 + "    left,right ->" + outRect.left + "," + outRect.right

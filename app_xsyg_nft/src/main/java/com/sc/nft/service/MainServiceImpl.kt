@@ -170,7 +170,7 @@ class MainServiceImpl : Service() , MainService{
     }
 
     override fun reTimer() {
-        Timber.i("NTAG reTimer")
+//        Timber.i("NTAG reTimer")
         startTimer()
     }
 

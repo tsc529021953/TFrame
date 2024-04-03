@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.nft"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 3
-        versionName "0.0.0-3"
+        versionCode 4
+        versionName "0.0.0-4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -103,6 +103,7 @@ dependencies {
     kapt deps.dagger.android_support_compiler
     kapt deps.dagger.compiler
 
+//    implementation 'com.github.Almeros:android-gesture-detectors:v1.0.1'
     implementation deps.gif
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.auc

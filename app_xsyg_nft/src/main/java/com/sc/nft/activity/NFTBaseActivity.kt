@@ -56,7 +56,7 @@ open class NFTBaseActivity<T : ViewDataBinding, VM : BaseViewModel> : BaseBindin
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         if (ev?.action == MotionEvent.ACTION_DOWN) {
-            Timber.i("NTAG onTouchEvent $mainService")
+//            Timber.i("NTAG onTouchEvent $mainService")
             mainService?.reTimer()
         }
         return super.dispatchTouchEvent(ev)
