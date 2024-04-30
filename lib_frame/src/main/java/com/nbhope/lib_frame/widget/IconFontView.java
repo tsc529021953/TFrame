@@ -25,4 +25,9 @@ public class IconFontView extends AppCompatTextView {
         Typeface icon = Typeface.createFromAsset(context.getAssets(), "iconfont.ttf");
         this.setTypeface(icon);
     }
+
+    public void setSelect(boolean select) {
+        this.setSelected(select);
+    }
+
 }

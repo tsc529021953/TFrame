@@ -3,4 +3,18 @@
     <string name="icon_pen">&#xe601;</string>
     <string name="icon_eraser">&#xe600;</string>
     <string name="icon_close">&#xe604;</string>
+    <string name="icon_line_weight">&#xe70c;</string>
+    <string name="icon_back">&#xe655;</string>
+    <string name="icon_next">&#xe654;</string>
+    <string name="icon_color">&#xe65f;</string>
+    <string name="icon_clear">&#xe6c3;</string>
+    <string name="icon_setting">&#xe611;</string>
+    <string name="icon_pen_mode">&#xe69e;</string>
+    <string name="icon_save">&#xe63b;</string>
+    <string name="icon_share">&#xe63b;</string>
+
+    <!---->
+    <string name="text_save_or_code">是否需要生成图片分享二维码？</string>
+    <string name="text_close_draw">是否关闭批注界面？</string>
+    <string name="text_no_open_draw">当前暂未打开批注！</string>
 </resources>

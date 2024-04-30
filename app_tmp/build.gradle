@@ -1,0 +1,66 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "../build_types.gradle"
+apply from: "../app_types.gradle"
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.illusory.tmp"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 3
+        versionName "0.0.3"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    ndkVersion '21.0.6113669'
+
+    signingConfigs {
+        def path = ''
+//        if (isBuildModule.toBoolean())
+        path = '../sign/';
+        debug {
+            storeFile file(path + project.property('keyStoreAW'))
+            storePassword project.property('keyStorePassword_HOPE')
+            keyAlias project.property('keyAlias_HOPE')
+            keyPassword project.property('keyAliasPassword_HOPE')
+        }
+        release {
+//            storeFile file(path + project.property('keyStoreA133'))
+//            storePassword project.property('keyStorePassword_HOPE')
+//            keyAlias project.property('keyAlias_HOPE')
+//            keyPassword project.property('keyAliasPassword_HOPE')
+
+            storeFile file(path + project.property('keyStoreYS3588'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+    }
+
+
+
+}
+
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.support.core_ktx
+
+    implementation deps.support.app_compat
+    androidTestImplementation deps.support.app_compat
+    implementation deps.support.design
+    androidTestImplementation deps.support.design
+    implementation deps.constraint_layout
+    implementation project(path: ':lib_frame')
+    testImplementation deps.junit
+    androidTestImplementation deps.espresso.core
+    implementation deps.hellodaemon
+}

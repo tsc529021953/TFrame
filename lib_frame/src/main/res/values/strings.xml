@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="text_close">关闭</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_sure">确定</string>
+    <string name="text_tip">提示</string>
+    <string name="text_yes">是</string>
+    <string name="text_no">否</string>
+
+</resources>

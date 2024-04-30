@@ -9,10 +9,17 @@
         <item name="android:paddingBottom">@dimen/float_line_padding</item>
     </style>
 
+    <style name="float_line_icon2_style" parent="float_line_icon_style">
+        <item name="android:visibility">gone</item>
+    </style>
+
     <style name="float_line_icon_style">
         <item name="android:layout_width">@dimen/float_line_icon_size</item>
         <item name="android:layout_height">@dimen/float_line_icon_size</item>
         <item name="android:textSize">@dimen/float_line_text_size</item>
+        <item name="android:textColor">@color/float_line_icon_color</item>
         <item name="android:gravity">center</item>
+        <item name="android:foreground">@drawable/selector_float_line_icon</item>
+        <item name="android:layout_margin">@dimen/float_line_icon_padding</item>
     </style>
 </resources>

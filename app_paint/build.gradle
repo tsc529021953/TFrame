@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "../build_types.gradle"
+apply from: "../app_types.gradle"
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.illusory.paint"
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionCode 1
+        versionName "0.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.getName())
+            }
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    ndkVersion '21.0.6113669'
+
+    signingConfigs {
+        def path = ''
+//        if (isBuildModule.toBoolean())
+        path = '../sign/';
+        debug {
+            storeFile file(path + project.property('keyStoreAW'))
+            storePassword project.property('keyStorePassword_HOPE')
+            keyAlias project.property('keyAlias_HOPE')
+            keyPassword project.property('keyAliasPassword_HOPE')
+        }
+        release {
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+    }
+
+    def timeForDebugFileFormater = "MMddHH"
+    def timeForReleaseFileFormater = "MMdd"
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def buildTypeName = variant.buildType.name
+
+            def timeFormater
+            if ("debug".equalsIgnoreCase(buildTypeName)) {
+                timeFormater = timeForDebugFileFormater
+            } else {
+                timeFormater = timeForReleaseFileFormater
+            }
+            def tmp = "TPaint_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            println(tmp)
+            outputFileName = tmp
+        }
+    }
+
+}
+
+static def releaseTime(String formater) {
+    return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
+}
+
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.support.core_ktx
+
+    implementation deps.support.app_compat
+    androidTestImplementation deps.support.app_compat
+    implementation deps.support.design
+    androidTestImplementation deps.support.design
+    implementation deps.constraint_layout
+    implementation project(path: ':lib_frame')
+    implementation project(path: ':lib_float')
+    testImplementation deps.junit
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation deps.espresso.core
+
+    implementation deps.arouter.api
+    kapt deps.arouter.compiler
+
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+}

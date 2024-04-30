@@ -10,17 +10,26 @@ import android.graphics.PixelFormat
 import android.graphics.Point
 import android.os.*
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
+import com.nbhope.lib_frame.dialog.TipDialog
+import com.nbhope.lib_frame.dialog.TipNFDialog
+import com.nbhope.lib_frame.utils.ShellUtil
+import com.nbhope.lib_frame.utils.ValueHolder
+import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.nbhope.lib_frame.widget.IconFontView
 import com.petterp.floatingx.FloatingX
 import com.petterp.floatingx.assist.FxGravity
 import com.petterp.floatingx.assist.FxScopeType
 import com.sc.lib_float.R
 import com.sc.lib_float.inter.IPaintService
+import com.sc.lib_float.module.LineManager
+import com.sc.lib_float.widget.DrawView
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -44,11 +53,9 @@ class PaintServiceImpl : Service(), IPaintService {
 
     lateinit var mainHandler: MainHandler
 
-    /*view 版块*/
-    private var rootView: View? = null
-    private var iconIv: ImageView? = null
-    private var line1Ly: View? = null
-    private var line2Ly: View? = null
+    lateinit var lineManager: LineManager
+
+    private lateinit var mScope: CoroutineScope
 
     override fun onBind(p0: Intent?): IBinder? {
         return this.mBinder
@@ -59,7 +66,9 @@ class PaintServiceImpl : Service(), IPaintService {
         Timber.i("$TAG onCreate")
         initNotice()
         init(application)
+        mScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         mainHandler = MainHandler(Looper.getMainLooper())
+        lineManager = LineManager(mScope, application)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             initFloat()
         }
@@ -108,37 +117,58 @@ class PaintServiceImpl : Service(), IPaintService {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initFloat() {
-//        var windowManager: WindowManager? =
-//            getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-//        } else {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-//        }
-//        layoutParams.format = PixelFormat.RGBA_8888
-//        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
-//        layoutParams.flags =
-//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.x = 0
-//        var point: Point? = Point()
-//        (windowManager!!.defaultDisplay.getSize(point))
-//        layoutParams.y = point!!.y - layoutParams.height + 50
-//
-//        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
-//        if (Settings.canDrawOverlays(this)) {
-//            rootView = View.inflate(baseContext, R.layout.paint_float_button, null)
-////            tvContent = rootView!!.findViewById(R.id.content)
-////            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
-////            ivVoice = rootView!!.findViewById(R.id.iv_voice)
-////            rootView!!.setOnClickListener {
-////                stopSpeech(it)
-////            }
-//            windowManager.addView(rootView, layoutParams)
-//            showFloat()
-//        }
+        val dm = application.resources.displayMetrics
+        FloatingX.install {
+            setContext(application)
+            setLayout(R.layout.paint_float_button)
+            // 系统浮窗记得声明权限
+            setY((dm.heightPixels / 4).toFloat())
+            setScopeType(FxScopeType.SYSTEM)
+            setGravity(FxGravity.LEFT_OR_BOTTOM)
+//            setEnableLog(true)
+//            setOnClickListener {
+//                Timber.i("FTAG click $it ${FloatingX.control().getView()}")
+//                // 如果显示，则隐藏
+//            }
+        }
+        // 读取记录 以及当前页面判断是否要隐藏悬浮窗
+//        showFloat()
+        initDraw()
+//        hideFloat(0)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun initDraw() {
+        var windowManager: WindowManager? =
+            getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
+        }
+        layoutParams.format = PixelFormat.RGBA_8888
+        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
+        layoutParams.flags =
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
+        layoutParams.x = 0
+        var point: Point? = Point()
+        (windowManager!!.defaultDisplay.getSize(point))
+        layoutParams.y = point!!.y - layoutParams.height + 50
+
+        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
+        if (Settings.canDrawOverlays(this)) {
+            lineManager.paintView = View.inflate(baseContext, R.layout.view_paint, null)
+            lineManager.drawView = lineManager.paintView!!.findViewById(R.id.draw_view)
+//            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
+//            ivVoice = rootView!!.findViewById(R.id.iv_voice)
+//            rootView!!.setOnClickListener {
+//                stopSpeech(it)
+//            }
+            windowManager.addView(lineManager.paintView, layoutParams)
+        }
 //
 ////        hideFloat(0)
 //        Timber.d("dialog, hideFloat1")
@@ -146,18 +176,6 @@ class PaintServiceImpl : Service(), IPaintService {
 //        windowManager = null
 //        layoutParams = null
 
-        FloatingX.install {
-            setContext(application)
-            setLayout(R.layout.paint_float_button)
-            // 系统浮窗记得声明权限
-            setScopeType(FxScopeType.SYSTEM_AUTO)
-            setGravity(FxGravity.LEFT_OR_BOTTOM)
-//            setOnClickListener {
-//                Timber.i("FTAG click $it")
-//                // 如果显示，则隐藏
-//            }
-        }
-        showFloat()
     }
 
     override fun init(context: Context) {
@@ -166,11 +184,6 @@ class PaintServiceImpl : Service(), IPaintService {
 
     override fun showFloat() {
         mainHandler.removeMessages(MSG_FLOAT_HIDE)
-//        if (customDialog) {
-//            Timber.i("到这了说话2")
-//            mVoiceOut?.dialogOpen()
-//            return
-//        }
         if (!FloatingX.control().isShow())
             mainHandler.sendEmptyMessage(MSG_FLOAT_SHOW)
     }
@@ -224,37 +237,70 @@ class PaintServiceImpl : Service(), IPaintService {
                     mainHandler.removeMessages(MSG_FLOAT_SHOW)
                 }
                 MSG_LINE_SHOW -> {
-                    if (line1Ly != null) {
-                        iconIv?.visibility = View.GONE
-                        line1Ly?.visibility = View.VISIBLE
-                    }
+                    lineManager.showLine()
                     mainHandler.removeMessages(MSG_LINE_SHOW)
                 }
                 MSG_LINE_HIDE -> {
-                    if (line1Ly != null) {
-                        iconIv?.visibility = View.VISIBLE
-                        line1Ly?.visibility = View.GONE
-                    }
+                    lineManager.hideLine()
                     mainHandler.removeMessages(MSG_LINE_HIDE)
+                }
+                MSG_DRAW_SHOW -> {
+                    lineManager.showDraw()
+                    mainHandler.removeMessages(MSG_DRAW_SHOW)
+                }
+                MSG_DRAW_HIDE -> {
+                    lineManager.hideDraw()
+                    mainHandler.removeMessages(MSG_DRAW_HIDE)
                 }
             }
         }
     }
 
     fun initView() {
-        if (rootView == null) {
-            rootView = FloatingX.control().getView()
-            if (rootView != null) {
-                iconIv = rootView!!.findViewById(R.id.icon_iv)
-                iconIv?.setOnClickListener {
-                    showLine()
+        if (lineManager.rootView == null) {
+            lineManager.initView(FloatingX.control().getView())
+            lineManager.saveIFV?.setOnClickListener {
+                if (lineManager.drawView?.visibility == View.GONE) {
+                    ToastUtil.showS(R.string.text_no_open_draw)
+                    return@setOnClickListener
                 }
-                line1Ly = rootView!!.findViewById(R.id.line1_ly)
-                rootView!!.findViewById<IconFontView>(R.id.close_tv).setOnClickListener {
-                    hideLine()
+                ValueHolder.setValue {
+                    // 截图保存
+                    val dic = "/Paint/Texture"
+                    val path = Environment.getExternalStorageDirectory().absolutePath + dic
+                    val saveCB: ((cb: () -> Unit) -> Unit) = {
+                        mScope.launch {
+                            hideFloat(0)
+                            delay(500)
+                            val callback = {
+                                ShellUtil.shotScreen(path, dic) {
+                                    Timber.i("KTAG shotScreen $it")
+                                    if (it == 0) {
+                                        ToastUtil.showS("保存成功，路径为$path")
+                                    } else ToastUtil.showS("保存失败，路径为$path")
+                                }
+                            }
+                            callback.invoke()
+                            delay(500)
+                            showFloat()
+                        }
+                    }
+                    TipNFDialog.showInfoTip(application,
+                        message = resources.getString(R.string.text_save_or_code),
+                        sureStr = resources.getString(R.string.text_yes),
+                        cancelStr = resources.getString(R.string.text_no),
+                        callBack = {
+                            saveCB.invoke {
+                                // TODO 生成分享二维码
+                            }
+                            return@showInfoTip true
+                        },
+                        cancelCallBack = {
+                            saveCB.invoke {  }
+                            return@showInfoTip true
+                        })
                 }
             }
-            Timber.i("FTAG rootView $rootView")
         }
     }
 }

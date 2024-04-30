@@ -97,4 +97,6 @@ dependencies {
     implementation 'q.rorbin:badgeview:1.1.2'
     api deps.um_asms
     api deps.um_common
+    /*view*/
+    api deps.toast
 }

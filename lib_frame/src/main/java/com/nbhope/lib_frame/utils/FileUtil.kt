@@ -1,11 +1,8 @@
 package com.nbhope.lib_frame.utils
 
+import android.content.Context
 import android.text.TextUtils
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
-import java.io.IOException
-import java.lang.StringBuilder
+import java.io.*
 
 /**
  *Created by ywr on 2021/11/12 9:38
@@ -68,5 +65,37 @@ class FileUtil {
             }
             return sb.toString()
         }
+
+        @JvmStatic
+        fun copyAssetFile(context: Context, fileName: String, targetFilePath: String): String? {
+            var `is`: InputStream? = null
+            var os: FileOutputStream? = null
+            try {
+                `is` = context.getAssets().open(fileName)
+                if (!File(targetFilePath).parentFile.exists()) {
+                    File(targetFilePath).parentFile.mkdirs()
+                }
+                os = FileOutputStream(targetFilePath)
+                val buffer = ByteArray(1024)
+                var len: Int
+                while (`is`.read(buffer).also { len = it } != -1) {
+                    os.write(buffer, 0, len)
+                }
+                os.flush()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
+                try {
+                    `is`?.close()
+                    os?.close()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            return targetFilePath
+        }
     }
+
+
+
 }

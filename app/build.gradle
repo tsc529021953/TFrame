@@ -27,7 +27,7 @@ android {
 //        if (isBuildModule.toBoolean())
         path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStoreRK'))
+            storeFile file(path + project.property('keyStoreAW'))
             storePassword project.property('keyStorePassword_HOPE')
             keyAlias project.property('keyAlias_HOPE')
             keyPassword project.property('keyAliasPassword_HOPE')
@@ -55,7 +55,7 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
-    implementation project(path: ':lib_float')
+//    implementation project(path: ':lib_float')
     testImplementation deps.junit
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core

@@ -51,11 +51,11 @@ class PaintServiceDelegate : IPaintService {
     }
 
     override fun showFloat() {
-
+        mService?.showFloat()
     }
 
     override fun hideFloat(delayMillis: Long) {
-
+        mService?.hideFloat(delayMillis)
     }
 
     override fun showLine() {

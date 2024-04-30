@@ -4,10 +4,13 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkRequest
+import android.view.Gravity
 import com.alibaba.android.arouter.launcher.ARouter
+import com.hjq.toast.Toaster
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.lib.frame.dynconfig.HopeDynConfig
 import com.nbhope.lib_frame.BuildConfig
+import com.nbhope.lib_frame.R
 import com.nbhope.lib_frame.constants.HopeConstants
 import com.nbhope.lib_frame.di.BaseAppComponent
 import com.nbhope.lib_frame.integration.AppLifecycles
@@ -15,9 +18,6 @@ import com.nbhope.lib_frame.utils.FileLoggingTree
 import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.Preconditions
 import com.nbhope.lib_frame.utils.ThreadAwareDebugTree
-import com.tencent.bugly.Bugly
-import com.tencent.bugly.beta.Beta
-import com.tencent.bugly.crashreport.CrashReport
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -33,8 +33,8 @@ open class HopeBaseApp : Application(), App {
 
     private val injectorMap = HashMap<String, DispatchingAndroidInjector<Any>>()
 
-    @Inject
-    lateinit var activityLifecycleImpl: ActivityLifecycleImpl
+//    @Inject
+//    lateinit var activityLifecycleImpl: ActivityLifecycleImpl
 
     private var mAppDelegate: AppLifecycles? = null
 
@@ -69,14 +69,14 @@ open class HopeBaseApp : Application(), App {
 
 
         inject()
-        registerActivityLifecycleCallbacks(activityLifecycleImpl)
+//        registerActivityLifecycleCallbacks(activityLifecycleImpl)
 
     }
 
     override fun onTerminate() {
         super.onTerminate()
         mAppDelegate?.onTerminate(this)
-        unregisterActivityLifecycleCallbacks(activityLifecycleImpl)
+//        unregisterActivityLifecycleCallbacks(activityLifecycleImpl)
     }
 
 
@@ -84,6 +84,7 @@ open class HopeBaseApp : Application(), App {
         initArouter()
         initLiveEventBus()
         initBugly()
+        initToast()
     }
 
     private fun initNetConfig() {
@@ -209,5 +210,17 @@ open class HopeBaseApp : Application(), App {
             className.startsWith(it)
         }
         return injectorMap.get(key)
+    }
+
+    fun initToast() {
+        Toaster.init(this)
+//        ToastUtils.setView(R.layout.toast_custom_view)
+//        ToastUtils.setStyle(com.nbhope.lib_frame.widget.WhiteToastStyle())
+//        ToastUtils.setGravity(Gravity.CENTER)
+        //        ToastUtils.setView(R.layout.toast_custom_view)
+//        ToastUtils.setStyle(com.nbhope.lib_frame.widget.WhiteToastStyle())
+//        ToastUtils.setGravity(Gravity.CENTER)
+//        Toaster.setView(R.layout.custom_toast)
+        Toaster.setGravity(Gravity.BOTTOM, 0, 30)
     }
 }

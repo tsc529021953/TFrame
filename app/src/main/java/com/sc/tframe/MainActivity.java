@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
 //        tTest();
     }
 
+
+
     void tTest() {
         findViewById(R.id.text2).setVisibility(View.GONE);
         layout = findViewById(R.id.bg_ly);

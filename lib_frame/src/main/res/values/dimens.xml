@@ -68,4 +68,8 @@
     <dimen name="pickerview_topbar_title_textsize">18sp</dimen>
     <!-- 选项文字大小 -->
     <dimen name="pickerview_textsize">20sp</dimen>
+
+    <!--dialog-->
+    <dimen name="float_dialog_tip_width">352dp</dimen>
+    <dimen name="float_dialog_tip_height">173dp</dimen>
 </resources>
