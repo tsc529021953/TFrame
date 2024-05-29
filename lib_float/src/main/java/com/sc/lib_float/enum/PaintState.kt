@@ -6,10 +6,16 @@ package com.sc.lib_float.enum
  * @version 0.0.0-1
  * @description
  */
-enum class PaintState {
-    PAINTING,
-    ERASER,
-    CTRL,
-    STATIC
+object PaintState {
+
+    const val PAINTING = 0
+
+    const val ERASER = 1
+
+    const val CTRL = 2
+
+//    ERASER,
+//    CTRL,
+//    STATIC
 
 }

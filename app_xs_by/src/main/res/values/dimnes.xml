@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="main_tip_image_size">20dp</dimen>
+    <dimen name="main_tip_image_margin">15dp</dimen>
+    <dimen name="main_clock_margin_top">20dp</dimen>
+
+    <dimen name="main_app_item_height">110dp</dimen>
+    <dimen name="main_app_item_width">80dp</dimen>
+    <dimen name="main_app_text_height">20dp</dimen>
+    <dimen name="main_app_item_bg_radius">15dp</dimen>
+    <dimen name="main_app_item_text_size">15sp</dimen>
+
+</resources>

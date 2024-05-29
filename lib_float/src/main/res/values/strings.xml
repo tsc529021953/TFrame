@@ -12,6 +12,11 @@
     <string name="icon_pen_mode">&#xe69e;</string>
     <string name="icon_save">&#xe63b;</string>
     <string name="icon_share">&#xe63b;</string>
+    <string name="icon_ctrl">&#xe84d;</string>
+    <string name="icon_no_see">&#xe627;</string>
+    <string name="icon_background">&#xe76d;</string>
+    <string name="icon_tool">&#xe605;</string> <!--工具箱-->
+    <string name="icon_draw">&#xe61d;</string> <!--绘图-->
 
     <!---->
     <string name="text_save_or_code">是否需要生成图片分享二维码？</string>

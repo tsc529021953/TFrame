@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.utils.DeviceUtil
 import com.nbhope.lib_frame.utils.FileLoggingTree
 import com.nbhope.lib_frame.utils.ThreadAwareDebugTree
+import com.sdkapi.api.SdkApi
 import timber.log.Timber
 
 /**
@@ -19,20 +20,11 @@ class AppHope : HopeBaseApp() {
     override fun onCreate() {
 //        if (DeviceUtil.isMainProcess(this)) {
             super.onCreate()
-//            initTimber()
             println("on app onCreate")
             Timber.i("初始化 准备开启服务！")
             TmpServiceDelegate.getInstance().init(this)
 //        }
+        SdkApi.newInstance(this)
     }
 
-    private fun initTimber() {
-//        if (!BuildConfig.DEBUG) {
-//            // 保存日志在sdcard/Android/data/com.nbhope.tframe/cache 中
-//            Timber.plant(FileLoggingTree())
-////            Timber.plant(ThreadAwareDebugTree())
-//        } else {
-//            Timber.plant(ThreadAwareDebugTree())
-//        }
-    }
 }

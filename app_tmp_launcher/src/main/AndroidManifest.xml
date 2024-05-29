@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="com.illusory.tmp_launcher.receiver.StartReceiver"
+        <receiver android:name="com.illusory.xs_by.receiver.StartReceiver"
                   android:enabled="true"
                   android:exported="true"
         >
@@ -44,7 +44,7 @@
         </service>
 
         <meta-data
-                android:name="com.illusory.tmp_launcher"
+                android:name="com.illusory.xs_by"
                 android:value="PackageName"/>
     </application>
 

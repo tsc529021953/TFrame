@@ -4,13 +4,17 @@ import android.R.attr.bitmap
 import android.app.Application
 import android.os.Environment
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
+import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.dialog.TipNFDialog
 import com.nbhope.lib_frame.utils.AppUtils
 import com.nbhope.lib_frame.utils.ShellUtil
 import com.nbhope.lib_frame.utils.ValueHolder
 import com.nbhope.lib_frame.widget.IconFontView
 import com.sc.lib_float.R
+import com.sc.lib_float.enum.PaintState
 import com.sc.lib_float.inter.IPaint
 import com.sc.lib_float.widget.DrawView
 import kotlinx.coroutines.CoroutineScope
@@ -28,18 +32,28 @@ import java.util.HashMap
  * @version 0.0.0-1
  * @description
  */
-class LineManager constructor(var mScope: CoroutineScope, var application: Application, var isFloat: Boolean = true): IPaint {
+open class LineManager constructor(var mScope: CoroutineScope, var application: Application, var isFloat: Boolean = true): IPaint {
+
+    companion object {
+        fun getIcon(id: Int): String {
+            return HopeBaseApp.getContext().getString(id)
+        }
+    }
 
     /*view 版块*/
     var rootView: View? = null
     var iconIv: ImageView? = null
-    var line1Ly: View? = null
-    var line2Ly: View? = null
+    var line1Ly: LinearLayout? = null
+    var line2Ly: LinearLayout? = null
+    var line3Ly: LinearLayout? = null
 
     var penIFV: IconFontView? = null
     var eraserIFV: IconFontView? = null
     var colorIFV: IconFontView? = null
     var saveIFV: IconFontView? = null
+    var ctrlIFV: IconFontView? = null
+    var drawIFV: IconFontView? = null
+    var settingIFV: IconFontView? = null
 
     /*paint view*/
     var paintView: View? = null
@@ -47,10 +61,16 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
 
     var selectedList = ArrayList<IconFontView>()
 
-    fun initView(root: View?) {
+    override fun initView(root: View?) {
         if (root != null) {
             rootView = root
             if (rootView != null) {
+                if (isFloat) {
+                    floatSideInit()
+                } else {
+                    normalSideInit()
+                }
+
                 iconIv = rootView!!.findViewById(R.id.icon_iv)
                 Timber.i("KTAG iconIv ${iconIv == null}")
                 iconIv?.setOnClickListener {
@@ -61,10 +81,13 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
                 Timber.i("KTAG hasOnClickListeners ${iconIv?.hasOnClickListeners()}")
                 iconIv?.performClick()
                 line1Ly = rootView!!.findViewById(R.id.line1_ly)
+                line2Ly = rootView!!.findViewById(R.id.line2_ly)
+//                line3Ly = rootView!!.findViewById(R.id.line3_ly)
                 penIFV = rootView!!.findViewById(R.id.pen_tv)
                 penIFV?.setOnClickListener {
                     showDraw()
                     // 设置选中状态
+                    drawView?.pen()
                     setSelect(penIFV, true)
                 }
                 eraserIFV = rootView!!.findViewById(R.id.eraser_tv)
@@ -83,7 +106,20 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
                 setIFVClick(R.id.save_line_tv) {
                     save()
                 }
+                setIFVClick(R.id.back_tv) {
+                    drawView?.backStep()
+                }
+                setIFVClick(R.id.next_tv) {
+                    drawView?.nextStep()
+                }
                 saveIFV = rootView!!.findViewById(R.id.save_line_tv)
+                val ctrlLy = rootView!!.findViewById<View>(R.id.ctrl_ly)
+                ctrlLy.setOnTouchListener { view, motionEvent -> return@setOnTouchListener true }
+                // k
+                ctrlIFV = rootView!!.findViewById(R.id.ctrl_tv)
+                ctrlIFV?.setOnClickListener {
+                    drawView?.ctrl()
+                }
             }
             Timber.i("FTAG rootView $rootView")
         }
@@ -91,6 +127,25 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
 
     fun setIFVClick(id: Int, cb: View.OnClickListener) {
         rootView?.findViewById<IconFontView>(id)?.setOnClickListener(cb)
+    }
+
+    override fun showLine3() {
+
+    }
+
+    override fun hideLine3() {
+
+    }
+
+    override fun showLine2() {
+        if (line2Ly != null)
+            line2Ly?.visibility = View.VISIBLE
+    }
+
+    override fun hideLine2() {
+        if (line2Ly != null)
+            line2Ly?.visibility = View.GONE
+        hideLine3()
     }
 
     override fun showLine() {
@@ -105,6 +160,8 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
             iconIv?.visibility = View.VISIBLE
             line1Ly?.visibility = View.GONE
         }
+        hideLine2()
+        hideLine3()
     }
 
     override fun showDraw() {
@@ -149,6 +206,8 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
                 hideLine()
             }
         } else {
+            hideLine3()
+            hideLine2()
             hideLine()
         }
     }
@@ -163,5 +222,15 @@ class LineManager constructor(var mScope: CoroutineScope, var application: Appli
             selectedList.remove(iconFontView)
         }
     }
+
+    fun normalSideInit() {
+
+    }
+
+    fun floatSideInit() {
+
+    }
+
+
 
 }

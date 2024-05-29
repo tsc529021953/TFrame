@@ -1,4 +1,4 @@
-package com.illusory.tmp_launcher;
+package com.illusory.xs_by;
 
 import org.junit.Test;
 

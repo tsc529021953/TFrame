@@ -2,7 +2,7 @@
 <layout>
 
     <data>
-        <variable name="vm" type="com.illusory.tmp_launcher.vm.MainViewModel"/>
+        <variable name="vm" type="com.illusory.xs_by.vm.MainViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

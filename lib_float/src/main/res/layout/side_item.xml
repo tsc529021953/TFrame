@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable name="vm" type="com.sc.lib_float.bean.SideItem"/>
+    </data>
+
+    <com.nbhope.lib_frame.widget.IconFontView
+            style="@style/float_line_icon_style"
+            android:id="@+id/ifv"
+            android:text="@{vm.content}"
+    />
+
+</layout>

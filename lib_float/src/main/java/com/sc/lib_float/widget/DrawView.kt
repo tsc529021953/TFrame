@@ -5,6 +5,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
 import com.sc.lib_float.*
 import com.sc.lib_float.bean.PaintItem
 import com.sc.lib_float.enum.PaintState
@@ -59,9 +61,17 @@ class DrawView : View {
     var recordBitmaps = ArrayList<Bitmap>()
     var recordPaintItems = ArrayList<PaintItem>()
     var currentPaintItems = ArrayList<PaintItem>()
+    var backPaintItems = ArrayList<PaintItem>()
+
+    lateinit var canMatrix: Matrix
 
     /*标记*/
-    var paintState = PaintState.PAINTING
+    var paintState = ObservableInt(PaintState.PAINTING)
+
+    var transX = 0f
+    var transY = 0f
+    var downX = 0f
+    var downY = 0f
 
     fun initPenPaint() {
 //        val cornerPathEffect = CornerPathEffect(200F)
@@ -99,12 +109,31 @@ class DrawView : View {
         cacheBitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
         cacheCanvas = Canvas()
         cacheCanvas?.setBitmap(cacheBitmap)
+
+        canMatrix = Matrix()
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val x = event!!.x
         val y = event!!.y
 //        Timber.i("KTAG onTouchEvents ${event!!.action}")
+        if (paintState.get() == PaintState.CTRL) {
+            when (event!!.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = x
+                    downY = x
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    transX += x - downX
+                    transY += y - downY
+                    invalidate()
+                }
+                MotionEvent.ACTION_UP -> {
+
+                }
+            }
+            return true
+        }
         when {
             MotionEvent.ACTION_POINTER_DOWN == event!!.action ||
                     DOWN_LIST.contains(event!!.action) -> {
@@ -142,7 +171,7 @@ class DrawView : View {
             val x = event!!.getX(pointerIndex)
             val y = event!!.getY(pointerIndex)
             val paintItem =
-                PaintItem(if (paintState == PaintState.PAINTING) penPaint else eraserPaint, Path(), pointerId)
+                PaintItem(if (paintState.get() == PaintState.PAINTING) penPaint else eraserPaint, Path(), pointerId)
             paintItem.x = x
             paintItem.y = y
             paintItem.path?.moveTo(x, y)
@@ -175,8 +204,8 @@ class DrawView : View {
 //        canvas?.drawPath(path, penPaint)
         val p = Paint()
         //将cacheBitmap绘制到该View
-        //将cacheBitmap绘制到该View
-        canvas?.drawBitmap(cacheBitmap!!, 0F, 0F, p)
+        canvas?.translate(transX, transY)
+        canvas?.drawBitmap(cacheBitmap!!, canMatrix, p)
         recordPaintItems.forEach {
             if (it.paint != null && it.path != null)
                 canvas?.drawPath(it.path!!, it.paint!!)
@@ -186,10 +215,15 @@ class DrawView : View {
                 canvas?.drawPath(it.path!!, it.paint!!)
         }
         Timber.i("KTAG onDraw ${recordPaintItems.size} ${currentPaintItems.size}")
+//        canvas?.rotate(30f)
     }
 
     fun pen() {
-        paintState = PaintState.PAINTING
+        paintState.set(PaintState.PAINTING)
+    }
+
+    fun ctrl() {
+        paintState.set(PaintState.CTRL)
     }
 
     // 图片加载
@@ -204,7 +238,7 @@ class DrawView : View {
 
     // 橡皮
     fun eraser() {
-        paintState = PaintState.ERASER
+        paintState.set(PaintState.ERASER)
     }
 
     // 橡皮大小
@@ -219,5 +253,22 @@ class DrawView : View {
 
     // 图片输出
 
-    //
+    // 回退
+    fun backStep() {
+        // 移除记录列表中的最新项
+        if (recordPaintItems.size <= 0) return
+        val last = recordPaintItems.get(recordPaintItems.size - 1)
+        backPaintItems.add(last)
+        recordPaintItems.removeLast()
+        invalidate()
+    }
+
+    // 前进
+    fun nextStep() {
+        if (backPaintItems.size <= 0) return
+        val last = backPaintItems.get(backPaintItems.size - 1)
+        recordPaintItems.add(last)
+        backPaintItems.removeLast()
+        invalidate()
+    }
 }

@@ -16,16 +16,17 @@ import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.illusory.tmp.R
 import com.illusory.tmp.inter.ITmpService
+import com.nbhope.lib_frame.utils.DeviceUtil
 import com.nbhope.lib_frame.utils.GpioUtils
 import com.nbhope.lib_frame.utils.TimerHandler
-import com.nbhope.lib_frame.utils.ViewUtil.Companion.immersionTitle
+import com.sdkapi.api.SdkApi
+import com.sdkapi.common.ApiTool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
 import java.io.*
 import java.lang.ref.WeakReference
-import java.nio.charset.Charset
 
 /**
  * @author  tsc
@@ -62,6 +63,9 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var timerHandler: TimerHandler? = null
 
+    var lastValue1 = ""
+    var lastValue2 = ""
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -74,6 +78,7 @@ class TmpServiceImpl : ITmpService, Service() {
             Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
         }
         initGPIO()
+        Timber.d(" App start Service version " + DeviceUtil.getPlayerVersionCode(this))
     }
 
     override fun onDestroy() {
@@ -165,8 +170,10 @@ class TmpServiceImpl : ITmpService, Service() {
      */
     fun initGPIO() {
         val callback = {
-            var index = 59
-            var index2 = 60
+            var bIndex = ApiTool.GpioPin.GPIO1 // 59
+            var bIndex2 = ApiTool.GpioPin.GPIO1// 60
+            var index = ApiTool.GpioPin.PB0// 59
+            var index2 = ApiTool.GpioPin.PA2// 60
             var param = 0
             var path = Environment.getExternalStorageDirectory().absolutePath + BASE_FILE
             var file = File(path)
@@ -179,24 +186,32 @@ class TmpServiceImpl : ITmpService, Service() {
                 try {
                     val isr = InputStreamReader(FileInputStream(file), "UTF-8")
                     val br = BufferedReader(isr)
-                    param = br.readLine().toIntOrNull() ?: param
-                    for (i in 0 until 2) {
-                        br.readLine()
-                    }
-                    index = br.readLine().toIntOrNull() ?: index
-                    index2 = br.readLine().toIntOrNull() ?: index2
+                    param = br.readLine().toIntOrNull() ?: param // 1
+//                    for (i in 0 until 2) {
+//                        br.readLine()
+//                    }
+                    bIndex = br.readLine().toIntOrNull() ?: bIndex  // 2
+                    bIndex2 = br.readLine().toIntOrNull() ?: bIndex2  // 3
+
+                    index = br.readLine().toIntOrNull() ?: index  // 4
+                    index2 = br.readLine().toIntOrNull() ?: index2  // 5
                 } catch (e: Exception) {
                     Timber.e("$TAG readConfig err ${e.message}")
                 }
             }
             Timber.i("$TAG index $index index2 $index2 $param")
+//            GpioUtils.setGpioDirection(index, 1)
+//            GpioUtils.setGpioDirection(index2, 1)
+
             timerHandler = TimerHandler(1000) {
                 var value = "-1"
                 var value2 = "-1"
                 try {
-                    value = GpioUtils.getGpioValue(index)
-                    value2 = GpioUtils.getGpioValue(index2)
-                    Timber.i("$TAG getGpioValue g1 $value g2 $value2")
+//                    value = GpioUtils.getGpioValue(index)
+//                    value2 = GpioUtils.getGpioValue(index2)
+                    value = SdkApi.getInstance().Hardware().getGpioInput(bIndex, index).toString()
+                    value2 = SdkApi.getInstance().Hardware().getGpioInput(bIndex2, index2).toString()
+                    Timber.i("$TAG getGpioValue g1 $value $lastValue1 g2 $value2 $lastValue2")
                 } catch (e: Exception) {
                     e.printStackTrace()
                     Timber.e("$TAG err ${e.message}")
@@ -206,10 +221,14 @@ class TmpServiceImpl : ITmpService, Service() {
 //                testindex++
 //                value = if (testindex % 10 == 0) "1" else "0"
 
-                if (value == "$param") {
+                if (value == "$param" && lastValue1 == "${1 - param}") {
                     showFloat()
-                } else if (value2 == "$param") hideFloat(0)
+                } else if (value2 == "$param" && lastValue2 == "${1 - param}") {
+                    hideFloat(0)
+                }
 
+                lastValue1 = value
+                lastValue2 = value2
 //                if (value == "0") {
 //                    hideFloat(0)
 //                } else if (value == "1")
@@ -217,7 +236,7 @@ class TmpServiceImpl : ITmpService, Service() {
             timerHandler?.start()
         }
         try {
-            GpioUtils.upgradeRootPermissionForExport()
+//            GpioUtils.upgradeRootPermissionForExport()
             // 开启定时器，定时1s获取当前IO口状态
             callback.invoke()
         } catch (e: Exception) {

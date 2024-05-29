@@ -5,6 +5,9 @@ import android.graphics.Color
 import android.os.Build
 import android.view.View
 import android.view.Window
+import androidx.appcompat.widget.SearchView
+import androidx.databinding.BindingAdapter
+import androidx.databinding.ObservableBoolean
 
 /**
  * @author  tsc
@@ -76,6 +79,24 @@ class ViewUtil {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 window.navigationBarDividerColor = Color.TRANSPARENT
             }
+        }
+
+        @JvmStatic
+        @BindingAdapter(value = ["isSelect"], requireAll = true)
+        fun isSelect(view: View, data: ObservableBoolean?) {
+            view.isSelected = data?.get()!!
+        }
+
+        @JvmStatic
+        @BindingAdapter(value = ["isSelect"], requireAll = true)
+        fun isSelect(view: View, data: Boolean?) {
+            view.isSelected = data!!
+        }
+
+        @JvmStatic
+        fun hideSearchViewUnderLine(view: SearchView) {
+            view?.findViewById<View>(androidx.appcompat.R.id.search_plate)?.setBackgroundColor(Color.TRANSPARENT)
+            view?.findViewById<View>(androidx.appcompat.R.id.submit_area)?.setBackgroundColor(Color.TRANSPARENT)
         }
     }
 }

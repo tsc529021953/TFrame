@@ -13,6 +13,7 @@ include ':lib_float'
 
 include ':app'
 include ':app_paint'
+include ':app_xs_by'
 //include ':app_tmp'
 //include ':app_tmp_launcher'
 //include ':app_xw'

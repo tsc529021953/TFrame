@@ -4,6 +4,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
+              android:id="@+id/ctrl_ly"
               android:visibility="visible"
               tools:visibility="visible"
               android:clickable="false"
@@ -58,6 +59,13 @@
                 style="@style/float_line_icon_style"
                 android:id="@+id/back_tv"
                 android:text="@string/icon_back"
+        />
+
+        <com.nbhope.lib_frame.widget.IconFontView
+                style="@style/float_line_icon_style"
+                android:id="@+id/next_tv"
+                android:text="@string/icon_next"
+                android:visibility="gone"
         />
 
         <com.nbhope.lib_frame.widget.IconFontView

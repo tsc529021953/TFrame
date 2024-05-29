@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="main_app_item_style">
+        <item name="android:layout_width">@dimen/main_app_item_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="main_app_item_img_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/main_app_item_width</item>
+        <item name="android:background">@drawable/shape_main_app_item_bg</item>
+        <item name="android:padding">15dp</item>
+    </style>
+
+    <style name="main_app_item_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/main_app_text_height</item>
+        <item name="android:textSize">@dimen/main_app_item_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:lines">1</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="main_app_hor_style">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="main_app_ver_style">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+    <style name="main_app_interval_style">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">50dp</item>
+    </style>
+
+</resources>
