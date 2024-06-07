@@ -24,12 +24,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(val spManager: SharedPreferencesManager) : BaseViewModel() {
 
     companion object {
-        val AppList = arrayListOf<AppInfo>(
-            AppInfo("无线投屏2", "com.android.settings"),
-            AppInfo("白板书写2", "com.illusory.isdb"),
-            AppInfo("文件管理2", "com.android.documentsui"),
-            AppInfo("更多应用2", "com.android.settings/com.android.settings.SubSettings")
-        )
 
         const val BASE_FILE = "/THREDIM_MEDIA/"
         const val CONFIG_FILE = "AppInfo.json"

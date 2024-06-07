@@ -15,16 +15,44 @@
             android:background="@color/bg_color"
     >
 
-        <TextView android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:id="@+id/text_tv"
-                  app:layout_constraintStart_toStartOf="parent"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintBottom_toBottomOf="parent"
-                  android:text="@string/text_sure"
-                  android:textSize="30sp"
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="match_parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:scaleType="fitEnd"
+                   android:src="@mipmap/ic_main_left"
         />
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="match_parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   android:scaleType="fitStart"
+                   android:src="@mipmap/ic_main_right"
+        />
+        <ImageView android:layout_width="420dp"
+                   android:layout_height="380dp"
+                   android:id="@+id/outside_iv"
+                   app:layout_constraintStart_toStartOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   app:layout_constraintTop_toTopOf="parent"
+                   android:src="@mipmap/ic_main_center_outside"
+                   android:layout_marginTop="50dp"
+        />
+        <ImageView android:layout_width="150dp"
+                   android:layout_height="150dp"
+                   app:layout_constraintStart_toStartOf="@+id/outside_iv"
+                   app:layout_constraintEnd_toEndOf="@+id/outside_iv"
+                   app:layout_constraintTop_toTopOf="@+id/outside_iv"
+                   app:layout_constraintBottom_toBottomOf="@+id/outside_iv"
+                   android:src="@mipmap/ic_main_center"
+        />
+
+<!--        android:checked="@{viewModel.switchState}"-->
+        <androidx.appcompat.widget.SwitchCompat
+                style="@style/main_switch_style"
+                app:layout_constraintTop_toBottomOf="@id/outside_iv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:track="@drawable/setting_switch_setting_track"
+                tools:ignore="UseSwitchCompatOrMaterialXml"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

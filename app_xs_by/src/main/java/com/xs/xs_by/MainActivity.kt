@@ -31,7 +31,7 @@ class MainActivity: BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun subscribeUi() {
 //        networkCallback.registNetworkCallback(networkCallbackModule)
-        viewModel.startAnimation(binding.textTv)
+//        viewModel.startAnimation(binding.textTv)
     }
 
     override fun initData() {
@@ -44,7 +44,7 @@ class MainActivity: BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.stopAnimation(binding.textTv)
+//        viewModel.stopAnimation(binding.textTv)
     }
 
 //    var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {

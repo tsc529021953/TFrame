@@ -11,9 +11,9 @@
     <application
             android:name="com.xs.xs_by.app.AppHope"
             android:allowBackup="true"
-            android:icon="@drawable/ic_tmp"
+            android:icon="@mipmap/logo"
             android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
+            android:roundIcon="@mipmap/logo"
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
         <activity android:name="com.xs.xs_by.MainActivity" android:launchMode="singleTask">
