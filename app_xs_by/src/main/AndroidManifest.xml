@@ -16,7 +16,8 @@
             android:roundIcon="@mipmap/logo"
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
-        <activity android:name="com.xs.xs_by.MainActivity" android:launchMode="singleTask">
+        <activity android:name="com.xs.xs_by.MainActivity" android:launchMode="singleTask"
+            android:screenOrientation="locked">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

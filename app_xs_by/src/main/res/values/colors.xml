@@ -14,4 +14,8 @@
 
     <color name="switch_open_color">#0E9343</color>
     <color name="switch_close_color">#D93636</color>
+
+    <color name="main_text_color">#fff</color>
+    <color name="main_theme_state_tip_close_color">#EB4F2E</color>
+    <color name="main_theme_state_tip_open_color">#ffffff</color>
 </resources>

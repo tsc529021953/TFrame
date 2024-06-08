@@ -1,14 +1,18 @@
 package com.xs.xs_by
 
+import android.content.pm.ActivityInfo
 import android.net.Network
 import android.net.NetworkCapabilities
+import android.os.Bundle
 import com.xs.xs_by.databinding.ActivityMainBinding
 import com.xs.xs_by.vm.MainViewModel
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
+import androidx.databinding.Observable
 
 /**
  * @author  tsc
@@ -29,13 +33,31 @@ class MainActivity: BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     @Inject
     lateinit var networkCallback: NetworkCallback
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+    }
+
     override fun subscribeUi() {
 //        networkCallback.registNetworkCallback(networkCallbackModule)
 //        viewModel.startAnimation(binding.textTv)
+        binding.vm = viewModel
+        binding.stateSc.setOnClickListener {
+            viewModel.themeStateObs.set(binding.stateSc.isChecked)
+        }
     }
 
     override fun initData() {
         viewModel.initData()
+        viewModel.themeStateObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(p0: Observable?, p1: Int) {
+                if (viewModel.themeStateObs.get()) {
+                    viewModel.startAnimation(binding.centerIv)
+                } else viewModel.pauseAnimation(binding.centerIv)
+            }
+        })
     }
 
     override fun linkViewModel() {

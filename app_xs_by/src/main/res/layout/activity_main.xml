@@ -15,18 +15,62 @@
             android:background="@color/bg_color"
     >
 
+        <ImageView
+                android:layout_width="170dp"
+                android:layout_height="130dp"
+                android:src="@mipmap/ic_main_flower3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:scaleType="fitStart"
+                />
+        <ImageView
+                android:layout_width="160dp"
+                android:layout_height="110dp"
+                android:src="@mipmap/ic_main_flower4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scaleType="fitStart"
+                />
+        <ImageView
+                android:layout_width="260dp"
+                android:layout_height="180dp"
+                android:src="@mipmap/ic_main_flower1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:scaleType="fitStart"
+                />
+        <ImageView
+                android:layout_width="300dp"
+                android:layout_height="130dp"
+                android:src="@mipmap/ic_main_flower2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:scaleType="fitStart"
+                />
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="match_parent"
                    app:layout_constraintEnd_toEndOf="parent"
                    android:scaleType="fitEnd"
                    android:src="@mipmap/ic_main_left"
         />
+
         <ImageView android:layout_width="wrap_content"
                    android:layout_height="match_parent"
                    app:layout_constraintStart_toStartOf="parent"
                    android:scaleType="fitStart"
                    android:src="@mipmap/ic_main_right"
         />
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_marginBottom="20dp"
+                android:src="@mipmap/ic_main_flower5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/outside_iv"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
         <ImageView android:layout_width="420dp"
                    android:layout_height="380dp"
                    android:id="@+id/outside_iv"
@@ -34,25 +78,49 @@
                    app:layout_constraintEnd_toEndOf="parent"
                    app:layout_constraintTop_toTopOf="parent"
                    android:src="@mipmap/ic_main_center_outside"
-                   android:layout_marginTop="50dp"
+                   android:layout_marginTop="40dp"
         />
         <ImageView android:layout_width="150dp"
                    android:layout_height="150dp"
+                   android:id="@+id/center_iv"
                    app:layout_constraintStart_toStartOf="@+id/outside_iv"
                    app:layout_constraintEnd_toEndOf="@+id/outside_iv"
                    app:layout_constraintTop_toTopOf="@+id/outside_iv"
                    app:layout_constraintBottom_toBottomOf="@+id/outside_iv"
                    android:src="@mipmap/ic_main_center"
         />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_name"
+                app:layout_constraintTop_toBottomOf="@+id/center_iv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/main_text_color"
+                android:textSize="@dimen/main_text_size"
+                />
 
 <!--        android:checked="@{viewModel.switchState}"-->
         <androidx.appcompat.widget.SwitchCompat
                 style="@style/main_switch_style"
+                android:id="@+id/state_sc"
                 app:layout_constraintTop_toBottomOf="@id/outside_iv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:track="@drawable/setting_switch_setting_track"
                 tools:ignore="UseSwitchCompatOrMaterialXml"/>
 
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="40dp"
+                android:textColor="@{vm.themeStateObs ? @color/main_theme_state_tip_open_color : @color/main_theme_state_tip_close_color}"
+                android:text="@{vm.themeStateObs ? @string/title_theme_open : @string/title_theme_close}"
+                />
+        
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
