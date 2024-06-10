@@ -1,0 +1,109 @@
+package com.xs.xs_by.dialog
+
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.ObservableBoolean
+import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.utils.StringUtil
+import com.nbhope.lib_frame.utils.toast.ToastUtil
+import com.nbhope.lib_frame.widget.BaseDialogFragment
+import com.xs.xs_by.R
+import com.xs.xs_by.databinding.DialogChangeIpBinding
+import com.xs.xs_by.databinding.DialogTipByBinding
+
+/**
+ * @author  tsc
+ * @date  2024/4/8 9:16
+ * @version 0.0.0-1
+ * @description
+ */
+class BYIPDialog constructor(
+    var ip: String,
+    var port: Int,
+    var cancelStr: String? = "",
+    var sureStr: String? = "",
+    var callBack: ((ip: String, port: Int) -> Boolean)? = null,
+    var cancelCallBack: (() -> Boolean)? = null
+) : BaseDialogFragment<DialogChangeIpBinding, BaseViewModel>() {
+
+    companion object {
+
+        private var mDialog: BYIPDialog? = null
+
+        fun showInfoTip(
+            activity: AppCompatActivity,
+            ip: String,
+            port: Int,
+            cancelStr: String? = "",
+            sureStr: String? = "",
+            callBack: ((ip: String, port: Int) -> Boolean)? = null,
+            cancelCallBack: (() -> Boolean)? = null
+        ) {
+            if (mDialog?.isVisible == true) return
+            BYIPDialog(ip, port, cancelStr, sureStr, callBack, cancelCallBack).show(
+                activity.supportFragmentManager,
+                "TipDialog"
+            )
+        }
+    }
+
+    override val layoutId: Int = R.layout.dialog_change_ip
+
+    private var openObs = ObservableBoolean(true)
+
+    init {
+//        openObs.set(open)
+    }
+
+    override fun linkViewModel() {
+
+    }
+
+    override fun initView() {
+//        if (!title.isNullOrEmpty())
+//            binding.titleTv.text = title
+//        if (!message.isNullOrEmpty())
+//            binding.messageTv.text = message
+        binding.ipEt.setText(ip)
+        binding.portEt.setText(port.toString())
+        if (!cancelStr.isNullOrEmpty())
+            binding.cancelBtn.text = cancelStr
+        if (!sureStr.isNullOrEmpty())
+            binding.sureBtn.text = sureStr
+
+        binding.cancelBtn.setOnClickListener {
+            if (cancelCallBack == null || cancelCallBack?.invoke() == true) {
+                this.dismiss()
+            }
+        }
+        binding.sureBtn.setOnClickListener {
+            val ip = binding.ipEt.text.toString().trim()
+            val port = binding.portEt.text.toString().trim().toIntOrNull()
+            if (!StringUtil.isIP(ip)) {
+                ToastUtil.showS("请输入正确格式的ip")
+                return@setOnClickListener
+            }
+            if (port == null || port!! > 65000) {
+                ToastUtil.showS("请输入正确格式的端口号")
+                return@setOnClickListener
+            }
+            if (callBack == null || callBack?.invoke(ip, port) == true) {
+                this.dismiss()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mDialog = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initWindowsView(
+            resources.getDimension(R.dimen.dialog_tip_by_width).toInt(),
+            resources.getDimension(R.dimen.dialog_tip_by_ip_height).toInt()
+        )
+    }
+
+
+}

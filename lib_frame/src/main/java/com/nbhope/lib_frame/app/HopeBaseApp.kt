@@ -33,8 +33,8 @@ open class HopeBaseApp : Application(), App {
 
     private val injectorMap = HashMap<String, DispatchingAndroidInjector<Any>>()
 
-//    @Inject
-//    lateinit var activityLifecycleImpl: ActivityLifecycleImpl
+    @Inject
+    lateinit var activityLifecycleImpl: ActivityLifecycleImpl
 
     private var mAppDelegate: AppLifecycles? = null
 
@@ -69,14 +69,14 @@ open class HopeBaseApp : Application(), App {
 
 
         inject()
-//        registerActivityLifecycleCallbacks(activityLifecycleImpl)
+        registerActivityLifecycleCallbacks(activityLifecycleImpl)
 
     }
 
     override fun onTerminate() {
         super.onTerminate()
         mAppDelegate?.onTerminate(this)
-//        unregisterActivityLifecycleCallbacks(activityLifecycleImpl)
+        unregisterActivityLifecycleCallbacks(activityLifecycleImpl)
     }
 
 

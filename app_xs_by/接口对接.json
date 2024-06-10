@@ -1,0 +1,55 @@
+// Pad端主动控制
+// 获取列表
+{
+    "cmd": "list"
+}
+// 控制开关  type 控制类型 theme 主题  scene 场景  switch true 开启  false 关闭
+{
+    "cmd": "ctrl",
+    "type": "scene",
+    "id": "123",
+    "switch": true
+}
+
+
+// Pad端被动获取
+// 返回的列表数据 name 主题名称 switch 主题开关状态 id 编号  name 名称  img 资源   imgType 0 本地ID  1 文本  2 图片url  switch 开关状态
+{
+    "cmd": "list",
+    "id": "123",
+    "name": "主题名",
+    "switch": false,
+    "list": [
+        {
+            "name": "百子动画",
+            "id": "1",
+            "img": "https://fc3tn.baidu.com/it/u=3714895903,3870511924&fm=202?&w=96&h=54&rs=2&qlt=100",
+            "imgType": 2,
+            "switch": false
+        },{
+            "name": "背景",
+            "id": "2",
+            "img": "整体背景",
+            "imgType": 0,
+            "switch": true
+        }
+    ]
+}
+// 通知单个主题更新 update 更新  // TODO add delete
+{
+    "cmd": "theme",
+    "type": "update",
+    "name": "幸福",
+    "id": "123",
+    "switch": true
+}
+// 通知单个场景更新
+{
+    "cmd": "scene",
+    "type": "update",
+    "name": "幸福",
+    "id": "1",
+    "img": "整体背景",
+    "imgType": 0,
+    "switch": true
+}

@@ -7,5 +7,9 @@
     <string name="text_tip">提示</string>
     <string name="text_yes">是</string>
     <string name="text_no">否</string>
+    <string name="title_open">开启</string>
+    <string name="title_close">关闭</string>
+    <string name="title_back">返回</string>
+    <string name="title_tip">提示</string>
 
 </resources>

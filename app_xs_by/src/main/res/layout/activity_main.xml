@@ -92,6 +92,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/title_tv"
                 android:text="@string/title_name"
                 app:layout_constraintTop_toBottomOf="@+id/center_iv"
                 app:layout_constraintStart_toStartOf="parent"
@@ -120,6 +121,18 @@
                 android:layout_marginBottom="40dp"
                 android:textColor="@{vm.themeStateObs ? @color/main_theme_state_tip_open_color : @color/main_theme_state_tip_close_color}"
                 android:text="@{vm.themeStateObs ? @string/title_theme_open : @string/title_theme_close}"
+                />
+
+        <ImageView
+                android:layout_width="@dimen/one_back_btn_size"
+                android:layout_height="@dimen/one_back_btn_size"
+                android:id="@+id/back_btn"
+                android:layout_marginStart="@dimen/one_bg_margin_start"
+                android:layout_marginTop="@dimen/one_bg_margin_start"
+                android:src="@mipmap/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="@color/one_bg_inner_color"
                 />
         
     </androidx.constraintlayout.widget.ConstraintLayout>

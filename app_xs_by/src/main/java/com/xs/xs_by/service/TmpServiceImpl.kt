@@ -8,20 +8,47 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Point
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.*
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
-import com.xs.xs_by.R
-import com.xs.xs_by.inter.ITmpService
+import com.dlong.dl10netassistant.OnNetThreadListener
+import com.dlong.dl10netassistant.UdpBroadThread
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
+import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.network.NetworkCallback
+import com.nbhope.lib_frame.network.NetworkCallbackModule
+import com.nbhope.lib_frame.utils.FileUtil
+import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
+import com.xs.xs_by.R
+import com.xs.xs_by.bean.NetBean
+import com.xs.xs_by.bean.OneCtrlBean
+import com.xs.xs_by.bean.OneCtrlPage
+import com.xs.xs_by.bean.ThemeBean
+import com.xs.xs_by.constant.BYConstants
+import com.xs.xs_by.inter.ITmpService
+import com.xs.xs_by.utils.SPUtils
+import com.xs.xs_by.vm.MainViewModel
+import com.xs.xs_by.vm.OneCtrlViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import timber.log.Timber
+import java.io.File
+import java.io.UnsupportedEncodingException
 import java.lang.ref.WeakReference
+import java.util.*
+
 
 /**
  * @author  tsc
@@ -43,8 +70,8 @@ class TmpServiceImpl : ITmpService, Service() {
         var CHANNEL_ONE_ID = TmpServiceImpl::class.java.simpleName
         const val SERVICE_NOTICE_ID = 101
 
-        const val BASE_FILE = "/THREDIM_MEDIA/"
-        const val CONFIG_FILE = "串口同步配置.txt"
+        const val BASE_FILE = "/XS_MEDIA/"
+        const val CONFIG_FILE = "AppInfo.json"
     }
 
     private val mBinder: IBinder = BaseBinder()
@@ -58,17 +85,33 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var timerHandler: TimerHandler? = null
 
+    private var udpBroadThread: UdpBroadThread? = null
+
+    lateinit var networkCallback: NetworkCallback
+
+    private var gson = Gson()
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
         init(application)
         mScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         mainHandler = MainHandler(Looper.getMainLooper())
+        networkCallback = (application as HopeBaseApp).getAppComponent().networkCallback
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            initFloat()
 //        } else {
 //            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
 //        }
+//        networkCallback.registNetworkCallback(networkCallbackModule)
+        Timber.i("XTAG service Create")
+//        initAppData(this) {
+//            Timber.i("XTAG service initAppData $ip:$port")
+//
+//        }
+        BYConstants.ip = SPUtils.getValue(this, BYConstants.SP_IP, BYConstants.ip).toString()
+        BYConstants.port = SPUtils.getValue(this, BYConstants.SP_PORT, BYConstants.port) as Int
+        reBuild()
     }
 
     override fun onDestroy() {
@@ -76,7 +119,7 @@ class TmpServiceImpl : ITmpService, Service() {
         timerHandler?.stop()
     }
 
-    fun initNotice() {
+    private fun initNotice() {
         var builder: Notification.Builder? = Notification.Builder(this)
         builder!!.setSmallIcon(R.drawable.ic_tmp).setWhen(System.currentTimeMillis())
         builder.setContentTitle("KeepAppAlive")
@@ -162,6 +205,13 @@ class TmpServiceImpl : ITmpService, Service() {
         mainHandler.sendEmptyMessage(MSG_FLOAT_HIDE)
     }
 
+    override fun write(msg: String) {
+        Timber.i("XTAG write ${udpBroadThread == null} $msg")
+        if (udpBroadThread != null) {
+            udpBroadThread?.send(BYConstants.ip, BYConstants.port, msg.toByteArray(Charsets.UTF_8))
+        }
+    }
+
     private val MSG_FLOAT_SHOW = 100
     private val MSG_FLOAT_UPDATE = 101
     private val MSG_FLOAT_HIDE = 102
@@ -174,6 +224,7 @@ class TmpServiceImpl : ITmpService, Service() {
                         rootView?.visibility = View.GONE
                     mainHandler.removeMessages(MSG_FLOAT_HIDE)
                 }
+
                 MSG_FLOAT_SHOW -> {
                     if (rootView?.visibility != View.VISIBLE)
                         rootView?.visibility = View.VISIBLE
@@ -192,4 +243,202 @@ class TmpServiceImpl : ITmpService, Service() {
             return WeakReference(this@TmpServiceImpl).get()!!
         }
     }
+
+    private var onNetThreadListener = object : OnNetThreadListener {
+        override fun onAcceptSocket(ipAddress: String) {
+            Timber.i("XTAG onAcceptSocket ipAddress $ipAddress")
+        }
+
+        override fun onConnectFailed(ipAddress: String) {
+            Timber.i("XTAG onConnectFailed ipAddress $ipAddress")
+        }
+
+        override fun onConnected(ipAddress: String) {
+            Timber.i("XTAG onConnected ipAddress $ipAddress")
+        }
+
+        override fun onDisconnect(ipAddress: String) {
+            Timber.i("XTAG onDisconnect ipAddress $ipAddress")
+        }
+
+        override fun onError(ipAddress: String, error: String) {
+            Timber.i("XTAG onError ipAddress $ipAddress $error")
+        }
+
+        override fun onReceive(ipAddress: String, port: Int, time: Long, data: ByteArray) {
+            val msg = byteToString(data) // data.toString(Charsets.UTF_8)
+            Timber.i("XTAG onReceive ipAddress $ipAddress $port $msg")
+            if (msg.contains(BYConstants.CMD_TABLE)) {
+                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_TABLE, msg))
+            } else if (msg.contains(BYConstants.CMD_GROUP)) {
+                // 当前桌面处于关闭状态，需要关闭
+                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_GROUP, msg))
+            } else {
+                try {
+                    val json = JSONObject(msg)
+                    if (json.has("cmd")) {
+                        when (json.getString("cmd")) {
+                            BYConstants.CMD_LIST -> {
+                                val theme = Gson().fromJson(msg, ThemeBean::class.java)
+                                if (theme != null) {
+                                    MainViewModel.themeBean = theme
+                                }
+                                if (json.has("list")) {
+                                    val arr = json.getJSONArray("list")
+                                    val list = arrayListOf<OneCtrlBean>()
+                                    for (i in 0 until arr.length()) {
+                                        val item = arr.getJSONObject(i)
+                                        val scene = gson.fromJson<OneCtrlBean.SceneBean>(
+                                            item.toString(),
+                                            OneCtrlBean.SceneBean::class.java
+                                        )
+                                        Timber.i("XTAG name $scene")
+                                        val one = OneCtrlBean(scene)
+                                        list.add(one)
+                                    }
+                                    OneCtrlViewModel.PAGE_LIST.clear()
+                                    var size = list.size / 4
+                                    if (size <= 0) size = 1
+                                    for (i in 0 until size) {
+                                        val page = OneCtrlPage()
+                                        for (j in 0 until 4) {
+                                            if (j + i * 4 < list.size) {
+                                                page.ctrlBeans.add(list[j + i * 4])
+                                            }
+                                        }
+                                        OneCtrlViewModel.PAGE_LIST.add(page)
+                                    }
+                                }
+                                // 获取到list,直接清除覆盖替换
+                                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_LIST, ""))
+                            }
+
+                            BYConstants.CMD_THEME -> {
+                                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_THEME, msg))
+                            }
+
+                            BYConstants.CMD_SCENE -> {
+                                val scene = gson.fromJson<OneCtrlBean.SceneBean>(msg, OneCtrlBean.SceneBean::class.java)
+                                Timber.i("XTAG name $scene")
+                                val one = OneCtrlBean(scene)
+                                // 查找是否存在
+                                for (i in 0 until OneCtrlViewModel.PAGE_LIST.size) {
+                                    val item = OneCtrlViewModel.PAGE_LIST[i]
+                                    for (j in 0 until item.ctrlBeans.size) {
+                                        val it = item.ctrlBeans[j]
+                                        if (it.id == one.id && !it.equal(one)) {
+                                            OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j] = one
+                                            val json = JsonObject()
+                                            json.addProperty("i", i)
+                                            json.addProperty("j", j)
+                                            LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_SCENE, json.toString()))
+                                            return
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+    }
+
+    override fun reBuild() {
+        udpBroadThread?.close()
+        udpBroadThread = UdpBroadThread(BYConstants.port, onNetThreadListener)
+        udpBroadThread?.start()
+    }
+
+    var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
+        override fun onAvailable(network: Network?) {
+            reBuild()
+        }
+
+        override fun onLost(network: Network?) {
+            udpBroadThread?.close()
+        }
+
+        override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities) {
+            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                when {
+                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        Timber.i("onCapabilitiesChanged: 网络类型为wifi")
+                    }
+
+                    networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        Timber.i("onCapabilitiesChanged: 网络类型为以太网")
+                    }
+
+                    else -> {
+                        Timber.i("onCapabilitiesChanged: 其他网络")
+                    }
+                }
+            }
+        }
+    }
+
+    fun byteToString(data: ByteArray): String {
+        var index = data.size
+        for (i in data.indices) {
+            if (data[i].toInt() == 0) {
+                index = i
+                break
+            }
+        }
+        val temp = ByteArray(index)
+        Arrays.fill(temp, 0.toByte())
+        System.arraycopy(data, 0, temp, 0, index)
+        val str: String
+        try {
+            str = String(temp, charset("GBK"))
+        } catch (e: UnsupportedEncodingException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+            return ""
+        }
+        return str
+    }
+
+//    fun initAppData(context: Context, callback: () -> Unit) {
+//        mScope.launch {
+//            var path = Environment.getExternalStorageDirectory().absolutePath + BASE_FILE
+//            var file = File(path)
+//            val copyFun = {
+//                val res = FileUtil.copyAssetFile(context, CONFIG_FILE, path)
+//                Timber.i("KTAG copyFun $res")
+//            }
+//            path += CONFIG_FILE
+//            if (!file.exists()) {
+//                file.mkdirs()
+//                Timber.i("KTAG 路径不存在 $path")
+//                // copy
+//                copyFun.invoke()
+//            } else {
+//                file = File(path)
+//                if (file.exists()) {
+//                    val json = FileUtil.readFile(path)
+//                    val netBean = gson.fromJson(json, NetBean::class.java)
+//                    port = netBean.port
+//                    ip = netBean.ip ?: ip
+////                    val applist = gson.fromJson<ArrayList<NetBean>>(json, object : TypeToken<List<AppInfo?>?>() {}.type)
+////                    Timber.i("KTAG json $json ${applist.size}")
+////                    for (i in 0 until applist.size) {
+////                        val app = applist[i]
+////                        if (i < AppList.size) {
+////                            AppList[i].name = app.name
+////                        }
+////                        Timber.i("KTAG app $app")
+////                    }
+//                    callback.invoke()
+//                } else {
+//                    copyFun.invoke()
+//                }
+//            }
+//        }
+//    }
+
 }

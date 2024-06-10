@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.xs.xs_by.bean.OneCtrlPage"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            >
+
+        <include
+                style="@style/one_vp_item_style"
+                layout="@layout/item_one_ctrl_item"
+                android:id="@+id/item1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+
+                />
+
+        <include
+                style="@style/one_vp_item_style"
+                layout="@layout/item_one_ctrl_item"
+                android:id="@+id/item2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+        <include
+                style="@style/one_vp_item_style"
+                layout="@layout/item_one_ctrl_item"
+                android:id="@+id/item3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+        <include
+                style="@style/one_vp_item_style"
+                layout="@layout/item_one_ctrl_item"
+                android:id="@+id/item4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

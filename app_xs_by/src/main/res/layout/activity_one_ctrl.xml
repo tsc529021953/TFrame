@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+                name="vm"
+                type="com.xs.xs_by.vm.OneCtrlViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/one_bg_color"
+            >
+
+        <ImageView
+                android:layout_width="@dimen/one_back_btn_size"
+                android:layout_height="@dimen/one_back_btn_size"
+                android:id="@+id/back_btn"
+                android:layout_marginStart="@dimen/one_bg_margin_start"
+                android:layout_marginTop="@dimen/one_bg_margin_start"
+                android:src="@mipmap/ic_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="@color/one_bg_inner_color"
+                />
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/back_btn"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                android:text="@string/title_back"
+                android:layout_marginStart="10dp"
+                android:textSize="25sp"
+                android:textColor="@color/one_bg_inner_color"
+                />
+
+        <View
+                android:layout_width="100dp"
+                android:layout_height="0.5dp"
+                android:background="@color/white"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                app:layout_constraintEnd_toStartOf="@+id/title_tv"
+                android:layout_marginEnd="18dp"
+                />
+
+        <View
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/shape_common_corner_8dp"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                app:layout_constraintEnd_toStartOf="@+id/title_tv"
+                android:layout_marginEnd="10dp"
+                />
+        
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/title_tv"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:text="幸福婚庆"
+                />
+
+        <View
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:background="@drawable/shape_common_corner_8dp"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                app:layout_constraintStart_toEndOf="@+id/title_tv"
+                android:layout_marginStart="10dp"
+                />
+
+        <View
+                android:layout_width="100dp"
+                android:layout_height="0.5dp"
+                android:background="@color/white"
+                app:layout_constraintTop_toTopOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="@+id/back_btn"
+                app:layout_constraintStart_toEndOf="@+id/title_tv"
+                android:layout_marginStart="18dp"
+                />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/bg_ly"
+                android:background="@drawable/shape_one_bg"
+                android:layout_marginTop="@dimen/one_bg_margin_top"
+                android:layout_marginStart="@dimen/one_bg_margin_start"
+                android:layout_marginEnd="@dimen/one_bg_margin_start"
+                android:layout_marginBottom="@dimen/one_bg_margin_start"
+                />
+
+        <ImageView style="@style/one_by_dragon_style"
+                   android:src="@mipmap/ic_dragon"
+                   android:id="@+id/dragon_iv"
+                   app:layout_constraintTop_toTopOf="@+id/bg_ly"
+                   app:layout_constraintBottom_toBottomOf="@+id/bg_ly"
+                   app:layout_constraintStart_toStartOf="@+id/bg_ly"
+                   app:layout_constraintEnd_toStartOf="@+id/phoenix_iv"
+                   android:layout_marginBottom="100dp"
+                />
+
+        <ImageView style="@style/one_by_dragon_style"
+                   android:id="@+id/phoenix_iv"
+                   android:src="@mipmap/ic_phoenix"
+                   app:layout_constraintStart_toEndOf="@+id/dragon_iv"
+                   app:layout_constraintTop_toTopOf="@+id/bg_ly"
+                   app:layout_constraintBottom_toBottomOf="@+id/bg_ly"
+                   app:layout_constraintEnd_toEndOf="@+id/bg_ly"
+                   android:layout_marginTop="60dp"
+                   android:scaleType="fitEnd"
+                />
+        
+        <ImageView style="@style/one_board_style"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:src="@mipmap/ic_kuang_top"
+                />
+        <ImageView style="@style/one_flower_style"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   app:layout_constraintStart_toStartOf="parent"
+                   android:src="@mipmap/ic_one_tip2"
+                />
+        <ImageView style="@style/one_flower_style"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:layout_marginTop="55dp"
+                   android:src="@mipmap/ic_one_tip1"
+                />
+
+        <ImageView style="@style/one_board_style"
+                   app:layout_constraintBottom_toBottomOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:layout_marginEnd="15dp"
+                   android:layout_marginBottom="15dp"
+                   android:src="@mipmap/ic_kuang_bottom"
+                />
+        <ImageView style="@style/one_by_logo_style"
+                   app:layout_constraintBottom_toBottomOf="@+id/bg_ly"
+                   app:layout_constraintStart_toStartOf="parent"
+                   android:src="@mipmap/ic_by_logo"
+                   app:layout_constraintEnd_toEndOf="parent"
+                />
+        
+        
+        <androidx.viewpager2.widget.ViewPager2
+                android:layout_width="@dimen/one_item_ctrl_vp_width"
+                android:layout_height="@dimen/one_item_ctrl_vp_height"
+                android:id="@+id/center_vp"
+                app:layout_constraintStart_toStartOf="@id/bg_ly"
+                app:layout_constraintEnd_toEndOf="@id/bg_ly"
+                app:layout_constraintTop_toTopOf="@id/bg_ly"
+                android:layout_marginTop="70dp"
+                />
+
+        <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/vp_ci"
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toBottomOf="@id/center_vp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

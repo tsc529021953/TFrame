@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.xs.xs_by.bean.OneCtrlBean"/>
+
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/one_item_ctrl_vp_item_width"
+            android:layout_height="@dimen/one_item_ctrl_vp_item_height"
+            android:id="@+id/bg_ly"
+            android:background="@drawable/shape_one_ctrl_item"
+            >
+
+        <ImageView
+                android:layout_width="@dimen/one_item_ctrl_vp_item_tip_size"
+                android:layout_height="@dimen/one_item_ctrl_vp_item_tip_size"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@mipmap/ic_item_tip_top"
+                />
+
+        <ImageView
+                android:layout_width="@dimen/one_item_ctrl_vp_item_tip_size"
+                android:layout_height="@dimen/one_item_ctrl_vp_item_tip_size"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@mipmap/ic_item_tip_bottom"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{vm.name}"
+                android:id="@+id/name_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="20sp"
+                android:textColor="#8D0D0F"
+                android:layout_marginTop="7dp"
+                tools:text="百子互动"
+                />
+
+        <View
+                android:layout_width="80dp"
+                android:layout_height="2dp"
+                android:background="#8D0D0F"
+                app:layout_constraintTop_toBottomOf="@+id/name_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        <ImageView
+                style="@style/one_vp_item_img_style"
+                android:id="@+id/img_iv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/line_v"
+                app:layout_constraintBottom_toBottomOf="@+id/line_v"
+                app:layout_constraintEnd_toEndOf="@id/line_v"
+                tools:src="@mipmap/ic_one_item7"
+                android:visibility="@{vm.imgType != 1 ? View.VISIBLE : View.GONE}"
+                />
+
+        <TextView
+                style="@style/one_vp_item_img_style"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/line_v"
+                app:layout_constraintBottom_toBottomOf="@+id/line_v"
+                app:layout_constraintEnd_toEndOf="@id/line_v"
+                android:textColor="#EEDFD4"
+                android:textSize="19sp"
+                android:gravity="center"
+                tools:text="互动特效"
+                tools:visibility="gone"
+                android:text="@{vm.img}"
+                android:visibility="@{vm.imgType == 1 ? View.VISIBLE : View.GONE}"
+                />
+
+        <View
+                android:layout_width="1dp"
+                android:layout_height="60dp"
+                android:id="@+id/line_v"
+                android:background="#A64340"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+        <androidx.appcompat.widget.SwitchCompat
+                style="@style/main_switch_style"
+                android:id="@+id/state_sc"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/line_v"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="10dp"
+                app:track="@drawable/setting_switch_setting_track"
+                tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                tools:text="开启"
+                app:layout_constraintStart_toEndOf="@+id/line_v"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="15dp"
+                android:textColor="@{vm.switchObs ? @color/dialog_tip_by_ok_btn_bg_open_color : @color/main_theme_state_tip_close_color}"
+                android:text="@{vm.switchObs ? @string/title_open : @string/title_close}"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

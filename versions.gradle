@@ -93,7 +93,7 @@ versions.hotfox = "3.2.14"
 versions.tinypinyin = "2.0.3"
 versions.halo = "2.2.6"
 versions.multidex = "2.0.1"
-versions.circleindicator = "1.2.2@aar"
+versions.circleindicator = "2.1.6"
 versions.SeekArc = "v1.1"
 versions.itemtouchhelperextension = "1.0.6"
 versions.swipedelmenulayout = "V1.2.1"
@@ -113,6 +113,7 @@ versions.ip2region = "2.6.5"
 versions.auc = "1.31.1"
 versions.gif = "1.2.27"
 versions.floatx = "2.0.4"
+versions.network_debug = "0.1.7"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -320,6 +321,8 @@ deps.hope = hope
 
 deps.auc = "com.blankj:utilcodex:$versions.auc"
 deps.gif = "pl.droidsonroids.gif:android-gif-drawable:$versions.gif"
+// socket
+deps.network_debug = "com.github.D10NGYANG:NetworkDebugAssistant:$versions.network_debug"
 
 ext.deps = deps
 

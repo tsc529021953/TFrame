@@ -47,4 +47,50 @@
         <item name="android:thumb">@drawable/setting_switch_thumb_setting</item>
     </style>
 
+    <style name="one_board_style">
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:layout_marginStart">18dp</item>
+        <item name="android:layout_marginTop">76dp</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="one_flower_style">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">150dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+<!--        <item name="android:scaleType">fitXY</item>-->
+    </style>
+    <style name="one_by_logo_style">
+        <item name="android:layout_width">180dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+<!--        <item name="android:scaleType">fitXY</item>-->
+    </style>
+
+    <style name="one_by_dragon_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:alpha">0.3</item>
+        <!--        <item name="android:scaleType">fitXY</item>-->
+    </style>
+
+    <style name="one_vp_item_style">
+        <item name="android:layout_width">@dimen/one_item_ctrl_vp_item_width</item>
+        <item name="android:layout_height">@dimen/one_item_ctrl_vp_item_height</item>
+    </style>
+
+    <style name="one_vp_item_img_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:backgroundTint">#BE292D</item>
+        <item name="android:background">@drawable/shape_common_corner_8dp</item>
+    </style>
+
 </resources>

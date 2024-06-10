@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="android:configChanges">orientation|keyboardHidden|screenSize</item>
         <item name="android:screenOrientation">locked</item>
+        <item name="android:windowBackground">@drawable/shape_launcher</item>
     </style>
 </resources>

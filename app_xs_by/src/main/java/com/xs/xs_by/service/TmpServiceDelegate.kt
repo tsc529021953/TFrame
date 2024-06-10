@@ -42,6 +42,14 @@ class TmpServiceDelegate: ITmpService {
         mService?.hideFloat(delayMillis)
     }
 
+    override fun write(msg: String) {
+        mService?.write(msg)
+    }
+
+    override fun reBuild() {
+        mService?.reBuild()
+    }
+
     private fun bindService(context: Context) {
         isBind = context.bindService(Intent(context, TmpServiceImpl::class.java), mConnection, Context.BIND_AUTO_CREATE)
         Timber.i("TTAG bindService $isBind")

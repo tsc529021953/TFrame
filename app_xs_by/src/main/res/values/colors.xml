@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
+    <color name="purple_200">#A12326</color>
+    <color name="purple_500">#A12326</color>
+    <color name="purple_700">#A12326</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
 
@@ -18,4 +18,14 @@
     <color name="main_text_color">#fff</color>
     <color name="main_theme_state_tip_close_color">#EB4F2E</color>
     <color name="main_theme_state_tip_open_color">#ffffff</color>
+
+    <color name="dialog_tip_by_title_bg_close_color">#1B243C</color>
+    <color name="dialog_tip_by_title_bg_open_color">#8D0D0F</color>
+    <color name="dialog_tip_by_ok_btn_bg_close_color">#8A0D0F</color>
+    <color name="dialog_tip_by_ok_btn_bg_open_color">#26AD46</color>
+    <color name="dialog_tip_by_cancel_btn_bg_open_color">#1B243C</color>
+    <color name="dialog_tip_by_message_bg_color">#55243C</color>
+
+    <color name="one_bg_color">#1B243C</color>
+    <color name="one_bg_inner_color">#8D0D0F</color>
 </resources>
