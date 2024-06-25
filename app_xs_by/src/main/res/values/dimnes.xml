@@ -18,7 +18,7 @@
     <dimen name="main_text_size">20sp</dimen>
     <dimen name="dialog_tip_by_width">340dp</dimen>
     <dimen name="dialog_tip_by_height">160dp</dimen>
-    <dimen name="dialog_tip_by_ip_height">200dp</dimen>
+    <dimen name="dialog_tip_by_ip_height">320dp</dimen>
     <dimen name="dialog_tip_by_radius">20dp</dimen>
     <dimen name="dialog_tip_by_btn_radius">10dp</dimen>
     <dimen name="dialog_tip_by_title_height">40dp</dimen>

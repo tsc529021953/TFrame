@@ -46,6 +46,10 @@ class TmpServiceDelegate: ITmpService {
         mService?.write(msg)
     }
 
+    override fun write2(msg: String) {
+        mService?.write2(msg)
+    }
+
     override fun reBuild() {
         mService?.reBuild()
     }

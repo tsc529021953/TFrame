@@ -86,6 +86,7 @@ class TmpServiceImpl : ITmpService, Service() {
     private var timerHandler: TimerHandler? = null
 
     private var udpBroadThread: UdpBroadThread? = null
+    private var udpBroadThread2: UdpBroadThread? = null
 
     lateinit var networkCallback: NetworkCallback
 
@@ -111,6 +112,8 @@ class TmpServiceImpl : ITmpService, Service() {
 //        }
         BYConstants.ip = SPUtils.getValue(this, BYConstants.SP_IP, BYConstants.ip).toString()
         BYConstants.port = SPUtils.getValue(this, BYConstants.SP_PORT, BYConstants.port) as Int
+        BYConstants.ip2 = SPUtils.getValue(this, BYConstants.SP_IP2, BYConstants.ip2).toString()
+        BYConstants.port2 = SPUtils.getValue(this, BYConstants.SP_PORT2, BYConstants.port2) as Int
         reBuild()
     }
 
@@ -209,6 +212,13 @@ class TmpServiceImpl : ITmpService, Service() {
         Timber.i("XTAG write ${udpBroadThread == null} $msg")
         if (udpBroadThread != null) {
             udpBroadThread?.send(BYConstants.ip, BYConstants.port, msg.toByteArray(Charsets.UTF_8))
+        }
+    }
+
+    override fun write2(msg: String) {
+        Timber.i("XTAG write2 ${udpBroadThread2 == null} $msg")
+        if (udpBroadThread2 != null) {
+            udpBroadThread2?.send(BYConstants.ip2, BYConstants.port2, msg.toByteArray(Charsets.UTF_8))
         }
     }
 
@@ -351,6 +361,10 @@ class TmpServiceImpl : ITmpService, Service() {
         udpBroadThread?.close()
         udpBroadThread = UdpBroadThread(BYConstants.port, onNetThreadListener)
         udpBroadThread?.start()
+
+        udpBroadThread2?.close()
+        udpBroadThread2 = UdpBroadThread(BYConstants.port2, onNetThreadListener)
+        udpBroadThread2?.start()
     }
 
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
@@ -360,6 +374,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
         override fun onLost(network: Network?) {
             udpBroadThread?.close()
+            udpBroadThread2?.close()
         }
 
         override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities) {

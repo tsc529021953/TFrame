@@ -124,6 +124,6 @@ class OneCtrlActivity : BaseBindingActivity<ActivityOneCtrlBinding, OneCtrlViewM
         json.addProperty("type", BYConstants.CMD_SCENE)
         json.addProperty("switch", open)
         json.addProperty("id", bean.id)
-        TmpServiceDelegate.getInstance().write(json.toString())
+        TmpServiceDelegate.getInstance().write2(json.toString())
     }
 }

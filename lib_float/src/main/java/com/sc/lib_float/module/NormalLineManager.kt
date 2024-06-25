@@ -45,12 +45,6 @@ class NormalLineManager constructor(mScope: CoroutineScope, application: Applica
             hideLine3()},
     )
 
-    private val SETTING_LINE_LIST = arrayListOf<SideItem>(
-        SideItem(getIcon(R.string.icon_close), R.string.icon_close) {
-            hideLine2()
-            hideLine3()},
-    )
-
     private val FIRST_LINE_LIST = arrayListOf<SideItem>(
         SideItem(getIcon(R.string.icon_draw), R.string.icon_draw) { showLine2Base(DRAW_LINE_LIST) { it, binding ->
             showDrawLine(it, binding)

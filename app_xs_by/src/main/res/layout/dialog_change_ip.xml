@@ -12,7 +12,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="@dimen/dialog_tip_by_width"
-            android:layout_height="200dp"
+            android:layout_height="@dimen/dialog_tip_by_ip_height"
             android:background="@drawable/shape_dialog_by_bg"
             >
 
@@ -61,22 +61,25 @@
                 android:inputType="number"
                 android:hint="请输入端口"
                 />
-
-<!--        <TextView-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/message_tv"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                tools:text="开启\nss"-->
-<!--                android:gravity="center"-->
-<!--                android:layout_marginStart="20dp"-->
-<!--                android:layout_marginEnd="20dp"-->
-<!--                android:textSize="22sp"-->
-<!--                android:textColor="@color/dialog_tip_by_message_bg_color"-->
-<!--                />-->
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:id="@+id/ip2_et"
+                app:layout_constraintTop_toBottomOf="@+id/port_et"
+                android:layout_margin="10dp"
+                android:inputType="number"
+                android:digits="0123456789."
+                android:hint="请输入展示端ip"
+                />
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:id="@+id/port2_et"
+                app:layout_constraintTop_toBottomOf="@+id/ip2_et"
+                android:layout_margin="10dp"
+                android:inputType="number"
+                android:hint="请输入展示端端口"
+                />
 
         <TextView
                 android:layout_width="@dimen/dialog_tip_by_btn_width"

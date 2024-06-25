@@ -16,6 +16,10 @@ object BYConstants {
 
     const val SP_IP = "SP_IP"
     const val SP_PORT = "SP_PORT"
+    const val SP_IP2 = "SP_IP2"
+    const val SP_PORT2 = "SP_PORT2"
     var port = 60000 // 2222  60000
     var ip = "192.168.1.101"
+    var port2 = 60001 // 2222  60000
+    var ip2 = "192.168.1.102"
 }

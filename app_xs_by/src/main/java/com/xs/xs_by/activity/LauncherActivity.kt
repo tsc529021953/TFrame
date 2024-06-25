@@ -62,13 +62,19 @@ class LauncherActivity : BaseBindingActivity<ActivityLauncherBinding, LauncherVi
             BYIPDialog.showInfoTip(this,
                 BYConstants.ip,
                 BYConstants.port,
+                BYConstants.ip2,
+                BYConstants.port2,
                 resources.getString(R.string.text_cancel),
                 resources.getString(R.string.text_sure),
-                callBack = { ip, port ->
+                callBack = { ip, port, ip2, port2 ->
                     SPUtils.putValue(this, BYConstants.SP_IP, ip)
                     SPUtils.putValue(this, BYConstants.SP_PORT, port)
+                    SPUtils.putValue(this, BYConstants.SP_IP2, ip2)
+                    SPUtils.putValue(this, BYConstants.SP_PORT2, port2)
                     BYConstants.ip = ip
                     BYConstants.port = port
+                    BYConstants.ip2 = ip2
+                    BYConstants.port2 = port2
                     TmpServiceDelegate.getInstance().reBuild()
                     return@showInfoTip true
                 }, cancelCallBack = {

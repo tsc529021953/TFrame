@@ -19,9 +19,11 @@ import com.xs.xs_by.databinding.DialogTipByBinding
 class BYIPDialog constructor(
     var ip: String,
     var port: Int,
+    var ip2: String,
+    var port2: Int,
     var cancelStr: String? = "",
     var sureStr: String? = "",
-    var callBack: ((ip: String, port: Int) -> Boolean)? = null,
+    var callBack: ((ip: String, port: Int, ip2: String, port2: Int) -> Boolean)? = null,
     var cancelCallBack: (() -> Boolean)? = null
 ) : BaseDialogFragment<DialogChangeIpBinding, BaseViewModel>() {
 
@@ -33,13 +35,15 @@ class BYIPDialog constructor(
             activity: AppCompatActivity,
             ip: String,
             port: Int,
+            ip2: String,
+            port2: Int,
             cancelStr: String? = "",
             sureStr: String? = "",
-            callBack: ((ip: String, port: Int) -> Boolean)? = null,
+            callBack: ((ip: String, port: Int, ip2: String, port2: Int) -> Boolean)? = null,
             cancelCallBack: (() -> Boolean)? = null
         ) {
             if (mDialog?.isVisible == true) return
-            BYIPDialog(ip, port, cancelStr, sureStr, callBack, cancelCallBack).show(
+            BYIPDialog(ip, port, ip2, port2, cancelStr, sureStr, callBack, cancelCallBack).show(
                 activity.supportFragmentManager,
                 "TipDialog"
             )
@@ -59,12 +63,10 @@ class BYIPDialog constructor(
     }
 
     override fun initView() {
-//        if (!title.isNullOrEmpty())
-//            binding.titleTv.text = title
-//        if (!message.isNullOrEmpty())
-//            binding.messageTv.text = message
         binding.ipEt.setText(ip)
         binding.portEt.setText(port.toString())
+        binding.ip2Et.setText(ip2)
+        binding.port2Et.setText(port2.toString())
         if (!cancelStr.isNullOrEmpty())
             binding.cancelBtn.text = cancelStr
         if (!sureStr.isNullOrEmpty())
@@ -78,15 +80,17 @@ class BYIPDialog constructor(
         binding.sureBtn.setOnClickListener {
             val ip = binding.ipEt.text.toString().trim()
             val port = binding.portEt.text.toString().trim().toIntOrNull()
-            if (!StringUtil.isIP(ip)) {
+            val ip2 = binding.ip2Et.text.toString().trim()
+            val port2 = binding.port2Et.text.toString().trim().toIntOrNull()
+            if (!StringUtil.isIP(ip) || !StringUtil.isIP(ip2)) {
                 ToastUtil.showS("请输入正确格式的ip")
                 return@setOnClickListener
             }
-            if (port == null || port!! > 65000) {
+            if (port == null || port!! > 65000 || port2 == null || port2!! > 65000) {
                 ToastUtil.showS("请输入正确格式的端口号")
                 return@setOnClickListener
             }
-            if (callBack == null || callBack?.invoke(ip, port) == true) {
+            if (callBack == null || callBack?.invoke(ip, port, ip2, port2) == true) {
                 this.dismiss()
             }
         }

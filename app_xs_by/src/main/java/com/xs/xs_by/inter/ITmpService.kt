@@ -14,6 +14,7 @@ interface ITmpService {
     fun showFloat()
     fun hideFloat(delayMillis: Long)
     fun write(msg: String)
+    fun write2(msg: String)
     fun reBuild()
 
 }

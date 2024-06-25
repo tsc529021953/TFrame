@@ -155,7 +155,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         // 发送获取列表
         val json = JsonObject()
         json.addProperty("cmd", BYConstants.CMD_LIST)
-        TmpServiceDelegate.getInstance().write(json.toString())
+        TmpServiceDelegate.getInstance().write2(json.toString())
     }
 
     private fun ctrlTheme(id: String, open: Boolean) {
