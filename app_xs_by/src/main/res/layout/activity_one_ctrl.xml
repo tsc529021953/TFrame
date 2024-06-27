@@ -57,7 +57,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/title_tv"
                 android:layout_marginEnd="10dp"
                 />
-        
+
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
                    android:layout_marginTop="60dp"
                    android:scaleType="fitEnd"
                 />
-        
+
         <ImageView style="@style/one_board_style"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -153,8 +153,8 @@
                    android:src="@mipmap/ic_by_logo"
                    app:layout_constraintEnd_toEndOf="parent"
                 />
-        
-        
+
+
         <androidx.viewpager2.widget.ViewPager2
                 android:layout_width="@dimen/one_item_ctrl_vp_width"
                 android:layout_height="@dimen/one_item_ctrl_vp_height"
@@ -162,7 +162,7 @@
                 app:layout_constraintStart_toStartOf="@id/bg_ly"
                 app:layout_constraintEnd_toEndOf="@id/bg_ly"
                 app:layout_constraintTop_toTopOf="@id/bg_ly"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="80dp"
                 />
 
         <me.relex.circleindicator.CircleIndicator3
@@ -173,6 +173,24 @@
                 app:layout_constraintTop_toBottomOf="@id/center_vp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        <TextView
+                style="@style/one_item_btn_style"
+                android:id="@+id/replay_btn"
+                app:layout_constraintEnd_toEndOf="@+id/center_vp"
+                app:layout_constraintBottom_toTopOf="@+id/center_vp"
+                android:layout_marginEnd="@dimen/one_item_ctrl_vp_btn_margin"
+                android:text="整体重播"
+                />
+
+        <TextView
+                style="@style/one_item_btn_style"
+                android:id="@+id/standby_btn"
+                app:layout_constraintStart_toStartOf="@+id/center_vp"
+                app:layout_constraintBottom_toTopOf="@+id/center_vp"
+                android:layout_marginStart="@dimen/one_item_ctrl_vp_btn_margin"
+                android:text="待机"
                 />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

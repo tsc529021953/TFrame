@@ -11,6 +11,8 @@ object BYConstants {
 
     const val CMD_LIST = "list"
     const val CMD_CTRL = "ctrl"
+    const val CMD_REPLAY = "replay" // 整体重播
+    const val CMD_STANDBY = "standby" // 待机
     const val CMD_SCENE = "scene"
     const val CMD_THEME = "theme"
 

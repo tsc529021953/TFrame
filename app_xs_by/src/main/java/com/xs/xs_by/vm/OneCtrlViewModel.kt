@@ -28,9 +28,9 @@ class OneCtrlViewModel @Inject constructor(val spManager: SharedPreferencesManag
         var PAGE_LIST = arrayListOf(
             OneCtrlPage(
                 arrayListOf(
-                    OneCtrlBean("背景", "0", "整体背景", 1),
+                    OneCtrlBean("背景", "0", R.mipmap.ic_by_logo.toString()),
                     OneCtrlBean("百子互动", "1", R.mipmap.ic_one_item2.toString()),
-                    OneCtrlBean("龙凤动画", "2", R.mipmap.ic_one_item3.toString()),
+                    OneCtrlBean("龙凤动画", "2", R.mipmap.ic_one_item3.toString(), showReload = true),
                     OneCtrlBean("中间大盘", "3", R.mipmap.ic_one_item4.toString())
                 )
             ),
@@ -39,7 +39,7 @@ class OneCtrlViewModel @Inject constructor(val spManager: SharedPreferencesManag
                     OneCtrlBean("餐盘-内", "4", R.mipmap.ic_one_item5.toString()),
                     OneCtrlBean("餐盘-外", "5", R.mipmap.ic_one_item6.toString()),
                     OneCtrlBean("边缘动画", "6", R.mipmap.ic_one_item7.toString()),
-                    OneCtrlBean("互动特效", "7", "互动特效", 1),
+                    OneCtrlBean("所有餐盘", "7", R.mipmap.ic_one_item8.toString()),
                 )
             )
         )

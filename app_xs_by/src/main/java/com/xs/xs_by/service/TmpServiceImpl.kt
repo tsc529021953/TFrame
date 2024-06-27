@@ -330,14 +330,17 @@ class TmpServiceImpl : ITmpService, Service() {
                             BYConstants.CMD_SCENE -> {
                                 val scene = gson.fromJson<OneCtrlBean.SceneBean>(msg, OneCtrlBean.SceneBean::class.java)
                                 Timber.i("XTAG name $scene")
-                                val one = OneCtrlBean(scene)
+//                                val one = OneCtrlBean(scene)
                                 // 查找是否存在
                                 for (i in 0 until OneCtrlViewModel.PAGE_LIST.size) {
                                     val item = OneCtrlViewModel.PAGE_LIST[i]
                                     for (j in 0 until item.ctrlBeans.size) {
                                         val it = item.ctrlBeans[j]
-                                        if (it.id == one.id && !it.equal(one)) {
-                                            OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j] = one
+                                        if (it.id == scene.id && it.switchObs.get() != scene.switch) {
+//                                            one.apply {
+//                                                OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j].name =
+//                                            }
+                                            OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j].switchObs.set(scene.switch)
                                             val json = JsonObject()
                                             json.addProperty("i", i)
                                             json.addProperty("j", j)

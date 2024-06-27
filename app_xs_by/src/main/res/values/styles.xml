@@ -93,4 +93,14 @@
         <item name="android:background">@drawable/shape_common_corner_8dp</item>
     </style>
 
+    <style name="one_item_btn_style">
+        <item name="android:layout_width">@dimen/one_item_ctrl_vp_btn_width</item>
+        <item name="android:layout_height">@dimen/one_item_ctrl_vp_btn_height</item>
+        <item name="android:background">@drawable/shape_one_btn_item</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">@color/one_btn_item_text_color</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+
 </resources>

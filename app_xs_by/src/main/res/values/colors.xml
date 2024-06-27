@@ -28,4 +28,5 @@
 
     <color name="one_bg_color">#1B243C</color>
     <color name="one_bg_inner_color">#8D0D0F</color>
+    <color name="one_btn_item_text_color">#926214</color>
 </resources>

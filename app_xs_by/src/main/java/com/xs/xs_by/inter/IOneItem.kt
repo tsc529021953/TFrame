@@ -7,4 +7,6 @@ interface IOneItem {
 
     fun onCheckedChanged(var1: OneCtrlBean?, var2: Boolean)
 
+    fun onItemBtnClick(var1: OneCtrlBean?)
+
 }

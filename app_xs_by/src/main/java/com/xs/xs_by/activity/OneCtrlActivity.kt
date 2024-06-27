@@ -74,11 +74,18 @@ class OneCtrlActivity : BaseBindingActivity<ActivityOneCtrlBinding, OneCtrlViewM
                 if (var1 != null)
                     ctrlScene(var1, var2)
             }
+
+            override fun onItemBtnClick(var1: OneCtrlBean?) {
+                if (var1 != null)
+                    ctrlScene(var1, mode = 1)
+            }
         }, this@OneCtrlActivity)
         binding.centerVp.adapter = adapter
         binding.vpCi.setViewPager(binding.centerVp)
         adapter?.registerAdapterDataObserver(binding.vpCi.adapterDataObserver)
         binding.titleTv.text = MainViewModel.themeBean.name
+        binding.replayBtn.setOnClickListener { replay() }
+        binding.standbyBtn.setOnClickListener { standby() }
     }
 
     override fun initData() {
@@ -118,12 +125,28 @@ class OneCtrlActivity : BaseBindingActivity<ActivityOneCtrlBinding, OneCtrlViewM
     }
 
 
-    fun ctrlScene(bean: OneCtrlBean, open: Boolean) {
+    fun ctrlScene(bean: OneCtrlBean, open: Boolean = false, mode: Int = 0) {
         val json = JsonObject()
         json.addProperty("cmd", BYConstants.CMD_CTRL)
         json.addProperty("type", BYConstants.CMD_SCENE)
-        json.addProperty("switch", open)
+        json.addProperty("theme", bean.theme)
         json.addProperty("id", bean.id)
+        json.addProperty("mode", mode)
+        if (mode == 0)
+            json.addProperty("switch", open)
         TmpServiceDelegate.getInstance().write2(json.toString())
     }
+
+    fun replay() {
+        val json = JsonObject()
+        json.addProperty("cmd", BYConstants.CMD_REPLAY)
+        TmpServiceDelegate.getInstance().write2(json.toString())
+    }
+
+    fun standby() {
+        val json = JsonObject()
+        json.addProperty("cmd", BYConstants.CMD_STANDBY)
+        TmpServiceDelegate.getInstance().write2(json.toString())
+    }
+
 }
