@@ -1,21 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable name="vm" type="com.xs.xs_mediaplay.vm.MainViewModel"/>
+
+        <variable
+                name="vm"
+                type="com.xs.xs_mediaplay.vm.MainViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+
             android:id="@+id/bg_ly"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bg_color"
-    >
+            >
 
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_top_ctrl_height"
+                android:orientation="horizontal"
+                >
 
+            <ImageView
+                    style="@style/main_ctrl_bottom_item_style"
+                    android:layout_width="@dimen/main_bottom_ctrl_item_size_small"
+                    android:layout_height="@dimen/main_bottom_ctrl_item_size_small"
+                    android:id="@+id/back_iv"
+                    android:src="@drawable/player_left"
+                    android:clickable="true"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/main_bottom_ctrl_height"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:orientation="horizontal"
+                >
+
+            <View style="@style/horizontal_space_style"/>
+
+            <ImageView
+                    style="@style/main_ctrl_bottom_item_style"
+                    android:id="@+id/pre_iv"
+                    android:src="@drawable/player_pre"
+                    />
+
+            <ImageView
+                    style="@style/main_ctrl_bottom_item_style"
+                    android:src="@{vm.playStatusObs ? @drawable/player_play : @drawable/player_pause }"
+                    tools:src="@drawable/player_play"
+                    android:id="@+id/play_iv"
+                    />
+
+            <ImageView
+                    style="@style/main_ctrl_bottom_item_style"
+                    android:src="@drawable/player_next"
+                    android:id="@+id/next_iv"
+                    />
+
+            <View style="@style/horizontal_space_style"/>
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

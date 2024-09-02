@@ -8,6 +8,7 @@
     <string name="dialog_tip_by_ok_btn_bg_open_title">确定开启该主题内容？</string>
     <string name="dialog_tip_by_item_close_title">是否关闭该内容？</string>
     <string name="dialog_tip_by_item_bg_open_title">是否开启该内容？</string>
+    <string name="dialog_tip_by_item_bg_replay_title">是否重播？</string>
     <string name="dialog_tip_launcher_open_title">当前餐桌系统处于关闭状态，是否开启？</string>
     <string name="dialog_tip_launcher_close_title">是否关闭餐桌系统？</string>
 </resources>

@@ -62,23 +62,23 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
         int size = page.getCtrlBeans().size();
         if (size > 0) {
             holder.binding.item1.setVm(page.getCtrlBeans().get(0));
-            loadImage(holder.binding.item1.imgIv, holder.binding.item1.stateSc, page.getCtrlBeans().get(0), 0, position);
+            loadImage(holder.binding.item1.imgIv, holder.binding.item1.stateSc, page.getCtrlBeans().get(0), 0, position, holder.binding.item1.replayBtn);
         } else  holder.binding.item1.bgLy.setVisibility(View.GONE);
         if (size > 1) {
             holder.binding.item2.setVm(page.getCtrlBeans().get(1));
-            loadImage(holder.binding.item2.imgIv, holder.binding.item2.stateSc, page.getCtrlBeans().get(1), 1, position);
+            loadImage(holder.binding.item2.imgIv, holder.binding.item2.stateSc, page.getCtrlBeans().get(1), 1, position, holder.binding.item2.replayBtn);
         } else  holder.binding.item2.bgLy.setVisibility(View.GONE);
         if (size > 2) {
             holder.binding.item3.setVm(page.getCtrlBeans().get(2));
-            loadImage(holder.binding.item3.imgIv, holder.binding.item3.stateSc, page.getCtrlBeans().get(2), 2, position);
+            loadImage(holder.binding.item3.imgIv, holder.binding.item3.stateSc, page.getCtrlBeans().get(2), 2, position, holder.binding.item3.replayBtn);
         } else  holder.binding.item3.bgLy.setVisibility(View.GONE);
         if (size > 3) {
             holder.binding.item4.setVm(page.getCtrlBeans().get(3));
-            loadImage(holder.binding.item4.imgIv, holder.binding.item4.stateSc, page.getCtrlBeans().get(3), 3, position);
+            loadImage(holder.binding.item4.imgIv, holder.binding.item4.stateSc, page.getCtrlBeans().get(3), 3, position, holder.binding.item4.replayBtn);
         } else  holder.binding.item4.bgLy.setVisibility(View.GONE);
     }
 
-    void loadImage(ImageView img, SwitchCompat switchCompat, OneCtrlBean ctrlBean, Integer index, int position) {
+    void loadImage(ImageView img, SwitchCompat switchCompat, OneCtrlBean ctrlBean, Integer index, int position, TextView replayBtn) {
         OneCtrlPage page = mData.get(position);
         if (ctrlBean != null) {
             if (ctrlBean.getImgType() == 1) {
@@ -95,7 +95,43 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
                     e.printStackTrace();
                 }
             }
+
+            if (ctrlBean.getShowReload()) {
+                replayBtn.setVisibility(View.VISIBLE);
+                replayBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        OneCtrlBean bean = page.getCtrlBeans().get(index);
+//                        iOneItem.onItemBtnClick(bean);
+                        BYTipDialog.Companion.showInfoTip(
+                                activity,
+                                true,
+                                bean.getName(),
+                                activity.getResources().getString(R.string.dialog_tip_by_item_bg_replay_title),
+                                activity.getResources().getString(R.string.text_cancel),
+                                activity.getResources().getString(R.string.text_sure),
+                                new Function0<Boolean>() {
+                                    @Override
+                                    public Boolean invoke() {
+                                        iOneItem.onItemBtnClick(bean);
+                                        return true;
+                                    }
+                                },
+                                new Function0<Boolean>() {
+                                    @Override
+                                    public Boolean invoke() {
+                                        return true;
+                                    }
+                                }
+                        );
+                    }
+                });
+            } else {
+                replayBtn.setVisibility(View.GONE);
+            }
+            switchCompat.setChecked(ctrlBean.getSwitchObs().get());
         }
+
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

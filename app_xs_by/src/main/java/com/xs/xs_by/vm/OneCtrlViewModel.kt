@@ -29,17 +29,17 @@ class OneCtrlViewModel @Inject constructor(val spManager: SharedPreferencesManag
             OneCtrlPage(
                 arrayListOf(
                     OneCtrlBean("背景", "0", R.mipmap.ic_by_logo.toString()),
-                    OneCtrlBean("百子互动", "1", R.mipmap.ic_one_item2.toString()),
-                    OneCtrlBean("龙凤动画", "2", R.mipmap.ic_one_item3.toString(), showReload = true),
-                    OneCtrlBean("中间大盘", "3", R.mipmap.ic_one_item4.toString())
+                    OneCtrlBean("龙凤动画", "1", R.mipmap.ic_one_item3.toString(), showReload = true),
+                    OneCtrlBean("餐盘-外", "4", R.mipmap.ic_one_item6.toString()),
+                    OneCtrlBean("餐盘-内", "5", R.mipmap.ic_one_item5.toString()),
                 )
             ),
             OneCtrlPage(
                 arrayListOf(
-                    OneCtrlBean("餐盘-内", "4", R.mipmap.ic_one_item5.toString()),
-                    OneCtrlBean("餐盘-外", "5", R.mipmap.ic_one_item6.toString()),
-                    OneCtrlBean("边缘动画", "6", R.mipmap.ic_one_item7.toString()),
-                    OneCtrlBean("所有餐盘", "7", R.mipmap.ic_one_item8.toString()),
+                    OneCtrlBean("边缘动画", "2", R.mipmap.ic_one_item7.toString()),
+                    OneCtrlBean("百子互动", "3", R.mipmap.ic_one_item2.toString()),
+                    OneCtrlBean("所有餐盘", "6", R.mipmap.ic_one_item8.toString()),
+                    OneCtrlBean("中间大盘", "7", R.mipmap.ic_one_item4.toString()),
                 )
             )
         )

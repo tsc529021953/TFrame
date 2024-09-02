@@ -11,8 +11,8 @@ android {
         applicationId "com.xs.xs_by"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 5
+        versionName "0.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {

@@ -8,7 +8,6 @@ import androidx.databinding.ObservableBoolean
 import com.google.gson.Gson
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
-import com.xs.xs_mediaplay.bean.ThemeBean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -27,13 +26,14 @@ class MainViewModel @Inject constructor(val spManager: SharedPreferencesManager)
 
         const val BASE_FILE = "/THREDIM_MEDIA/"
         const val CONFIG_FILE = "AppInfo.json"
-
-        var themeBean = ThemeBean("幸福婚庆", "001", false)
     }
 
     private var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     var gson = Gson()
+
+    var playStatusObs = ObservableBoolean(false)
+
 
     var rotateAnimation: RotateAnimation? = null
 

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <corners android:radius="@dimen/one_item_ctrl_btn_radius"/>
-    <gradient android:startColor="#F6D1A7" android:centerColor="#F5BD7C" android:endColor="#F4A850"/>
-</shape>

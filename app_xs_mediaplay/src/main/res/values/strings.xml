@@ -1,13 +1,4 @@
 <resources>
-    <string name="app_name">博洋中控</string>
+    <string name="app_name">向视播放器</string>
     <string name="format_12_hour">yyyy/MM/ddEEEE</string>
-    <string name="title_name">幸福婚庆</string>
-    <string name="title_theme_close">未开启任何主题</string>
-    <string name="title_theme_open">主题运行中</string>
-    <string name="dialog_tip_by_ok_btn_bg_close_title">确定关闭该主题内容？</string>
-    <string name="dialog_tip_by_ok_btn_bg_open_title">确定开启该主题内容？</string>
-    <string name="dialog_tip_by_item_close_title">是否关闭该内容？</string>
-    <string name="dialog_tip_by_item_bg_open_title">是否开启该内容？</string>
-    <string name="dialog_tip_launcher_open_title">当前餐桌系统处于关闭状态，是否开启？</string>
-    <string name="dialog_tip_launcher_close_title">是否关闭餐桌系统？</string>
 </resources>

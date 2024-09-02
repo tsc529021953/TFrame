@@ -101,7 +101,7 @@
                 android:id="@+id/state_sc"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/line_v"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/replay_btn"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="10dp"
                 app:track="@drawable/setting_switch_setting_track"
@@ -110,14 +110,35 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/state_tv"
                 android:textSize="15sp"
                 tools:text="开启"
-                app:layout_constraintStart_toEndOf="@+id/line_v"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/state_sc"
+                app:layout_constraintEnd_toEndOf="@+id/state_sc"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginBottom="15dp"
                 android:textColor="@{vm.switchObs ? @color/dialog_tip_by_ok_btn_bg_open_color : @color/main_theme_state_tip_close_color}"
                 android:text="@{vm.switchObs ? @string/title_open : @string/title_close}"
+                />
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/replay_btn"
+                android:text="重播"
+                android:textSize="15sp"
+                android:textColor="@color/one_btn_item_text_color"
+                app:layout_constraintStart_toEndOf="@+id/state_sc"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/state_sc"
+                app:layout_constraintBottom_toBottomOf="@+id/state_tv"
+                tools:visibility="visible"
+                android:visibility="gone"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/shape_one_ctrl_replay"
                 />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

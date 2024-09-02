@@ -34,7 +34,6 @@ import com.xs.xs_mediaplay.R
 import com.xs.xs_mediaplay.inter.ITmpService
 import com.xs.xs_mediaplay.utils.SPUtils
 import com.xs.xs_mediaplay.vm.MainViewModel
-import com.xs.xs_mediaplay.vm.OneCtrlViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -149,44 +148,44 @@ class TmpServiceImpl : ITmpService, Service() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun initFloat() {
-        var windowManager: WindowManager? =
-            getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        } else {
-            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-        }
-        layoutParams.format = PixelFormat.RGBA_8888
-        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
-        layoutParams.flags =
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
-        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-        layoutParams.x = 0
-        var point: Point? = Point()
-        (windowManager!!.defaultDisplay.getSize(point))
-        layoutParams.y = point!!.y - layoutParams.height + 50
-
-        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
-        if (Settings.canDrawOverlays(this)) {
-            rootView = View.inflate(baseContext, R.layout.float_tmp_view, null)
-//            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
-//            ivVoice = rootView!!.findViewById(R.id.iv_voice)
-            rootView!!.setOnClickListener {
-                hideFloat(100)
-            }
-            windowManager.addView(rootView, layoutParams)
-//            showDraw()
-//            showFloat()
-            hideFloat(0)
-        }
+//        var windowManager: WindowManager? =
+//            getSystemService(Context.WINDOW_SERVICE) as WindowManager
+//        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+//        } else {
+//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
+//        }
+//        layoutParams.format = PixelFormat.RGBA_8888
+//        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
+//        layoutParams.flags =
+//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
+//        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
+//        layoutParams.x = 0
+//        var point: Point? = Point()
+//        (windowManager!!.defaultDisplay.getSize(point))
+//        layoutParams.y = point!!.y - layoutParams.height + 50
 //
-////        hideFloat(0)
-//        Timber.d("dialog, hideFloat1")
-//        point = null
-//        windowManager = null
-//        layoutParams = null
+//        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
+//        if (Settings.canDrawOverlays(this)) {
+//            rootView = View.inflate(baseContext, R.layout.float_tmp_view, null)
+////            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
+////            ivVoice = rootView!!.findViewById(R.id.iv_voice)
+//            rootView!!.setOnClickListener {
+//                hideFloat(100)
+//            }
+//            windowManager.addView(rootView, layoutParams)
+////            showDraw()
+////            showFloat()
+//            hideFloat(0)
+//        }
+////
+//////        hideFloat(0)
+////        Timber.d("dialog, hideFloat1")
+////        point = null
+////        windowManager = null
+////        layoutParams = null
 
     }
 

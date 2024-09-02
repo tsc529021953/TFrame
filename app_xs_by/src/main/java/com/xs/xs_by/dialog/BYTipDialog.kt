@@ -1,5 +1,6 @@
 package com.xs.xs_by.dialog
 
+import android.app.SearchManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.ObservableBoolean
 import com.nbhope.lib_frame.base.BaseViewModel
@@ -77,7 +78,11 @@ class BYTipDialog constructor(
                 this.dismiss()
             }
         }
+        this.dialog?.setCanceledOnTouchOutside(false)
+        this.dialog?.setCancelable(false)
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -3,11 +3,11 @@
     <item>
         <shape android:shape="rectangle">
             <solid android:color="#00000000" />
-            <size android:height="@dimen/main_switch_height" />
+<!--            <size android:height="@dimen/main_switch_height" />-->
             <stroke
                 android:width="3dp"
                 android:color="@color/switch_open_color" />
-            <corners android:radius="@dimen/main_switch_radius" />
+<!--            <corners android:radius="@dimen/main_switch_radius" />-->
         </shape>
     </item>
 
@@ -20,7 +20,7 @@
                 android:endColor="@color/switch_open_color"
                 android:startColor="@color/switch_open_color"
                 android:type="linear" />
-            <corners android:radius="@dimen/main_switch_radius" />
+<!--            <corners android:radius="@dimen/main_switch_radius" />-->
         </shape>
     </item>
 </layer-list>

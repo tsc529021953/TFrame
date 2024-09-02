@@ -10,18 +10,6 @@ import com.xs.xs_mediaplay.vm.MainViewModel
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.network.NetworkCallback
 import javax.inject.Inject
-import androidx.databinding.Observable
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.nbhope.lib_frame.event.RemoteMessageEvent
-import com.nbhope.lib_frame.utils.LiveEBUtil
-import com.nbhope.lib_frame.utils.toast.ToastUtil
-import com.xs.xs_mediaplay.bean.ThemeBean
-import com.xs.xs_mediaplay.constant.BYConstants
-import com.xs.xs_mediaplay.dialog.BYTipDialog
-import com.xs.xs_mediaplay.service.TmpServiceDelegate
 
 /**
  * @author  tsc
@@ -32,7 +20,7 @@ import com.xs.xs_mediaplay.service.TmpServiceDelegate
  * 2. timer
  * 3. applist
  */
-@Route(path = BYConstants.MAIN_VIEW)
+//@Route(path = BYConstants.MAIN_VIEW)
 class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     companion object {
@@ -63,10 +51,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun subscribeUi() {
         binding.vm = viewModel
-        checkPermissions()
-//        binding.backBtn.setOnClickListener {
-//            finish()
-//        }
+        checkPermissions(true)
+        binding.backIv.setOnClickListener {
+            finish()
+            System.out.println("finish")
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -81,37 +70,20 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun linkViewModel() {
-
+   
     }
 
     override fun onDestroy() {
         super.onDestroy()
 //        viewModel.stopAnimation(binding.textTv)
-    }
-
-    override fun finish() {
-        BYTipDialog.showInfoTip(this,
-                true,
-                resources.getString(R.string.title_tip),
-                resources.getString(R.string.dialog_tip_launcher_close_title),
-                resources.getString(R.string.text_cancel),
-                resources.getString(R.string.text_sure),
-                callBack = {
-                    TmpServiceDelegate.getInstance().write(BYConstants.CMD_GROUP)
-                    super.finish()
-                    return@showInfoTip true
-                }, cancelCallBack = {
-            super.finish()
-            return@showInfoTip true
-        })
-    }
+    } 
 
     fun init() {
         //
         viewModel.initData()
     }
 
-    fun checkPermissions(request: Boolean = false): Boolean {
+    private fun checkPermissions(request: Boolean = false): Boolean {
         var hasPermission = true
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (i in 0 until PERMISSIONS.size) {
@@ -122,7 +94,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
             }
             if (!hasPermission && request) {
                 //
-                this.requestPermissions(PERMISSIONS.toArray() as Array<out String>, REQUEST_CODE)
+                this.requestPermissions(PERMISSIONS.toTypedArray(), REQUEST_CODE)
             }
         }
         return hasPermission

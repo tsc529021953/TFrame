@@ -3,8 +3,8 @@
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@color/switch_close_color" />
-            <size android:height="@dimen/main_switch_height" />
-            <corners android:radius="@dimen/main_switch_radius" />
+<!--            <size android:height="@dimen/main_switch_height" />-->
+<!--            <corners android:radius="@dimen/main_switch_radius" />-->
         </shape>
     </item>
 
@@ -15,7 +15,7 @@
 <!--            <stroke-->
 <!--                android:width="12dp"-->
 <!--                android:color="#4cffffff" />-->
-            <corners android:radius="@dimen/main_switch_radius" />
+<!--            <corners android:radius="@dimen/main_switch_radius" />-->
         </shape>
     </item>
 </layer-list>
