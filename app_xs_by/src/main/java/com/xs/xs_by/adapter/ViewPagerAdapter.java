@@ -1,4 +1,4 @@
-package com.xs.xs_by.adapter;
+package com.xs.xs_mediaplay.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,12 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.nbhope.lib_frame.app.HopeBaseApp;
-import com.xs.xs_by.R;
-import com.xs.xs_by.bean.OneCtrlBean;
-import com.xs.xs_by.bean.OneCtrlPage;
-import com.xs.xs_by.databinding.ItemOneCtrlBinding;
-import com.xs.xs_by.dialog.BYTipDialog;
-import com.xs.xs_by.inter.IOneItem;
+import com.xs.xs_mediaplay.R;
+import com.xs.xs_mediaplay.bean.OneCtrlBean;
+import com.xs.xs_mediaplay.bean.OneCtrlPage;
+import com.xs.xs_mediaplay.databinding.ItemOneCtrlBinding;
+import com.xs.xs_mediaplay.dialog.BYTipDialog;
+import com.xs.xs_mediaplay.inter.IOneItem;
 import kotlin.jvm.functions.Function0;
 
 /**

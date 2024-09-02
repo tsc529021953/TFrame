@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
-            android:name="com.xs.xs_by.app.AppHope"
+            android:name="com.xs.xs_mediaplay.app.AppHope"
             android:allowBackup="true"
             android:icon="@drawable/logo"
             android:label="@string/app_name"
@@ -40,7 +40,7 @@
         </activity>
 
         <receiver
-                android:name="com.xs.xs_by.receiver.StartReceiver"
+                android:name="com.xs.xs_mediaplay.receiver.StartReceiver"
                 android:enabled="true"
                 android:exported="true"
                 >
@@ -51,7 +51,7 @@
         </receiver>
 
         <service
-                android:name="com.xs.xs_by.service.TmpServiceImpl"
+                android:name="com.xs.xs_mediaplay.service.TmpServiceImpl"
                 android:exported="true"
                 >
             <intent-filter>
@@ -60,7 +60,7 @@
         </service>
 
         <meta-data
-                android:name="com.xs.xs_by"
+                android:name="com.xs.xs_mediaplay"
                 android:value="PackageName"/>
     </application>
 

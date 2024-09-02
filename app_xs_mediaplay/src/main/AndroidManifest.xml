@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.xs.xs_mediaplay">
+    <!--    android:sharedUserId="android.uid.system"-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <application
+            android:name="com.xs.xs_mediaplay.app.AppHope"
+            android:allowBackup="true"
+            android:icon="@drawable/logo"
+            android:label="@string/app_name"
+            android:roundIcon="@drawable/logo"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.TFrame">
+
+        <activity
+                android:name="com.xs.xs_mediaplay.MainActivity"
+                android:screenOrientation="locked">
+                        <intent-filter>
+                            <action android:name="android.intent.action.MAIN" />
+                            <category android:name="android.intent.category.LAUNCHER" />
+                            <category android:name="android.intent.category.DEFAULT" />
+                        </intent-filter>
+        </activity>
+
+        <receiver
+                android:name="com.xs.xs_mediaplay.receiver.StartReceiver"
+                android:enabled="true"
+                android:exported="true"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+                android:name="com.xs.xs_mediaplay.service.TmpServiceImpl"
+                android:exported="true"
+                >
+            <intent-filter>
+                <action android:name="com.xs.xs_mediaplay.service.TmpServiceImpl"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+                android:name="com.xs.xs_mediaplay"
+                android:value="PackageName"/>
+    </application>
+
+</manifest>

@@ -6,7 +6,7 @@
     <data>
         <variable
                 name="vm"
-                type="com.xs.xs_by.vm.OneCtrlViewModel"/>
+                type="com.xs.xs_mediaplay.vm.OneCtrlViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

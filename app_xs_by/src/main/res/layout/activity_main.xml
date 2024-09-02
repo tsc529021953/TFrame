@@ -2,7 +2,7 @@
 <layout>
 
     <data>
-        <variable name="vm" type="com.xs.xs_by.vm.MainViewModel"/>
+        <variable name="vm" type="com.xs.xs_mediaplay.vm.MainViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -134,6 +134,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:tint="@color/one_bg_inner_color"
                 />
-        
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

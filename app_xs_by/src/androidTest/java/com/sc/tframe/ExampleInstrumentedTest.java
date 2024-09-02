@@ -1,4 +1,4 @@
-package com.xs.xs_by;
+package com.xs.xs_mediaplay;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;
