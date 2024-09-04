@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">向视播放器</string>
+    <string name="format_12_hour">yyyy/MM/ddEEEE</string>
+</resources>

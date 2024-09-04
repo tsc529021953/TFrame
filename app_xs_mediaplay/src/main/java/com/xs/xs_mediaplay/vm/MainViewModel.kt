@@ -1,16 +1,20 @@
 package com.xs.xs_mediaplay.vm
 
 import android.animation.ObjectAnimator
+import android.os.Environment
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
 import androidx.databinding.ObservableBoolean
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.utils.FileUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import java.io.File
 import javax.inject.Inject
 
 
@@ -34,47 +38,11 @@ class MainViewModel @Inject constructor(val spManager: SharedPreferencesManager)
 
     var playStatusObs = ObservableBoolean(false)
 
-
-    var rotateAnimation: RotateAnimation? = null
-
-    var themeStateObs = ObservableBoolean(false)
-
-    private var animator: ObjectAnimator? = null
+    var filesObs = MutableLiveData<List<File>>()
 
     fun initData() {
-
+        val path = Environment.getExternalStorageDirectory().absolutePath + "/XS/"
+        val files = FileUtil.getDicVideoImageByExs(path)
+        filesObs.postValue(files)
     }
-
-    fun startAnimation(view: View) {
-//        if (rotateAnimation == null) {
-//            rotateAnimation = RotateAnimation(
-//                0f, 360f,
-//                Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f
-//            )
-//            rotateAnimation?.duration = 5000
-//            rotateAnimation?.repeatCount = Animation.INFINITE // 设置动画无限次数重复
-//            rotateAnimation?.interpolator = LinearInterpolator() // 设置动画的插值器，这里使用线性插值
-//        }
-//        view.startAnimation(rotateAnimation)
-        if (animator == null) {
-            animator = ObjectAnimator.ofFloat(view, "rotation", 0F, 360F)
-            animator!!.duration = 5000
-            animator!!.repeatCount = ObjectAnimator.INFINITE
-//            animator!!.repeatMode = ObjectAnimator.REVERSE
-            animator!!.interpolator = LinearInterpolator()
-            animator?.start()
-        } else animator?.resume()
-
-    }
-
-    fun pauseAnimation(view: View) {
-//        view.clearAnimation()
-        animator?.pause()
-    }
-
-    fun stopAnimation(view: View) {
-//        view.clearAnimation()
-        animator?.cancel()
-    }
-
 }

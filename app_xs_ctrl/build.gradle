@@ -8,7 +8,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.xs.xs_mediaplay"
+        applicationId "com.xs.xs_ctrl"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1
@@ -98,7 +98,4 @@ dependencies {
     kapt deps.dagger.compiler
     implementation deps.circleindicator
     implementation deps.network_debug
-
-//    implementation deps.exo_player
-    // implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
 }

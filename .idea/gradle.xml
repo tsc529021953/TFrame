@@ -19,12 +19,9 @@
             <option value="$PROJECT_DIR$/lib_camera" />
             <option value="$PROJECT_DIR$/lib_float" />
             <option value="$PROJECT_DIR$/lib_frame" />
-            <option value="$PROJECT_DIR$/lib_local_device" />
-            <option value="$PROJECT_DIR$/lib_local_online" />
             <option value="$PROJECT_DIR$/lib_system" />
             <option value="$PROJECT_DIR$/lib_weather" />
             <option value="$PROJECT_DIR$/lib_wifip2p" />
-            <option value="$PROJECT_DIR$/phmina" />
           </set>
         </option>
       </GradleProjectSettings>

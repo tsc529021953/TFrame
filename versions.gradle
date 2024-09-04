@@ -114,6 +114,7 @@ versions.auc = "1.31.1"
 versions.gif = "1.2.27"
 versions.floatx = "2.0.4"
 versions.network_debug = "0.1.7"
+versions.exo_player = "2.19.1"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -323,6 +324,8 @@ deps.auc = "com.blankj:utilcodex:$versions.auc"
 deps.gif = "pl.droidsonroids.gif:android-gif-drawable:$versions.gif"
 // socket
 deps.network_debug = "com.github.D10NGYANG:NetworkDebugAssistant:$versions.network_debug"
+/*播放器相关*/
+deps.exo_player = "com.google.android.exoplayer:exoplayer:$versions.exo_player"
 
 ext.deps = deps
 

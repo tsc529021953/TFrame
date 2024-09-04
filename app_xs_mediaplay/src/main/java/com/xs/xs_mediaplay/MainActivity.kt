@@ -9,6 +9,7 @@ import com.xs.xs_mediaplay.databinding.ActivityMainBinding
 import com.xs.xs_mediaplay.vm.MainViewModel
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.network.NetworkCallback
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -51,7 +52,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun subscribeUi() {
         binding.vm = viewModel
-        checkPermissions(true)
+        if (checkPermissions(true)) {
+            init()
+        }
         binding.backIv.setOnClickListener {
             finish()
             System.out.println("finish")
@@ -61,22 +64,24 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE && checkPermissions(false)) {
-
+            init()
         }
     }
 
     override fun initData() {
-
+        viewModel.filesObs.observe(this, {
+            Timber.i("视频图片数量 ${it.size}")
+        })
     }
 
     override fun linkViewModel() {
-   
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
 //        viewModel.stopAnimation(binding.textTv)
-    } 
+    }
 
     fun init() {
         //
