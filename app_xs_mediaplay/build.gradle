@@ -4,13 +4,13 @@ apply from: "../build_types.gradle"
 apply from: "../app_types.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.xs.xs_mediaplay"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -67,6 +67,16 @@ android {
         }
     }
 
+    configurations.all {
+        resolutionStrategy {
+//            force 'androidx.core:core-ktx:1.0.0'
+//            force'androidx.core:core:1.6.0'
+//            force'androidx.core:core-ktx:1.6.0'
+//            force 'org.jetbrains.kotlin:kotlin-stdlib-common:1.5.30'
+        }
+    }
+
+
 }
 
 static def releaseTime(String formater) {
@@ -99,6 +109,6 @@ dependencies {
     implementation deps.circleindicator
     implementation deps.network_debug
 
-//    implementation deps.exo_player
+    implementation deps.exo_player
     // implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
 }

@@ -69,9 +69,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun initData() {
-        viewModel.filesObs.observe(this, {
+        viewModel.filesObs.observe(this) {
             Timber.i("视频图片数量 ${it.size}")
-        })
+        }
     }
 
     override fun linkViewModel() {

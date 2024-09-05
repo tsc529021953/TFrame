@@ -30,7 +30,7 @@ versions.atsl_runner = "1.1.1"
 versions.atsl_junit = "1.1.0"
 versions.app_startup = "1.0.0-alpha01"
 versions.constraint_layout = "2.0.0-beta4"
-versions.core_ktx = "1.0.0"
+versions.core_ktx = "1.6.0"
 versions.dagger = "2.41"
 versions.dexmaker = "2.2.0"
 versions.espresso = "3.1.1"
@@ -114,7 +114,7 @@ versions.auc = "1.31.1"
 versions.gif = "1.2.27"
 versions.floatx = "2.0.4"
 versions.network_debug = "0.1.7"
-versions.exo_player = "2.19.1"
+versions.exo_player = "2.10.5"
 ext.versions = versions
 
 def deps = [:] //依赖
