@@ -1,4 +1,16 @@
 <resources>
-    <string name="app_name">向视播放器</string>
+    <string name="app_name">宏强中控</string>
     <string name="format_12_hour">yyyy/MM/ddEEEE</string>
+
+    <string name="zl_title1">展厅综合大屏</string>
+    <string name="zl_title2">创始人简介</string>
+    <string name="zl_title3">品效客户见证</string>
+    <string name="zl_title4">采纳简介</string>
+    <string name="zl_title5">教育用户见证</string>
+    <string name="zl_title6">教育公司简介</string>
+    <string name="zl_title7">灯箱控制</string>
+    
+    <string name="zk_device_name1">LED拼接屏</string>
+    <string name="zk_device_name2">服务器</string>
+    <string name="zk_device_name3">设备控制</string>
 </resources>

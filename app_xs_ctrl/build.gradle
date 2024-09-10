@@ -61,7 +61,7 @@ android {
             } else {
                 timeFormater = timeForReleaseFileFormater
             }
-            def tmp = "BY_ZK_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            def tmp = "HQ_ZK_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
             println(tmp)
             outputFileName = tmp
         }

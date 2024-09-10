@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
+            android:requestLegacyExternalStorage="true"
             android:name="com.xs.xs_mediaplay.app.AppHope"
             android:allowBackup="true"
             android:icon="@drawable/logo"
@@ -19,7 +20,7 @@
 
         <activity
                 android:name="com.xs.xs_mediaplay.MainActivity"
-                android:screenOrientation="locked" android:exported="true">
+                android:screenOrientation="landscape" android:exported="true">
                         <intent-filter>
                             <action android:name="android.intent.action.MAIN" />
                             <category android:name="android.intent.category.LAUNCHER" />

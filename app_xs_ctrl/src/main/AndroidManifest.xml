@@ -18,14 +18,15 @@
             android:theme="@style/Theme.TFrame">
 
         <activity
-                android:name="com.xs.xs_ctrl.MainActivity"
-                android:screenOrientation="locked">
+                android:name=".activity.LauncherActivity"
+                android:screenOrientation="landscape">
                         <intent-filter>
                             <action android:name="android.intent.action.MAIN" />
                             <category android:name="android.intent.category.LAUNCHER" />
                             <category android:name="android.intent.category.DEFAULT" />
                         </intent-filter>
         </activity>
+        <activity android:name=".MainActivity" android:screenOrientation="landscape"/>
 
         <receiver
                 android:name="com.xs.xs_ctrl.receiver.StartReceiver"

@@ -111,6 +111,7 @@ object FileUtil {
         val directory = File(path)
         if (directory.exists() && directory.isDirectory) {
             val fileList = directory.listFiles()
+            System.out.println("getDicFilesByExs exs ${directory.absolutePath} ${fileList?.size}")
             if (fileList!= null) {
                 for (file in fileList) {
                     if (file.isDirectory) {
@@ -119,7 +120,8 @@ object FileUtil {
                     } else {
                         // 如果是文件，则检查扩展名是否为视频文件
                         val fileName = file.name.lowercase()
-                        if (VIDEO_EXTENSIONS.any { fileName.endsWith(it) }) {
+                        System.out.println("fileName $fileName")
+                        if (exs.any { fileName.endsWith(it) }) {
                             files.add(file)
                         }
                     }

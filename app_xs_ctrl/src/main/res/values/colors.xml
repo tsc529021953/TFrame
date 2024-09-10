@@ -6,8 +6,9 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
 
-    <color name="bg_color">#000000</color>
-    <color name="text_color">#FFFFFFFF</color>
+    <color name="bg_color">#AEAEA6</color>
+    <color name="text_color">#000000</color>
+    <color name="text_color2">#fff</color>
 
     <!--main-->
     <color name="main_app_item_bg">#fff</color>

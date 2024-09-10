@@ -61,7 +61,7 @@ android {
             } else {
                 timeFormater = timeForReleaseFileFormater
             }
-            def tmp = "BY_ZK_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            def tmp = "HQ_MP_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
             println(tmp)
             outputFileName = tmp
         }
@@ -109,6 +109,7 @@ dependencies {
     implementation deps.circleindicator
     implementation deps.network_debug
 
-    implementation deps.exo_player
+    implementation deps.exo_player_core
+    implementation deps.exo_player_ui
     // implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
 }

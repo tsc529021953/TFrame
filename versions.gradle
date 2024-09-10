@@ -114,7 +114,7 @@ versions.auc = "1.31.1"
 versions.gif = "1.2.27"
 versions.floatx = "2.0.4"
 versions.network_debug = "0.1.7"
-versions.exo_player = "2.10.5"
+versions.exo_player = "2.18.0"
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -326,6 +326,9 @@ deps.gif = "pl.droidsonroids.gif:android-gif-drawable:$versions.gif"
 deps.network_debug = "com.github.D10NGYANG:NetworkDebugAssistant:$versions.network_debug"
 /*播放器相关*/
 deps.exo_player = "com.google.android.exoplayer:exoplayer:$versions.exo_player"
+deps.exo_player_core = "com.google.android.exoplayer:exoplayer-core:$versions.exo_player"
+deps.exo_player_ui = "com.google.android.exoplayer:exoplayer-ui:$versions.exo_player"
+deps.exo_player_dash = "com.google.android.exoplayer:exoplayer-dash:$versions.exo_player"
 
 ext.deps = deps
 

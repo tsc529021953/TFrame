@@ -35,6 +35,7 @@ class StartReceiver : BroadcastReceiver() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 p0.startActivity(intent)
 
+                System.out.println("init ?? subscribeUi22")
 //                TmpServiceDelegate.getInstance().init(p0!!)
             }
         }

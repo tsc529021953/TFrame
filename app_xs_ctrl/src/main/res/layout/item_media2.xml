@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <data>
+        <variable
+                name="title"
+                type="String"/>
+        <variable
+                name="play"
+                type="androidx.databinding.ObservableBoolean"/>
+        <variable
+                name="voice"
+                type="androidx.databinding.ObservableInt"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+        <TextView style="@style/zk_ctrl_title5_style"
+                  android:text="播放控制"
+                  tools:textColor="@color/white"
+                  android:id="@+id/title_Tv"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintStart_toStartOf="parent"
+                />
+
+        <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/voice_iv"
+                android:src="@{voice == 0 ? @drawable/zk_mute : @drawable/zk_voice}"
+                app:layout_constraintEnd_toStartOf="@+id/voice_seek"
+                app:layout_constraintTop_toTopOf="@+id/voice_seek"
+                app:layout_constraintBottom_toBottomOf="@+id/voice_seek"
+                android:layout_marginEnd="10dp"
+                />
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+                android:layout_width="150dp"
+                android:layout_height="30dp"
+                android:id="@+id/voice_seek"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/play_iv"
+                app:layout_constraintTop_toTopOf="@+id/play_iv"
+                android:min="0"
+                android:max="100"
+                android:progress="@{voice}"
+                />
+
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/play_iv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/pre_iv"
+                app:layout_constraintEnd_toEndOf="@+id/next_iv"
+                android:src="@{play ? @drawable/zk_play : @drawable/zk_pause}"
+                />
+
+        <ImageView
+                style="@style/zk_ctrl_btn4_style"
+                android:id="@+id/pre_iv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/play_iv"
+                app:layout_constraintTop_toTopOf="@+id/play_iv"
+                app:layout_constraintBottom_toBottomOf="@+id/play_iv"
+                android:src="@drawable/zk_pre"
+                />
+
+        <ImageView
+                style="@style/zk_ctrl_btn4_style"
+                android:id="@+id/next_iv"
+                app:layout_constraintEnd_toStartOf="@+id/voice_iv"
+                app:layout_constraintStart_toEndOf="@+id/play_iv"
+                app:layout_constraintTop_toTopOf="@+id/play_iv"
+                app:layout_constraintBottom_toBottomOf="@+id/play_iv"
+                android:src="@drawable/zk_next"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

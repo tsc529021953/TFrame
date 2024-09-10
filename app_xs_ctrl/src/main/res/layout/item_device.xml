@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <data>
+        <variable
+                name="title"
+                type="String"/>
+        <variable
+                name="image"
+                type="android.graphics.drawable.Drawable"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        
+        <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/device_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:src="@{image}"
+                />
+
+        <TextView style="@style/zk_ctrl_title5_style"
+                  android:text="@{title}"
+                  tools:text="@string/zl_title1"
+                  tools:textColor="@color/white"
+                  android:id="@+id/title_Tv"
+                  app:layout_constraintTop_toBottomOf="@+id/device_iv"
+                  app:layout_constraintStart_toStartOf="@+id/device_iv"
+                  app:layout_constraintEnd_toEndOf="@+id/device_iv"
+                />
+
+        <TextView
+                style="@style/zk_ctrl_btn3_style"
+                app:layout_constraintStart_toEndOf="@+id/device_iv"
+                app:layout_constraintTop_toTopOf="@+id/device_iv"
+                android:backgroundTint="#000"
+                android:textColor="@color/white"
+                android:text="开启"
+                android:id="@+id/open_tv"
+                />
+
+        <TextView
+                style="@style/zk_ctrl_btn3_style"
+                app:layout_constraintStart_toEndOf="@+id/device_iv"
+                app:layout_constraintBottom_toBottomOf="@+id/title_Tv"
+                android:text="关闭"
+                android:id="@+id/close_tv"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

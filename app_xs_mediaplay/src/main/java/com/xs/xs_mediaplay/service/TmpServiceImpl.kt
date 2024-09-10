@@ -17,6 +17,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.dlong.dl10netassistant.OnNetThreadListener
+import com.dlong.dl10netassistant.TcpServerThread
 import com.dlong.dl10netassistant.UdpBroadThread
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -24,9 +25,12 @@ import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
+import com.nbhope.lib_frame.utils.DataUtil
+import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.xs.xs_mediaplay.R
+import com.xs.xs_mediaplay.constant.MessageConstant
 //import com.xs.xs_mediaplay.bean.OneCtrlBean
 //import com.xs.xs_mediaplay.bean.OneCtrlPage
 //import com.xs.xs_mediaplay.bean.ThemeBean
@@ -66,6 +70,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
         const val BASE_FILE = "/XS_MEDIA/"
         const val CONFIG_FILE = "AppInfo.json"
+
+        const val SERVER_PORT = 60000
     }
 
     private val mBinder: IBinder = BaseBinder()
@@ -79,8 +85,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var timerHandler: TimerHandler? = null
 
-    private var udpBroadThread: UdpBroadThread? = null
-    private var udpBroadThread2: UdpBroadThread? = null
+    private var tcpBroadThread: UdpBroadThread? = null
 
     lateinit var networkCallback: NetworkCallback
 
@@ -98,8 +103,8 @@ class TmpServiceImpl : ITmpService, Service() {
 //        } else {
 //            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
 //        }
-//        networkCallback.registNetworkCallback(networkCallbackModule)
-        Timber.i("XTAG service Create")
+        networkCallback.registNetworkCallback(networkCallbackModule)
+        Timber.i("XTAG service Create " + HopeUtils.getIP())
 //        initAppData(this) {
 //            Timber.i("XTAG service initAppData $ip:$port")
 //
@@ -118,9 +123,9 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun initNotice() {
         var builder: Notification.Builder? = Notification.Builder(this)
-        builder!!.setSmallIcon(R.drawable.ic_tmp).setWhen(System.currentTimeMillis())
+        builder!!.setSmallIcon(R.drawable.logo).setWhen(System.currentTimeMillis())
         builder.setContentTitle("KeepAppAlive")
-        builder.setContentText("PaintService is running...")
+        builder.setContentText("XS_MP_Service is running...")
 //        startForeground(SPEECH_NOTICE_ID, builder.build())
 //        // 如果觉得常驻通知栏体验不好
 //        // 可以通过启动CancelNoticeService，将通知移除，oom_adj值不变
@@ -203,16 +208,9 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun write(msg: String) {
-        Timber.i("XTAG write ${udpBroadThread == null} $msg")
-        if (udpBroadThread != null) {
+        Timber.i("XTAG write ${tcpBroadThread == null} $msg")
+        if (tcpBroadThread != null) {
 //            udpBroadThread?.send(BYConstants.ip, BYConstants.port, msg.toByteArray(Charsets.UTF_8))
-        }
-    }
-
-    override fun write2(msg: String) {
-        Timber.i("XTAG write2 ${udpBroadThread2 == null} $msg")
-        if (udpBroadThread2 != null) {
-//            udpBroadThread2?.send(BYConstants.ip2, BYConstants.port2, msg.toByteArray(Charsets.UTF_8))
         }
     }
 
@@ -270,8 +268,28 @@ class TmpServiceImpl : ITmpService, Service() {
         }
 
         override fun onReceive(ipAddress: String, port: Int, time: Long, data: ByteArray) {
-//            val msg = byteToString(data) // data.toString(Charsets.UTF_8)
-//            Timber.i("XTAG onReceive ipAddress $ipAddress $port $msg")
+            var msg = DataUtil.byteToString(data) // data.toString(Charsets.UTF_8)
+            Timber.i("XTAG onReceive ipAddress $ipAddress $port $msg")
+            msg = msg.trim().replace("\r\n", "").toLowerCase()
+
+            when (msg) {
+                MessageConstant.CMD_PLAY,
+                MessageConstant.CMD_PAUSE,
+                MessageConstant.CMD_STOP,
+                MessageConstant.CMD_PRE,
+                MessageConstant.CMD_UPPER,
+                MessageConstant.CMD_LOWER,
+                MessageConstant.CMD_NEXT -> {
+                    LiveEBUtil.post(RemoteMessageEvent(msg, ""))
+                }
+                else -> {
+                    if (msg.startsWith(MessageConstant.CMD_VOICE)) {
+                        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_VOICE,  msg.split(':')[1]))
+                    } else if (msg.startsWith(MessageConstant.CMD_POSITION)) {
+                        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_POSITION,  msg.split(':')[1]))
+                    }
+                }
+            }
 //            if (msg.contains(BYConstants.CMD_TABLE)) {
 //                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_TABLE, msg))
 //            } else if (msg.contains(BYConstants.CMD_GROUP)) {
@@ -355,9 +373,9 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun reBuild() {
-//        udpBroadThread?.close()
-//        udpBroadThread = UdpBroadThread(BYConstants.port, onNetThreadListener)
-//        udpBroadThread?.start()
+        tcpBroadThread?.close()
+        tcpBroadThread = UdpBroadThread(SERVER_PORT, onNetThreadListener)
+        tcpBroadThread?.start()
 //
 //        udpBroadThread2?.close()
 //        udpBroadThread2 = UdpBroadThread(BYConstants.port2, onNetThreadListener)
@@ -370,8 +388,7 @@ class TmpServiceImpl : ITmpService, Service() {
         }
 
         override fun onLost(network: Network?) {
-            udpBroadThread?.close()
-            udpBroadThread2?.close()
+            tcpBroadThread?.close()
         }
 
         override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities) {
@@ -393,27 +410,6 @@ class TmpServiceImpl : ITmpService, Service() {
         }
     }
 
-    fun byteToString(data: ByteArray): String {
-        var index = data.size
-        for (i in data.indices) {
-            if (data[i].toInt() == 0) {
-                index = i
-                break
-            }
-        }
-        val temp = ByteArray(index)
-        Arrays.fill(temp, 0.toByte())
-        System.arraycopy(data, 0, temp, 0, index)
-        val str: String
-        try {
-            str = String(temp, charset("GBK"))
-        } catch (e: UnsupportedEncodingException) {
-            // TODO Auto-generated catch block
-            e.printStackTrace()
-            return ""
-        }
-        return str
-    }
 
 //    fun initAppData(context: Context, callback: () -> Unit) {
 //        mScope.launch {
