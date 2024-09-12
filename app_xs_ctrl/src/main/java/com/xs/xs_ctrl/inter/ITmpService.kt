@@ -17,5 +17,5 @@ interface ITmpService {
     fun write2(msg: String)
     fun writeMedia(ip: String, msg: String)
     fun reBuild()
-
+    fun checkTCPState()
 }

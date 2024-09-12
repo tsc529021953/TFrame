@@ -59,6 +59,10 @@ class TmpServiceDelegate: ITmpService {
         mService?.reBuild()
     }
 
+    override fun checkTCPState() {
+        mService?.checkTCPState()
+    }
+
     private fun bindService(context: Context) {
         isBind = context.bindService(Intent(context, TmpServiceImpl::class.java), mConnection, Context.BIND_AUTO_CREATE)
         Timber.i("TTAG bindService $isBind")

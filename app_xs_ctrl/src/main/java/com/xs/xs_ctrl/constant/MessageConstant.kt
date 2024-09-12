@@ -24,27 +24,28 @@ object MessageConstant {
     var port = 10000
     var port2 = 1000
     var port3 = 60000
+    var port4 = 60001
 
     const val WALL_LIGHT_OPEN = "FE050000FF009835"
     const val WALL_LIGHT_CLOSE = "FE0500000000D9C5"
     const val TOP_LIGHT_OPEN = "FE050001FF00C9F5"
     const val TOP_LIGHT_CLOSE = "FE05000100008805"
 
-    const val AI_OPEN_01 = "FE050003FF00C9F5"
+    const val AI_OPEN_01 = "FE050003FF006835"
     const val AI_CLOSE_01 = "FE050003000029C5"
     const val AI_OPEN_02 = "0"
     const val AI_CLOSE_02 = "1"
-    const val AI_OPEN_03 = "FE050002FF00C9F5"  // 创始人简介
+    const val AI_OPEN_03 = "FE050002FF0039F5"  // 创始人简介
     const val AI_CLOSE_03 = "FE05000200007805" // 创始人简介
-    const val AI_OPEN_04 = "FE050004FF00C9F5"
-    const val AI_CLOSE_04 = "FE0500040000C9C4"
-    const val AI_OPEN_05 = "FE050005FF00C9F5"
+    const val AI_OPEN_04 = "FE050004FF00D9F4"
+    const val AI_CLOSE_04 = "FE05000400009804"
+    const val AI_OPEN_05 = "FE050005FF008834"
     const val AI_CLOSE_05 = "FE0500050000C9C4"
-    const val AI_OPEN_06 = "FE050006FF00C9F5"
+    const val AI_OPEN_06 = "FE050006FF007834"
     const val AI_CLOSE_06 = "FE050006000039C4"
-    const val AI_OPEN_07 = "FE050007FF00C9F5"
+    const val AI_OPEN_07 = "FE050007FF0029F4"
     const val AI_CLOSE_07 = "FE05000700006804"
-    const val AI_OPEN_08 = "FE050008FF00C9F5"
+    const val AI_OPEN_08 = "FE050008FF0019F7"
     const val AI_CLOSE_08 = "FE05000800005807"
 
     const val AI_MEDIA_01 = "192.168.1.101"

@@ -78,7 +78,7 @@ class TmpServiceImpl : ITmpService, Service() {
     private var timerHandler: TimerHandler? = null
 
     private var tcpClient1: TcpClientThread? = null
-    private var tcpClient2: TcpClientThread? = null
+    private var tcpClient2: UdpBroadThread? = null
     private var tcpClient3: UdpBroadThread? = null
 
     lateinit var networkCallback: NetworkCallback
@@ -171,15 +171,19 @@ class TmpServiceImpl : ITmpService, Service() {
 //            tcpClient1?.send(MessageConstant.ip, MessageConstant.port, msg.toByteArray(Charsets.UTF_8))
 //            tcpClient1?.send(msg.toByteArray(Charsets.UTF_8))
             val bytes = DataUtil.hexStringToBytes(msg) ?: return
-            tcpClient1?.send(bytes)
+            try {
+                tcpClient1?.send(bytes)
+            } catch (e: Exception) {
+                // 尝试重连
+                tcpReBuild()
+            }
         }
     }
 
     override fun write2(msg: String) {
         Timber.i("XTAG write2 ${tcpClient2 == null} $msg")
         if (tcpClient2 != null) {
-            // MessageConstant.ip2, MessageConstant.port2,
-            tcpClient2?.send(msg.toByteArray(Charsets.UTF_8))
+            tcpClient2?.send(MessageConstant.ip2, MessageConstant.port2, msg.toByteArray(Charsets.UTF_8))
         }
     }
 
@@ -270,18 +274,30 @@ class TmpServiceImpl : ITmpService, Service() {
 
     }
 
-    override fun reBuild() {
-        Timber.i("XTAG reBuild")
+    private fun tcpReBuild() {
         try {
             tcpClient1?.close()
-        } catch (e: Exception) {}
-        tcpClient1 = TcpClientThread(MessageConstant.ip, MessageConstant.port, onNetThreadListener)
-        tcpClient1?.start()
+        } catch (e: Exception) {
+            Timber.e("tcpReBuild close failed: $e")
+        }
+        try {
+            tcpClient1 = TcpClientThread(MessageConstant.ip, MessageConstant.port, onNetThreadListener)
+            tcpClient1?.start()
+        } catch (e: Exception) {
+            Timber.e("tcpReBuild tcpClient1 start failed: $e")
+        }
+    }
+
+
+
+    override fun reBuild() {
+        Timber.i("XTAG reBuild")
+        tcpReBuild()
 
         try {
             tcpClient2?.close()
         } catch (e: Exception) {}
-        tcpClient2 = TcpClientThread(MessageConstant.ip2, MessageConstant.port2, onNetThreadListener)
+        tcpClient2 = UdpBroadThread(MessageConstant.port4, onNetThreadListener)
         tcpClient2?.start()
 
         try {
@@ -292,7 +308,17 @@ class TmpServiceImpl : ITmpService, Service() {
 //        Timber.i("XTAG reBuild state ${tcpClient1?.isConnected()} ${tcpClient2?.isConnected()}")
     }
 
-    var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
+    override fun checkTCPState() {
+        try {
+            if (tcpClient1 != null && (!tcpClient1!!.isConnected() || !tcpClient1!!.isAlive)) {
+                tcpReBuild()
+            }
+        } catch (e: Exception) {
+            Timber.e("checkTCPState ${e.message}")
+        }
+    }
+
+    private var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
         override fun onAvailable(network: Network?) {
             reBuild()
         }

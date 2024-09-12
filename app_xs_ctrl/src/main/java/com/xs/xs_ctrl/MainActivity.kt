@@ -74,6 +74,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        TmpServiceDelegate.getInstance().checkTCPState()
+    }
+
     override fun subscribeUi() {
         binding.vm = viewModel
         if (checkPermissions(true)) {
