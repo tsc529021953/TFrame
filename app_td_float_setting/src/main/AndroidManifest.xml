@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:sharedUserId="android.uid.system"
+          package="com.sc.float_setting">
+    <!--    android:sharedUserId="android.uid.system"-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+<!--    // 如果不使用系统浮窗可以忽略此步骤(即FxScopeType.App时可跳过)-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+
+    <application
+            android:requestLegacyExternalStorage="true"
+            android:name="com.sc.float_setting.app.AppHope"
+            android:allowBackup="true"
+            android:icon="@drawable/logo"
+            android:label="@string/app_name"
+            android:roundIcon="@drawable/logo"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.TFrame">
+
+        <activity
+                android:name="com.sc.float_setting.MainActivity"
+                android:theme="@style/TransparentActivity"
+                android:exported="true">
+                        <intent-filter>
+                            <action android:name="android.intent.action.MAIN" />
+                            <category android:name="android.intent.category.LAUNCHER" />
+                            <category android:name="android.intent.category.DEFAULT" />
+                        </intent-filter>
+        </activity>
+
+        <receiver
+                android:name="com.sc.float_setting.receiver.StartReceiver"
+                android:enabled="true"
+                android:exported="true"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+                android:name="com.sc.float_setting.service.TmpServiceImpl"
+                android:exported="true"
+                >
+            <intent-filter>
+                <action android:name="com.sc.float_setting.service.TmpServiceImpl"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+                android:name="com.sc.float_setting"
+                android:value="PackageName"/>
+    </application>
+
+</manifest>

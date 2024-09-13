@@ -290,92 +290,23 @@ class TmpServiceImpl : ITmpService, Service() {
                     }
                 }
             }
-//            if (msg.contains(BYConstants.CMD_TABLE)) {
-//                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_TABLE, msg))
-//            } else if (msg.contains(BYConstants.CMD_GROUP)) {
-//                // 当前桌面处于关闭状态，需要关闭
-//                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_GROUP, msg))
-//            } else {
-//                try {
-//                    val json = JSONObject(msg)
-//                    if (json.has("cmd")) {
-//                        when (json.getString("cmd")) {
-//                            BYConstants.CMD_LIST -> {
-//                                val theme = Gson().fromJson(msg, ThemeBean::class.java)
-//                                if (theme != null) {
-//                                    MainViewModel.themeBean = theme
-//                                }
-//                                if (json.has("list")) {
-//                                    val arr = json.getJSONArray("list")
-//                                    val list = arrayListOf<OneCtrlBean>()
-//                                    for (i in 0 until arr.length()) {
-//                                        val item = arr.getJSONObject(i)
-//                                        val scene = gson.fromJson<OneCtrlBean.SceneBean>(
-//                                            item.toString(),
-//                                            OneCtrlBean.SceneBean::class.java
-//                                        )
-//                                        Timber.i("XTAG name $scene")
-//                                        val one = OneCtrlBean(scene)
-//                                        list.add(one)
-//                                    }
-//                                    OneCtrlViewModel.PAGE_LIST.clear()
-//                                    var size = list.size / 4
-//                                    if (size <= 0) size = 1
-//                                    for (i in 0 until size) {
-//                                        val page = OneCtrlPage()
-//                                        for (j in 0 until 4) {
-//                                            if (j + i * 4 < list.size) {
-//                                                page.ctrlBeans.add(list[j + i * 4])
-//                                            }
-//                                        }
-//                                        OneCtrlViewModel.PAGE_LIST.add(page)
-//                                    }
-//                                }
-//                                // 获取到list,直接清除覆盖替换
-//                                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_LIST, ""))
-//                            }
-//
-//                            BYConstants.CMD_THEME -> {
-//                                LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_THEME, msg))
-//                            }
-//
-//                            BYConstants.CMD_SCENE -> {
-//                                val scene = gson.fromJson<OneCtrlBean.SceneBean>(msg, OneCtrlBean.SceneBean::class.java)
-//                                Timber.i("XTAG name $scene")
-////                                val one = OneCtrlBean(scene)
-//                                // 查找是否存在
-//                                for (i in 0 until OneCtrlViewModel.PAGE_LIST.size) {
-//                                    val item = OneCtrlViewModel.PAGE_LIST[i]
-//                                    for (j in 0 until item.ctrlBeans.size) {
-//                                        val it = item.ctrlBeans[j]
-//                                        if (it.id == scene.id && it.switchObs.get() != scene.switch) {
-////                                            one.apply {
-////                                                OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j].name =
-////                                            }
-//                                            OneCtrlViewModel.PAGE_LIST[i].ctrlBeans[j].switchObs.set(scene.switch)
-//                                            val json = JsonObject()
-//                                            json.addProperty("i", i)
-//                                            json.addProperty("j", j)
-//                                            LiveEBUtil.post(RemoteMessageEvent(BYConstants.CMD_SCENE, json.toString()))
-//                                            return
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                } catch (e: Exception) {
-//                    e.printStackTrace()
-//                }
-//            }
         }
 
     }
 
     override fun reBuild() {
-        tcpBroadThread?.close()
-        tcpBroadThread = UdpBroadThread(SERVER_PORT, onNetThreadListener)
-        tcpBroadThread?.start()
+        try {
+            tcpBroadThread?.close()
+        } catch (e: Exception) {
+            Timber.e("tcpBroadThread close fail ${e.message}")
+        }
+        try {
+            tcpBroadThread = UdpBroadThread(SERVER_PORT, onNetThreadListener)
+            tcpBroadThread?.start()
+        }catch (e: Exception) {
+            Timber.e("tcpBroadThread craeat fail ${e.message}")
+        }
+
 //
 //        udpBroadThread2?.close()
 //        udpBroadThread2 = UdpBroadThread(BYConstants.port2, onNetThreadListener)
@@ -388,7 +319,11 @@ class TmpServiceImpl : ITmpService, Service() {
         }
 
         override fun onLost(network: Network?) {
-            tcpBroadThread?.close()
+            try {
+                tcpBroadThread?.close()
+            }catch (e: Exception) {
+                Timber.e("onLost close fail ${e.message}")
+            }
         }
 
         override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities) {

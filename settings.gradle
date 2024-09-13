@@ -13,6 +13,7 @@ include ':lib_float'
 
 include ':app'
 include ':app_paint'
+include ':app_td_float_setting'
 include ':app_xs_mediaplay'
 include ':app_xs_ctrl'
 //include ':app_xs_by'
