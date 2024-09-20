@@ -1,0 +1,27 @@
+apply from: rootDir.path + "/component_lib.gradle"
+
+android {
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+    libraryVariants.all { variant ->
+        variant.outputs.all {
+            def buildTypeName = variant.buildType.name
+            if ("release".equalsIgnoreCase(buildTypeName)) {
+                outputFileName = "spLib_${defaultConfig.versionName}.aar"
+            }
+        }
+    }
+
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation 'com.android.support:appcompat-v7:25.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}

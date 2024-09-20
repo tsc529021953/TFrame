@@ -7,7 +7,7 @@ apply plugin: 'kotlin-allopen'
 apply plugin: 'androidx.navigation.safeargs.kotlin'
 apply plugin: 'kotlin-android-extensions'
 
-apply from: "../build_types.gradle"
+apply from: rootDir.path + "/build_types.gradle"
 
 kapt {
     useBuildCache = true

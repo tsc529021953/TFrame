@@ -83,6 +83,12 @@ static def releaseTime(String formater) {
     return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
 }
 
+repositories {
+    flatDir {
+        dirs './libs'
+    }
+}
+
 dependencies {
 
     implementation deps.kotlin.stdlib
@@ -94,6 +100,8 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
+//    implementation project(path: ':serialportlibrary')
+    implementation(name: 'spLib_0.0.2', ext: 'aar')
     testImplementation deps.junit
     androidTestImplementation deps.espresso.core
 //    implementation deps.hellodaemon

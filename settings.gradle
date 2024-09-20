@@ -24,4 +24,10 @@ include ':app_xs_ctrl'
 //include ':app_heTest'
 //include ':app_xsyg_nft' // 象山nft
 //include ':app_center_control'
+
+// 插件版块
+// 串口模块-陆博版本
+//include ':serialportlibrary'
+//project(':serialportlibrary').projectDir = new File('./base_libs/serialportlibrary')
+
 rootProject.name = "TFrame"
