@@ -43,6 +43,8 @@
 
             <ImageView style="@style/setting_iv_style"
                        android:src="@drawable/setting_ic_bright_low"
+                       android:paddingEnd="5dp"
+                       android:layout_width="40dp"
                     />
 
             <androidx.appcompat.widget.AppCompatSeekBar
@@ -63,6 +65,8 @@
 
             <ImageView style="@style/setting_iv_style"
                        android:src="@drawable/setting_ic_bright_high"
+                       android:paddingStart="5dp"
+                       android:layout_width="40dp"
                     />
 
         </LinearLayout>

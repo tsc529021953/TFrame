@@ -14,6 +14,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.databinding.Observable
 import androidx.databinding.ObservableInt
 import com.google.gson.Gson
 import com.nbhope.lib_frame.app.HopeBaseApp
@@ -26,10 +27,13 @@ import com.petterp.floatingx.assist.FxGravity
 import com.petterp.floatingx.assist.FxScopeType
 import com.petterp.floatingx.listener.IFxViewLifecycle
 import com.sc.float_setting.R
+import com.sc.float_setting.inter.ISerial
 import com.sc.float_setting.inter.ITmpService
+import com.sc.float_setting.utils.SerialHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -77,6 +81,10 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var brightObs = ObservableInt(0)
 
+    private var serialHelper: SerialHelper? = null
+
+    private var brightSB: AppCompatSeekBar? = null
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -91,15 +99,16 @@ class TmpServiceImpl : ITmpService, Service() {
         }
         networkCallback.registNetworkCallback(networkCallbackModule)
         Timber.i("XTAG service Create " + HopeUtils.getIP())
-//        initAppData(this) {
-//            Timber.i("XTAG service initAppData $ip:$port")
-//
-//        }
-//        BYConstants.ip = SPUtils.getValue(this, BYConstants.SP_IP, BYConstants.ip).toString()
-//        BYConstants.port = SPUtils.getValue(this, BYConstants.SP_PORT, BYConstants.port) as Int
-//        BYConstants.ip2 = SPUtils.getValue(this, BYConstants.SP_IP2, BYConstants.ip2).toString()
-//        BYConstants.port2 = SPUtils.getValue(this, BYConstants.SP_PORT2, BYConstants.port2) as Int
-        reBuild()
+
+        serialHelper = SerialHelper(object : ISerial {
+            override fun onBrightnessChanged(brightness: Int) {
+                brightObs.set(brightness)
+                mScope.launch(Dispatchers.Main) {
+                    brightSB?.progress = brightness
+                }
+            }
+        })
+        brightObs.set(serialHelper!!.ratio)
     }
 
     override fun onDestroy() {
@@ -111,7 +120,7 @@ class TmpServiceImpl : ITmpService, Service() {
         var builder: Notification.Builder? = Notification.Builder(this)
         builder!!.setSmallIcon(R.drawable.logo).setWhen(System.currentTimeMillis())
         builder.setContentTitle("KeepAppAlive")
-        builder.setContentText("XS_MP_Service is running...")
+        builder.setContentText("FLOAT_SETTING_Service is running...")
 //        startForeground(SPEECH_NOTICE_ID, builder.build())
 //        // 如果觉得常驻通知栏体验不好
 //        // 可以通过启动CancelNoticeService，将通知移除，oom_adj值不变
@@ -170,8 +179,8 @@ class TmpServiceImpl : ITmpService, Service() {
             rootView = FloatingX.control().getView()
             val iconIV = rootView!!.findViewById<ImageView>(R.id.icon_iv)
             val closeIV = rootView!!.findViewById<ImageView>(R.id.close_iv)
-            val brightSB = rootView!!.findViewById<AppCompatSeekBar>(R.id.bright_sb)
-            brightSB.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            brightSB = rootView!!.findViewById<AppCompatSeekBar>(R.id.bright_sb)
+            brightSB?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
                 }
@@ -182,10 +191,10 @@ class TmpServiceImpl : ITmpService, Service() {
 
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     // 调节亮度
-
+                    serialHelper?.sendBrightness(seekBar!!.progress)
                 }
             })
-
+            brightSB?.progress = brightObs.get()
             System.out.println("iconIV init $iconIV")
             val ctrlLy = rootView!!.findViewById<View>(R.id.ctrl_ly)
             iconIV.setOnClickListener {
