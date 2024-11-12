@@ -114,6 +114,7 @@ class SerialHelper {
             LagTime = br.readLine().toInt()
             ratio = br.readLine().toInt()
             br.close()
+            Timber.i("read_cfg $initfromcfg $serial_dev $LeadTime $LagTime $ratio")
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
@@ -149,6 +150,7 @@ class SerialHelper {
         val sendData2 = toByteArray(170) //0xaa
         val sendData = byteArrayOf(sendData0[7], sendData2[7], 0, sendData1[7], 0)
         ////DF
+        Timber.i("setLevel $sendData0 $sendData1 $sendData2")
         myPort.sendMessageOnce(sendData)
     }
 

@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.float_setting"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 1
-        versionName "0.0.1"
+        versionCode 4
+        versionName "0.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -101,7 +101,7 @@ dependencies {
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
 //    implementation project(path: ':serialportlibrary')
-    implementation(name: 'spLib_0.0.2', ext: 'aar')
+    implementation(name: 'spLib_0.0.3', ext: 'aar')
     testImplementation deps.junit
     androidTestImplementation deps.espresso.core
 //    implementation deps.hellodaemon

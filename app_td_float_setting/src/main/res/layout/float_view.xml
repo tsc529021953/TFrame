@@ -12,7 +12,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:src="@drawable/ic_ring"
-            android:alpha="0.1"
+            android:tint="#FFFFE0"
             android:id="@+id/icon_iv"
             android:clickable="true"
             />
@@ -24,7 +24,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"
-            tools:visibility="visible"
             android:orientation="vertical"
             android:background="@drawable/setting_brightness_bg"
             >

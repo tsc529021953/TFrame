@@ -102,18 +102,21 @@ class TmpServiceImpl : ITmpService, Service() {
 
         serialHelper = SerialHelper(object : ISerial {
             override fun onBrightnessChanged(brightness: Int) {
+                Timber.i("onBrightnessChanged $brightness")
                 brightObs.set(brightness)
                 mScope.launch(Dispatchers.Main) {
                     brightSB?.progress = brightness
                 }
             }
         })
+        serialHelper?.init()
         brightObs.set(serialHelper!!.ratio)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         timerHandler?.stop()
+        serialHelper?.release()
     }
 
     private fun initNotice() {
@@ -174,7 +177,7 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     fun initView() {
-        System.out.println("iconIV initView")
+        Timber.i("iconIV initView")
         if (rootView == null) {
             rootView = FloatingX.control().getView()
             val iconIV = rootView!!.findViewById<ImageView>(R.id.icon_iv)
