@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.float_setting"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 4
-        versionName "0.0.4"
+        versionCode 5
+        versionName "0.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -35,10 +35,10 @@ android {
 //        if (isBuildModule.toBoolean())
         path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStore9630'))
-            storePassword project.property('keyStorePassword')
-            keyAlias project.property('keyAlias')
-            keyPassword project.property('keyStorePassword')
+            storeFile file(path + project.property('keyStoreAW'))
+            storePassword project.property('keyStorePassword_HOPE')
+            keyAlias project.property('keyAlias_HOPE')
+            keyPassword project.property('keyAliasPassword_HOPE')
         }
         release {
             storeFile file(path + project.property('keyStore9630'))

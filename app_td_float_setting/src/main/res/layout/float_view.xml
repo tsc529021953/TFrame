@@ -4,16 +4,30 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/bg_ly"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:src="@drawable/ic_ring"
-            android:tint="#FFFFE0"
+            android:tint="#7C7C7C"
             android:id="@+id/icon_iv"
+            android:clickable="true"
+            android:visibility="gone"
+            />
+
+    <ImageView
+            android:layout_width="18dp"
+            android:layout_height="36dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/ic_ring_half"
+            android:tint="#7C7C7C"
+            android:alpha="0.5"
+            android:id="@+id/icon_iv2"
             android:clickable="true"
             />
 
@@ -24,6 +38,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"
+            tools:visibility="visible"
             android:orientation="vertical"
             android:background="@drawable/setting_brightness_bg"
             >
@@ -34,22 +49,37 @@
                    android:id="@+id/close_iv"
                 />
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:orientation="horizontal"
                 >
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="50"
+                    android:textColor="@color/white"
+                    android:gravity="top"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/bright_tv"
+                    />
 
             <ImageView style="@style/setting_iv_style"
                        android:src="@drawable/setting_ic_bright_low"
                        android:paddingEnd="5dp"
                        android:layout_width="40dp"
+                       app:layout_constraintStart_toStartOf="parent"
+                       app:layout_constraintBottom_toBottomOf="parent"
+                       android:id="@+id/down_btn"
                     />
 
             <androidx.appcompat.widget.AppCompatSeekBar
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:layout_height="match_parent"
+                    android:layout_height="50dp"
                     android:id="@+id/bright_sb"
                     android:progressDrawable="@drawable/setting_seekbar_progress"
                     android:splitTrack="false"
@@ -60,15 +90,21 @@
                     android:paddingEnd="10dp"
                     android:min="0"
                     android:max="100"
+                    app:layout_constraintStart_toEndOf="@+id/down_btn"
+                    app:layout_constraintEnd_toStartOf="@+id/up_btn"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     />
 
             <ImageView style="@style/setting_iv_style"
                        android:src="@drawable/setting_ic_bright_high"
                        android:paddingStart="5dp"
                        android:layout_width="40dp"
+                       android:id="@+id/up_btn"
+                       app:layout_constraintEnd_toEndOf="parent"
+                       app:layout_constraintBottom_toBottomOf="parent"
                     />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
