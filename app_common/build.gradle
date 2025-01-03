@@ -1,0 +1,112 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "../build_types.gradle"
+apply from: "../app_types.gradle"
+
+android {
+    compileSdkVersion 31
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.sc.common"
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 1
+        versionName "0.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.getName())
+            }
+        }
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    dataBinding {
+        enabled = true
+    }
+
+    ndkVersion '21.0.6113669'
+
+    signingConfigs {
+        def path = ''
+//        if (isBuildModule.toBoolean())
+        path = '../sign/';
+        debug {
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyStorePassword')
+        }
+        release {
+            storeFile file(path + project.property('keyStore'))
+            storePassword project.property('keyStorePassword')
+            keyAlias project.property('keyAlias')
+            keyPassword project.property('keyAliasPassword')
+        }
+    }
+
+    def timeForDebugFileFormater = "MMddHH"
+    def timeForReleaseFileFormater = "MMdd"
+    // applicationVariants are e.g. debug, release
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def buildTypeName = variant.buildType.name
+
+            def timeFormater
+            if ("debug".equalsIgnoreCase(buildTypeName)) {
+                timeFormater = timeForDebugFileFormater
+            } else {
+                timeFormater = timeForReleaseFileFormater
+            }
+            def tmp = "HQ_MP_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            println(tmp)
+            outputFileName = tmp
+        }
+    }
+
+    configurations.all {
+        resolutionStrategy {
+//            force 'androidx.core:core-ktx:1.0.0'
+//            force'androidx.core:core:1.6.0'
+//            force'androidx.core:core-ktx:1.6.0'
+//            force 'org.jetbrains.kotlin:kotlin-stdlib-common:1.5.30'
+        }
+    }
+
+
+}
+
+static def releaseTime(String formater) {
+    return new Date().format(formater, TimeZone.getTimeZone("GMT+08:00"))
+}
+
+dependencies {
+
+    implementation deps.kotlin.stdlib
+    implementation deps.support.core_ktx
+
+    implementation deps.support.app_compat
+    androidTestImplementation deps.support.app_compat
+    implementation deps.support.design
+    androidTestImplementation deps.support.design
+    implementation deps.constraint_layout
+    implementation project(path: ':lib_frame')
+    testImplementation deps.junit
+    androidTestImplementation deps.espresso.core
+//    implementation deps.hellodaemon
+
+    implementation deps.arouter.api
+    kapt deps.arouter.compiler
+
+    implementation deps.dagger.runtime
+    implementation deps.dagger.android
+    implementation deps.dagger.android_support
+    kapt deps.dagger.android_support_compiler
+    kapt deps.dagger.compiler
+    implementation deps.circleindicator
+//    implementation deps.network_debug
+
+}

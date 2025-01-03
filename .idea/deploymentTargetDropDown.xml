@@ -5,10 +5,16 @@
       <entry key="app">
         <State />
       </entry>
+      <entry key="app_common">
+        <State />
+      </entry>
       <entry key="app_paint">
         <State />
       </entry>
       <entry key="app_td_float_setting">
+        <State />
+      </entry>
+      <entry key="app_tmp_cw">
         <State />
       </entry>
       <entry key="app_xs_by">
