@@ -1,16 +1,22 @@
 package com.sc.tmp_cw
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
+import com.nbhope.lib_frame.utils.DisplayUtil
 import com.sc.tmp_cw.databinding.ActivityMainBinding
 import com.sc.tmp_cw.vm.MainViewModel
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -53,6 +59,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         const val PLAY_IMAGE_TIME = 15000L
         const val CTRL_LAYOUT_VIEW_TIME = 10000L
 
+        const val ANIMATION_TIMER = 2000L
+        const val HIDE_TIMER = 5000L
     }
 
     override var layoutId: Int = R.layout.activity_main
@@ -86,7 +94,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         }
         binding.rightVLy.setOnClickListener {
             // TODO 添加动画
-            binding.rightLy.visibility = View.VISIBLE
+//            binding.rightLy.visibility = View.VISIBLE
+            showSlidingView(binding.rightLy, true, ANIMATION_TIMER, HIDE_TIMER)
+        }
+        binding.rightLy.post {
+//            binding.rightLy.visibility = View.GONE
         }
     }
 
@@ -131,5 +143,70 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
             }
         }
         return hasPermission
+    }
+
+    val handler = Handler()
+
+    private fun showSlidingView(
+        slidingView: View,
+        isRight: Boolean = true,
+        aTime: Long = ANIMATION_TIMER,
+        hideTime: Long = HIDE_TIMER
+    ) {
+        // 启动从左侧滑出的动画
+        var w = slidingView.width.toFloat()
+        var width = DisplayUtil.getScreenWidth(this).toFloat()
+        System.out.println("width $w $width ")
+        slidingView.translationX = if (isRight) w else -w
+        System.out.println("translationX ${slidingView.translationX}")
+
+        // 设置 View 为可见
+        slidingView.visibility = View.VISIBLE
+//        slidingView.animate()
+//            .translationX(0f)
+//            .setDuration(aTime)  // 1秒钟滑动到屏幕中
+//            .withEndAction {
+//                // 在滑动完成后，延迟5秒钟，然后开始滑出
+//                if (hideTime > 0) {
+//                    viewModel.launch {
+//                        delay(hideTime)
+//                        this@MainActivity.runOnUiThread {
+//                            slideOutAndHide(slidingView, isRight)
+//                        }
+//                    }
+//                }
+//            }
+
+        val slideInAnimator = ObjectAnimator.ofFloat(slidingView, "translationX", 0f)
+        slideInAnimator.duration = aTime // 滑动动画时长
+        slideInAnimator.start()
+        // 延迟五秒后，启动滑回左侧并隐藏的动画
+        viewModel.launch {
+            delay(hideTime)
+            this@MainActivity.runOnUiThread {
+                slideOutAndHide(slidingView)
+            }
+        }
+    }
+
+    private fun slideOutAndHide(slidingView: View, isRight: Boolean = true, aTime: Long = ANIMATION_TIMER) {
+        var w = slidingView.width.toFloat()
+//        slidingView.animate()
+//            .translationX(if (isRight) w else -w)  // 滑出屏幕
+//            .setDuration(aTime)  // 1秒钟滑出
+//            .withEndAction {
+//                // 动画结束后隐藏视图
+//                slidingView.visibility = View.GONE
+//            }
+        val slideOutAnimator = ObjectAnimator.ofFloat(slidingView, "translationX", -w)
+        slideOutAnimator.duration = aTime // 滑动动画时长
+        slideOutAnimator.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                super.onAnimationEnd(animation)
+                // 动画结束后，隐藏 View
+                slidingView.visibility = View.GONE
+            }
+        })
+        slideOutAnimator.start()
     }
 }
