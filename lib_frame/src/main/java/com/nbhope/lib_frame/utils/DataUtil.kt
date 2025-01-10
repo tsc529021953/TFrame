@@ -2,6 +2,7 @@ package com.nbhope.lib_frame.utils
 
 import java.io.UnsupportedEncodingException
 import java.util.*
+import kotlin.experimental.and
 
 object DataUtil {
 
@@ -66,6 +67,27 @@ object DataUtil {
 
     fun charToByte(c: Char): Byte {
         return "0123456789ABCDEF".indexOf(c).toByte()
+    }
+
+    fun byteArray2HexString(arr: ByteArray): String {
+        return arr.toHexString()
+    }
+
+    fun ByteArray.toHexString(): String {
+        return joinToString(separator = "") { byte -> "%02x".format(byte) }
+    }
+
+    fun hexStringToDecimal(hexString: String): Int {
+        return hexString.toInt(16)
+    }
+
+
+    fun intToHex(num: Int): String {
+        return num.toString(16)
+    }
+
+    fun intToHex2(num: Int): String {
+        return "%04x".format(num)
     }
 
 }

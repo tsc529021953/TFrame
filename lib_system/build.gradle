@@ -13,7 +13,7 @@ dependencies {
     implementation deps.kotlin.stdlib
     implementation deps.retrofit.runtime
 
-    implementation deps.serialport
+//    implementation deps.serialport
     implementation deps.timber
 
     implementation deps.support.app_compat

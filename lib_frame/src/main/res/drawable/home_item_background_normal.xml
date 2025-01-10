@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <stroke-->
+<!--            android:width="@dimen/cibn_view_stroke_width"-->
+<!--            android:color="@color/item_stroke_color"/>-->
+<!--    <corners-->
+<!--            android:bottomLeftRadius="@dimen/radius_default"-->
+<!--            android:bottomRightRadius="@dimen/radius_default"-->
+<!--            android:topLeftRadius="@dimen/radius_default"-->
+<!--            android:topRightRadius="@dimen/radius_default"/>-->
+<!--    <padding-->
+<!--            android:bottom="@dimen/cibn_view_stroke_padding"-->
+<!--            android:left="@dimen/cibn_view_stroke_padding"-->
+<!--            android:right="@dimen/cibn_view_stroke_padding"-->
+<!--            android:top="@dimen/cibn_view_stroke_padding"/>-->
+</shape>

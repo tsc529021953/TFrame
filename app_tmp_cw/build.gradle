@@ -108,5 +108,13 @@ dependencies {
     kapt deps.dagger.compiler
     implementation deps.circleindicator
     implementation deps.network_debug
+    implementation deps.navigation.ui
+    implementation deps.navigation.fragment
+    /*media*/
+    implementation deps.exo_player_core
+    implementation deps.exo_player_rstp
+    implementation deps.exo_player_ui
+
+    implementation deps.shimmer
 
 }

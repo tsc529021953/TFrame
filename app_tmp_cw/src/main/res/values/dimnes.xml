@@ -2,9 +2,30 @@
 <resources>
 
     <!--main-->
+
+    <dimen name="title_ly_height">100dp</dimen>
     <dimen name="bottom_ly_height">300dp</dimen>
-    <dimen name="bottom_ly_left_width">200dp</dimen>
-    <dimen name="bottom_ly_right_width">100dp</dimen>
+    <dimen name="bottom_ly_left_width">0dp</dimen>
+    <dimen name="bottom_ly_right_width">150dp</dimen>
     <dimen name="bottom_ly_right_half_width">50dp</dimen>
+
+    <dimen name="bottom_btn_list_size">30dp</dimen>
+    <dimen name="bottom_btn_list_margin">20dp</dimen>
+    <dimen name="bottom_btn_list_btn_size">60dp</dimen>
+    <dimen name="bottom_btn_list_btn_text_size">20sp</dimen>
+
+    <dimen name="main_title_clock_text_size">18sp</dimen>
+    <dimen name="main_title_clock_margin_end">30dp</dimen>
+    <dimen name="main_title_station_ly_width">250dp</dimen>
+    <dimen name="main_title_station_ly_height">50dp</dimen>
+    <dimen name="main_title_station_icon_height">30dp</dimen>
+    <dimen name="main_title_station_margin">10dp</dimen>
+    <dimen name="main_title_station_bg_radius">10dp</dimen>
+
+    <dimen name="main_title_logo_ly_width">300dp</dimen>
+    <dimen name="main_title_logo_ly_height">50dp</dimen>
+    <dimen name="main_title_logo_ly_margin">0dp</dimen>
+
+    <dimen name="sm_video_margin">20dp</dimen>
 
 </resources>

@@ -35,7 +35,7 @@ android {
 //        if (isBuildModule.toBoolean())
         path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStore'))
+            storeFile file(path + project.property('keyStoreAW'))
             storePassword project.property('keyStorePassword')
             keyAlias project.property('keyAlias')
             keyPassword project.property('keyStorePassword')

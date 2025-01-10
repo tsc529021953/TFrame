@@ -429,7 +429,6 @@ class HopeUtils private constructor() {
                     val enumIpAddr = intf.inetAddresses
                     while (enumIpAddr.hasMoreElements()) {
                         val inetAddress = enumIpAddr.nextElement()
-                        Timber.e("XTAG 获取ip? ${inetAddress.hostAddress}")
                         if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
                             return inetAddress.hostAddress
                         }

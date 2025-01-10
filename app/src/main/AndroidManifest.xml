@@ -13,22 +13,22 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
-        <activity android:name=".HomeActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-<!--        <receiver android:name="com.illusory.paint.receiver.StartReceiver"-->
-<!--                  android:enabled="true"-->
-<!--                  android:exported="true"-->
-<!--        >-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
-<!--                <action android:name="android.provider.Telephony.SECRET_CODE"/>-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
+        <receiver android:name="com.illusory.paint.receiver.StartReceiver"
+                  android:enabled="true"
+                  android:exported="true"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

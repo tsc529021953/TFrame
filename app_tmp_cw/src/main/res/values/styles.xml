@@ -1,7 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android"
+           xmlns:app="http://schemas.android.com/apk/res-auto"
+        >
 
 
+    <style name="main_title_clock">
+        <item name="android:textSize">@dimen/main_title_clock_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:format24Hour">@string/format_12_hour</item>
+        <item name="android:format12Hour">@string/format_12_hour</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginEnd">@dimen/main_title_clock_margin_end</item>
+    </style>
 
+    <style name="main_title_station">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">2</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textSize">@dimen/main_title_clock_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="main_title_station_ly">
+        <item name="android:layout_width">@dimen/main_title_station_ly_width</item>
+        <item name="android:layout_height">@dimen/main_title_station_ly_height</item>
+        <item name="android:background">@drawable/shape_title_station_bg</item>
+        <item name="android:paddingEnd">@dimen/main_title_station_margin</item>
+        <item name="android:paddingStart">@dimen/main_title_station_margin</item>
+    </style>
+
+    <style name="main_bottom_right_ly">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_gravity">end</item>
+    </style>
+
+    <style name="main_bottom_right_bottom_btn_ly">
+        <item name="android:layout_width">@dimen/bottom_btn_list_size</item>
+        <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin</item>
+        <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
+    </style>
+
+    <style name="main_bottom_right_bottom_btn_btn">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="main_bottom_right_btn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">vertical</item>
+<!--        <item name="android:foreground">@drawable/home_selector_kg_item_bg</item>-->
+    </style>
+
+    <style name="main_bottom_right_image">
+        <item name="android:layout_width">@dimen/bottom_btn_list_btn_size</item>
+        <item name="android:layout_height">@dimen/bottom_btn_list_btn_size</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="main_bottom_right_text">
+        <item name="android:layout_width">@dimen/bottom_btn_list_btn_size</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+<!--        <item name="android:layout_gravity">bottom</item>-->
+        <item name="android:textSize">@dimen/bottom_btn_list_btn_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+    </style>
 
 </resources>

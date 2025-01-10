@@ -1,6 +1,9 @@
 package com.sc.tmp_cw.inter
 
 import android.content.Context
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
+import com.alibaba.android.arouter.facade.template.IProvider
 
 /**
  * @author  tsc
@@ -8,11 +11,12 @@ import android.content.Context
  * @version 0.0.0-1
  * @description
  */
-interface ITmpService {
+interface ITmpService: IProvider {
 
-    fun init(context: Context)
-    fun showFloat()
-    fun hideFloat(delayMillis: Long)
+    var stationObs: ObservableField<String>
+    var timeObs: ObservableField<String>
+
+    fun test(msg: String)
     fun write(msg: String)
     fun reBuild()
 

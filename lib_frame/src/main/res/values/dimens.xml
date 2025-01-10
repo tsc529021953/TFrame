@@ -72,4 +72,7 @@
     <!--dialog-->
     <dimen name="float_dialog_tip_width">352dp</dimen>
     <dimen name="float_dialog_tip_height">173dp</dimen>
+
+    <!--common-->
+
 </resources>

@@ -46,7 +46,6 @@ versions.mockito = "2.25.0"
 versions.mockito_all = "1.10.19"
 versions.mockito_android = "2.25.0"
 versions.mockwebserver = "3.8.1"
-versions.navigation = "2.2.1"
 versions.okhttp_logging_interceptor = "3.11.0"
 versions.paging = "2.1.2"
 versions.retrofit = "2.6.0"
@@ -113,8 +112,10 @@ versions.ip2region = "2.6.5"
 versions.auc = "1.31.1"
 versions.gif = "1.2.27"
 versions.floatx = "2.2.6"
-versions.network_debug = "0.1.7"
-versions.exo_player = "2.18.0"
+versions.network_debug = "0.1.7" // tcp udp等
+versions.exo_player = "2.18.0" // exo 播放器
+versions.navigation = "2.3.2" // fragment 导航
+versions.shimmer = "0.4.0" // 闪光特效
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -329,6 +330,10 @@ deps.exo_player = "com.google.android.exoplayer:exoplayer:$versions.exo_player"
 deps.exo_player_core = "com.google.android.exoplayer:exoplayer-core:$versions.exo_player"
 deps.exo_player_ui = "com.google.android.exoplayer:exoplayer-ui:$versions.exo_player"
 deps.exo_player_dash = "com.google.android.exoplayer:exoplayer-dash:$versions.exo_player"
+deps.exo_player_rstp = "com.google.android.exoplayer:exoplayer-rtsp:$versions.exo_player"
+
+/*特效*/
+deps.shimmer = "com.facebook.shimmer:shimmer:$versions.shimmer"
 
 ext.deps = deps
 

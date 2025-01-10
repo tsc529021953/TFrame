@@ -27,6 +27,8 @@
                             <category android:name="android.intent.category.DEFAULT" />
                         </intent-filter>
         </activity>
+        <activity android:name=".activity.SceneryActivity"/>
+        <activity android:name=".activity.UrgentNotifyActivity" android:launchMode="singleTop"/>
 
         <receiver
                 android:name="com.sc.tmp_cw.receiver.StartReceiver"

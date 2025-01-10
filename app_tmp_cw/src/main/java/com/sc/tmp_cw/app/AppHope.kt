@@ -18,7 +18,7 @@ class AppHope : HopeBaseApp() {
 //            initTimber()
             println("on app onCreate")
             Timber.i("初始化 准备开启服务！")
-            TmpServiceDelegate.getInstance().init(this)
+            TmpServiceDelegate.getInstance()?.init(this)
 //        }
     }
 

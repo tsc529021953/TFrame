@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">车窗互动系统</string>
-    <string name="format_12_hour">yyyy/MM/ddEEEE</string>
+    <string name="format_12_hour">yyyy年MM月dd日 EEEE hh:mm</string>
+    <string name="arrived">已到达</string>
+    <string name="no_make">功能暂未实现！</string>
 </resources>

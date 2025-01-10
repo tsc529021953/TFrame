@@ -9,14 +9,25 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.view.Gravity
 import android.view.View
+import android.widget.TextView
+import androidx.navigation.fragment.NavHostFragment
+import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
+import com.nbhope.lib_frame.utils.AnimationUtil
 import com.nbhope.lib_frame.utils.DisplayUtil
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.toast.ToastUtil
+import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityMainBinding
+import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.MainViewModel
+import com.sc.tmp_cw.weight.KeepStateNavigator
 import kotlinx.coroutines.delay
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -52,15 +63,13 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         const val REQUEST_CODE = 10085
 
         var PERMISSIONS = arrayListOf(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
         )
 
         const val PLAY_IMAGE_TIME = 15000L
         const val CTRL_LAYOUT_VIEW_TIME = 10000L
 
-        const val ANIMATION_TIMER = 2000L
-        const val HIDE_TIMER = 5000L
     }
 
     override var layoutId: Int = R.layout.activity_main
@@ -71,15 +80,24 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     @Inject
     lateinit var networkCallback: NetworkCallback
 
+    private lateinit var mNavHostFragment: NavHostFragment
+
+    private var currLayout: View? = null
+
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
         when (it.cmd) {
-
+            MessageConstant.SERVICE_INIT_SUCCESS -> {
+                if (TmpServiceDelegate.service() != null)
+                    binding.service = TmpServiceDelegate.service()!!
+                Timber.i("SERVICE_INIT_SUCCESS ${TmpServiceDelegate.service()}")
+            }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hideSystemUI()
         System.out.println("onCreate ??? $requestedOrientation ${requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}")
         if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -89,17 +107,62 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun subscribeUi() {
         binding.vm = viewModel
+        if (TmpServiceDelegate.service() != null)
+            binding.service = TmpServiceDelegate.service()!!
         if (checkPermissions(true)) {
             init()
         }
-        binding.rightVLy.setOnClickListener {
-            // TODO 添加动画
-//            binding.rightLy.visibility = View.VISIBLE
-            showSlidingView(binding.rightLy, true, ANIMATION_TIMER, HIDE_TIMER)
+
+        /*初始导航*/
+        mNavHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // setup custom navigator
+        val navigator = KeepStateNavigator(this, mNavHostFragment.childFragmentManager, R.id.nav_host_fragment)
+        val navController = mNavHostFragment.navController
+        navController.navigatorProvider.addNavigator(navigator)
+        navController.setGraph(R.navigation.home_navigation)
+        layoutClick(binding.rtspBtn)
+
+
+        binding.listBtn.setOnClickListener {
+            binding.rightLy.openDrawer(Gravity.RIGHT)
         }
-        binding.rightLy.post {
-//            binding.rightLy.visibility = View.GONE
+
+        binding.rtspBtn.setOnClickListener {
+            layoutClick(binding.rtspBtn) {
+                navController.navigate(R.id.navigation_stream_media, null)
+            }
         }
+        binding.localBtn.setOnClickListener {
+            layoutClick(binding.localBtn) {
+                ToastUtil.showS(R.string.no_make)
+            }
+        }
+        binding.fjBtn.setOnClickListener {
+            ARouter.getInstance().build(MessageConstant.ROUTH_SCENERY).navigation(this)
+        }
+        binding.jhBtn.setOnClickListener {
+            TmpServiceDelegate.service()?.test("")
+            layoutClick(binding.jhBtn) {
+                ToastUtil.showS(R.string.no_make)
+//                ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this)
+            }
+        }
+    }
+
+    private fun layoutClick(view: View, callback: (() -> Unit)? = null) {
+        if (currLayout == view) return
+        callback?.invoke()
+        if (currLayout != null) {
+            currLayout!!.isSelected = false
+            currLayout!!.scaleX = 1f
+            currLayout!!.scaleY = 1f
+        }
+//        if (currLayout is TextView)
+//            (currLayout as TextView).textSize = DisplayUtil.px2sp(this, resources.getDimension(R.dimen.home_text_tab_size)).toFloat()
+        view.isSelected = true
+        currLayout = view
+        currLayout!!.scaleX = 1.2f
+        currLayout!!.scaleY = 1.2f
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -111,7 +174,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun initData() {
-
+        LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
     }
 
     override fun linkViewModel() {
@@ -120,7 +183,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     override fun onDestroy() {
         super.onDestroy()
-
+        LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
     }
 
     private fun init() {
@@ -147,66 +210,5 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     val handler = Handler()
 
-    private fun showSlidingView(
-        slidingView: View,
-        isRight: Boolean = true,
-        aTime: Long = ANIMATION_TIMER,
-        hideTime: Long = HIDE_TIMER
-    ) {
-        // 启动从左侧滑出的动画
-        var w = slidingView.width.toFloat()
-        var width = DisplayUtil.getScreenWidth(this).toFloat()
-        System.out.println("width $w $width ")
-        slidingView.translationX = if (isRight) w else -w
-        System.out.println("translationX ${slidingView.translationX}")
 
-        // 设置 View 为可见
-        slidingView.visibility = View.VISIBLE
-//        slidingView.animate()
-//            .translationX(0f)
-//            .setDuration(aTime)  // 1秒钟滑动到屏幕中
-//            .withEndAction {
-//                // 在滑动完成后，延迟5秒钟，然后开始滑出
-//                if (hideTime > 0) {
-//                    viewModel.launch {
-//                        delay(hideTime)
-//                        this@MainActivity.runOnUiThread {
-//                            slideOutAndHide(slidingView, isRight)
-//                        }
-//                    }
-//                }
-//            }
-
-        val slideInAnimator = ObjectAnimator.ofFloat(slidingView, "translationX", 0f)
-        slideInAnimator.duration = aTime // 滑动动画时长
-        slideInAnimator.start()
-        // 延迟五秒后，启动滑回左侧并隐藏的动画
-        viewModel.launch {
-            delay(hideTime)
-            this@MainActivity.runOnUiThread {
-                slideOutAndHide(slidingView)
-            }
-        }
-    }
-
-    private fun slideOutAndHide(slidingView: View, isRight: Boolean = true, aTime: Long = ANIMATION_TIMER) {
-        var w = slidingView.width.toFloat()
-//        slidingView.animate()
-//            .translationX(if (isRight) w else -w)  // 滑出屏幕
-//            .setDuration(aTime)  // 1秒钟滑出
-//            .withEndAction {
-//                // 动画结束后隐藏视图
-//                slidingView.visibility = View.GONE
-//            }
-        val slideOutAnimator = ObjectAnimator.ofFloat(slidingView, "translationX", -w)
-        slideOutAnimator.duration = aTime // 滑动动画时长
-        slideOutAnimator.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                super.onAnimationEnd(animation)
-                // 动画结束后，隐藏 View
-                slidingView.visibility = View.GONE
-            }
-        })
-        slideOutAnimator.start()
-    }
 }

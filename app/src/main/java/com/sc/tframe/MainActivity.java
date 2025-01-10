@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import com.sc.lib_system.util.CommandUtil;
 import timber.log.Timber;
 
 import static com.nbhope.lib_frame.utils.ViewUtil.immersionTitle;
@@ -32,36 +33,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         immersionTitle(this);
 
-//        tTest();
+        tTest();
     }
 
 
 
     void tTest() {
-        findViewById(R.id.text2).setVisibility(View.GONE);
-        layout = findViewById(R.id.bg_ly);
-        layout.setBackgroundColor(Color.BLACK);
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                Timber.i("TTAG SWITCH_TIME ");
-                layout.setBackgroundColor(isBlack ? Color.WHITE : Color.BLACK);
-                isBlack = !isBlack;
-                handler.postDelayed(runnable, SWITCH_TIME);
-            }
-        };
-        handler.postDelayed(runnable, SWITCH_TIME);
+//        findViewById(R.id.text2).setVisibility(View.GONE);
+//        layout = findViewById(R.id.bg_ly);
+//        layout.setBackgroundColor(Color.BLACK);
+//        runnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                Timber.i("TTAG SWITCH_TIME ");
+//                layout.setBackgroundColor(isBlack ? Color.WHITE : Color.BLACK);
+//                isBlack = !isBlack;
+//                handler.postDelayed(runnable, SWITCH_TIME);
+//            }
+//        };
+//        handler.postDelayed(runnable, SWITCH_TIME);
+        try {
+            CommandUtil.CommandResult res = CommandUtil.runCommand("setprop service.adb.tcp.port 5555");
+            System.out.println("CommandResult1 " + res.toString());
+            Process process = Runtime.getRuntime().exec("su");
+            res = CommandUtil.runCommand("stop adbd", true);
+            System.out.println("CommandResult2 " + res.toString());
+            res = CommandUtil.runCommand("start adbd", true);
+            System.out.println("CommandResult3 " + res.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     void heTest() {
         findViewById(R.id.text2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent= new Intent();
-                intent.setAction("android.provider.Telephony.SECRET_CODE");
-                intent.setData( Uri.parse("android secret code://66"));
-                intent.setComponent(new ComponentName("com.sc.hetest","com.sc.hetest.com.sc.nft.receiver.StartReceiver"));
-                sendBroadcast(intent);
+
+//                Intent intent= new Intent();
+//                intent.setAction("android.provider.Telephony.SECRET_CODE");
+//                intent.setData( Uri.parse("android secret code://66"));
+//                intent.setComponent(new ComponentName("com.sc.hetest","com.sc.hetest.com.sc.nft.receiver.StartReceiver"));
+//                sendBroadcast(intent);
 //                Toast.makeText(this, "打开测试app", Toast.LENGTH_LONG).show();
             }
         });

@@ -8,68 +8,125 @@
         <variable
                 name="vm"
                 type="com.sc.tmp_cw.vm.MainViewModel"/>
+
+        <variable
+                name="service"
+                type="com.sc.tmp_cw.inter.ITmpService"/>
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/bg_ly"
+    <androidx.drawerlayout.widget.DrawerLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bg_color"
+            android:id="@+id/right_ly"
+            app:layout_constraintTop_toBottomOf="@+id/title_ly"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             >
 
-        <LinearLayout
-                android:layout_width="@dimen/bottom_ly_left_width"
-                android:layout_height="@dimen/bottom_ly_height"
-                android:id="@+id/left_ly"
-                android:orientation="vertical"
-                android:background="#f00"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                >
-
-        </LinearLayout>
-
         <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bg_ly"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/left_ly"
-                android:background="#0f0"
+                android:layout_height="match_parent"
+                android:background="@color/bg_color"
                 >
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/title_ly_height"
+                    android:id="@+id/title_ly"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="#0f0"
+                    >
+
+                <include
+                        layout="@layout/module_title_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/title_ly2"
+                        app:service="@{service}"
+                        />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <fragment
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:id="@+id/nav_host_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    app:layout_constraintTop_toBottomOf="@+id/title_ly"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:descendantFocusability="afterDescendants"
+                    app:defaultNavHost="true"
+                    />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                    style="@style/main_bottom_right_bottom_btn_ly"
+                    android:id="@+id/shimmer_view_container1"
+                    app:shimmer_base_alpha="1"
+                    app:shimmer_duration="3000"
+                    app:shimmer_highlight_alpha="0.4"
+                    app:shimmer_tilt="180"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+
+                <ImageView
+                        style="@style/main_bottom_right_bottom_btn_btn"
+                        android:id="@+id/list_btn"
+                        android:src="@drawable/icon_btn_list"
+                        />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="@dimen/bottom_ly_height"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/left_ly"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:background="#00f"
-                >
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <View
-                android:layout_width="@dimen/bottom_ly_right_half_width"
-                android:layout_height="@dimen/bottom_ly_height"
-                android:id="@+id/right_v_ly"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
 
         <LinearLayout
                 android:layout_width="@dimen/bottom_ly_right_width"
-                android:layout_height="@dimen/bottom_ly_height"
-                android:id="@+id/right_ly"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:background="#f00"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:visibility="gone"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/title_ly_height"
                 >
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_rtsp"
+                    android:id="@+id/rtsp_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_fj"
+                    android:id="@+id/fj_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_jh"
+                    android:id="@+id/jh_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_local"
+                    android:id="@+id/local_btn"
+                    />
+
+            <!--本地视频待定-->
+
+            <View style="@style/vertical_space_style"/>
+
+
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

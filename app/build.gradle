@@ -55,7 +55,7 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
-//    implementation project(path: ':lib_float')
+    implementation project(path: ':lib_system')
     testImplementation deps.junit
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core

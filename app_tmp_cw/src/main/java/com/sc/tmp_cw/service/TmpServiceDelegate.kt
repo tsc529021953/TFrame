@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.inter.ITmpService
 import timber.log.Timber
 
@@ -14,40 +17,30 @@ import timber.log.Timber
  * @version 0.0.0-1
  * @description
  */
-class TmpServiceDelegate: ITmpService {
+open class TmpServiceDelegate {
 
-    private var mService: TmpServiceImpl? = null
+    protected var mService: TmpServiceImpl? = null
 
     private var isBind = false
 
     companion object {
-        private var _instance: ITmpService? = null
+        private var instance: TmpServiceDelegate? = null
 
-        fun getInstance(): ITmpService {
-            if (_instance == null)
-                _instance = TmpServiceDelegate()
-            return _instance!!;
+        fun getInstance(): TmpServiceDelegate? {
+            if (instance == null)
+                instance = TmpServiceDelegate()
+            return instance;
+        }
+
+        fun service(): ITmpService? {
+            if (instance == null)
+                instance = TmpServiceDelegate()
+            return instance!!.mService;
         }
     }
 
-    override fun init(content: Context) {
+    fun init(content: Context) {
         bindService(content)
-    }
-
-    override fun showFloat() {
-        mService?.showFloat()
-    }
-
-    override fun hideFloat(delayMillis: Long) {
-        mService?.hideFloat(delayMillis)
-    }
-
-    override fun write(msg: String) {
-        mService?.write(msg)
-    }
-
-    override fun reBuild() {
-        mService?.reBuild()
     }
 
     private fun bindService(context: Context) {
@@ -63,6 +56,7 @@ class TmpServiceDelegate: ITmpService {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             mService = (service as TmpServiceImpl.BaseBinder).getPaintService()
             Timber.d("onServiceConnected")
+            LiveEBUtil.post(RemoteMessageEvent(MessageConstant.SERVICE_INIT_SUCCESS, ""))
         }
     }
 }

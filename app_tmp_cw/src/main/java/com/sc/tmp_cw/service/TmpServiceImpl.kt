@@ -10,22 +10,22 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.*
 import android.view.View
-import androidx.annotation.RequiresApi
+import androidx.databinding.ObservableField
+import com.dlong.dl10netassistant.OnNetThreadListener
+import com.dlong.dl10netassistant.UdpMultiThread
 import com.google.gson.Gson
 import com.nbhope.lib_frame.app.HopeBaseApp
-import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.DataUtil
 import com.nbhope.lib_frame.utils.HopeUtils
-import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.inter.ITmpService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import java.util.*
@@ -54,7 +54,8 @@ class TmpServiceImpl : ITmpService, Service() {
         const val BASE_FILE = "/XS_MEDIA/"
         const val CONFIG_FILE = "AppInfo.json"
 
-        const val SERVER_PORT = 60000
+        const val SERVER_PORT = 16680
+        const val SERVER_IP = "234.55.66.80"
     }
 
     private val mBinder: IBinder = BaseBinder()
@@ -72,6 +73,14 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var gson = Gson()
 
+    private val MSG_FLOAT_SHOW = 100
+    private val MSG_FLOAT_UPDATE = 101
+    private val MSG_FLOAT_HIDE = 102
+    private val CONNECT_MSG = 1002
+
+    /*udp*/
+    private var comThread: UdpMultiThread? = null
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -86,6 +95,7 @@ class TmpServiceImpl : ITmpService, Service() {
 //        }
         networkCallback.registNetworkCallback(networkCallbackModule)
         Timber.i("XTAG service Create " + HopeUtils.getIP())
+        System.out.println("XTAG service Create2 " + HopeUtils.getIP())
 //        initAppData(this) {
 //            Timber.i("XTAG service initAppData $ip:$port")
 //
@@ -94,12 +104,14 @@ class TmpServiceImpl : ITmpService, Service() {
 //        BYConstants.port = SPUtils.getValue(this, BYConstants.SP_PORT, BYConstants.port) as Int
 //        BYConstants.ip2 = SPUtils.getValue(this, BYConstants.SP_IP2, BYConstants.ip2).toString()
 //        BYConstants.port2 = SPUtils.getValue(this, BYConstants.SP_PORT2, BYConstants.port2) as Int
-        reBuild()
+        setStation("六里台 LiuLiTai")
+        reBuild() // onCreate
     }
 
     override fun onDestroy() {
         super.onDestroy()
         timerHandler?.stop()
+        release()
     }
 
     private fun initNotice() {
@@ -132,69 +144,86 @@ class TmpServiceImpl : ITmpService, Service() {
         startForeground(SERVICE_NOTICE_ID, builder.build())
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun initFloat() {
-//        var windowManager: WindowManager? =
-//            getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-//        } else {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-//        }
-//        layoutParams.format = PixelFormat.RGBA_8888
-//        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
-//        layoutParams.flags =
-//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.x = 0
-//        var point: Point? = Point()
-//        (windowManager!!.defaultDisplay.getSize(point))
-//        layoutParams.y = point!!.y - layoutParams.height + 50
-//
-//        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
-//        if (Settings.canDrawOverlays(this)) {
-//            rootView = View.inflate(baseContext, R.layout.float_tmp_view, null)
-////            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
-////            ivVoice = rootView!!.findViewById(R.id.iv_voice)
-//            rootView!!.setOnClickListener {
-//                hideFloat(100)
-//            }
-//            windowManager.addView(rootView, layoutParams)
-////            showDraw()
-////            showFloat()
-//            hideFloat(0)
-//        }
-////
-//////        hideFloat(0)
-////        Timber.d("dialog, hideFloat1")
-////        point = null
-////        windowManager = null
-////        layoutParams = null
+    override var stationObs = ObservableField<String>("测试文案")
+    override var timeObs = ObservableField<String>("")
+    override fun test(msg: String) {
+        MessageHandler.test(msg, this)
+    }
+
+    private var onNetThreadListener = object : OnNetThreadListener {
+        override fun onAcceptSocket(ipAddress: String) {
+            // 不需要
+        }
+
+        override fun onConnectFailed(ipAddress: String) {
+            // 打开端口失败
+            Timber.i("onConnectFailed $ipAddress")
+        }
+
+        override fun onConnected(ipAddress: String) {
+            // 打开端口成功
+            Timber.i("onConnected $ipAddress")
+        }
+
+        override fun onDisconnect(ipAddress: String) {
+            // 关闭UDP
+            Timber.i("onDisconnect $ipAddress")
+        }
+
+        override fun onError(ipAddress: String, error: String) {
+            // 发生错误
+            Timber.i("onError $ipAddress $error")
+        }
+
+        override fun onReceive(ipAddress: String, port: Int, time: Long, data: ByteArray) {
+            // 接受到信息，ipAddress消息来源地址，port消息来源端口，time消息到达时间，data消息内容
+            data.forEach {
+                System.out.println("onReceive $it")
+            }
+            var msg = DataUtil.byteArray2HexString(data)
+            Timber.i("onReceive $ipAddress $port $time ${data.size} $msg")
+            // 判断是否是hex
+            mScope.launch {
+                MessageHandler.handleMessage(msg, this@TmpServiceImpl)
+            }
+        }
+    }
+
+    override fun init(context: Context?) {
 
     }
 
-    override fun init(context: Context) {
-
-    }
-
-    override fun showFloat() {
-        mainHandler.removeMessages(MSG_FLOAT_HIDE)
-        mainHandler.sendEmptyMessage(MSG_FLOAT_SHOW)
-    }
-
-    override fun hideFloat(delayMillis: Long) {
-        mainHandler.sendEmptyMessage(MSG_FLOAT_HIDE)
+    override fun reBuild() {
+        try {
+            release()
+        } catch (e: Exception) {
+            Timber.e("tcpBroadThread close fail ${e.message}")
+        }
+        try {
+            if (comThread == null)
+                comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
+            comThread?.start()
+        }catch (e: Exception) {
+            Timber.e("tcpBroadThread craeat fail ${e.message}")
+        }
     }
 
     override fun write(msg: String) {
 
     }
 
-    private val MSG_FLOAT_SHOW = 100
-    private val MSG_FLOAT_UPDATE = 101
-    private val MSG_FLOAT_HIDE = 102
+    private fun release() {
+        comThread?.stop()
+        comThread?.close()
+    }
+
+    /*方法*/
+    private fun setStation(station: String) {
+        stationObs.set(station)
+    }
+
+
+    /**/
 
     inner class MainHandler(looper: Looper) : Handler(looper) {
         override fun handleMessage(msg: Message) {
@@ -224,28 +253,9 @@ class TmpServiceImpl : ITmpService, Service() {
         }
     }
 
-    override fun reBuild() {
-//        try {
-//            tcpBroadThread?.close()
-//        } catch (e: Exception) {
-//            Timber.e("tcpBroadThread close fail ${e.message}")
-//        }
-//        try {
-//            tcpBroadThread = UdpBroadThread(SERVER_PORT, onNetThreadListener)
-//            tcpBroadThread?.start()
-//        }catch (e: Exception) {
-//            Timber.e("tcpBroadThread craeat fail ${e.message}")
-//        }
-
-//
-//        udpBroadThread2?.close()
-//        udpBroadThread2 = UdpBroadThread(BYConstants.port2, onNetThreadListener)
-//        udpBroadThread2?.start()
-    }
-
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
         override fun onAvailable(network: Network?) {
-            reBuild()
+            reBuild() // 联网
         }
 
         override fun onLost(network: Network?) {
@@ -270,7 +280,6 @@ class TmpServiceImpl : ITmpService, Service() {
             }
         }
     }
-
 
 //    fun initAppData(context: Context, callback: () -> Unit) {
 //        mScope.launch {
