@@ -11,4 +11,7 @@
 
     <color name="title_bg_color">#2196F3</color>
 
+    <color name="un_text_color">#fd730c</color>
+    <color name="setting_btn_color">#4DFFFFFF</color>
+
 </resources>

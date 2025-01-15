@@ -41,11 +41,12 @@ public final class AndroidInjectionDelegate {
         String className = activity.getComponentName().getClassName();
         AndroidInjector<Object> injector = ((HopeBaseApp) application).getInjector(className);
         if (injector == null) {
-            throw new RuntimeException(
-                    String.format(
-                            "%s does not contain key %s",
-                            application.getClass().getCanonicalName(),
-                            activity.getPackageName()));
+            return;
+//            throw new RuntimeException(
+//                    String.format(
+//                            "%s does not contain key %s",
+//                            application.getClass().getCanonicalName(),
+//                            activity.getPackageName()));
         }
 
         inject(activity, injector);
@@ -205,11 +206,12 @@ public final class AndroidInjectionDelegate {
         String packageName = ((InjectionGroup) contentProvider).packageName();
         AndroidInjector<Object> injector = ((HopeBaseApp) application).getInjector(packageName);
         if (injector == null) {
-            throw new RuntimeException(
-                    String.format(
-                            "%s does not contain key %s",
-                            contentProvider.getClass().getCanonicalName(),
-                            packageName));
+//            throw new RuntimeException(
+//                    String.format(
+//                            "%s does not contain key %s",
+//                            contentProvider.getClass().getCanonicalName(),
+//                            packageName));
+            return;
         }
         inject(contentProvider, injector);
     }

@@ -12,6 +12,7 @@ object FileUtil {
 
     val VIDEO_EXTENSIONS = arrayListOf("mp4", "mkv", "avi", "mov", "flv", "wmv", "3gp")
     val PICTURES_EXTENSIONS = arrayListOf(".jpg", ".png")
+    val TEXT_EXTENSIONS = arrayListOf(".txt", ".log")
 
     @JvmStatic
     fun isFileExist(filePath: String?): Boolean {
@@ -60,7 +61,6 @@ object FileUtil {
             val br = BufferedReader(fr)
             var line: String?
             while (br.readLine().also { line = it } != null) {
-                println(line)
                 sb.append(line)
             }
             br.close()
@@ -106,6 +106,33 @@ object FileUtil {
         return getDicFilesByExs(exs, path)
     }
 
+    fun getDicFileBeansByExs(exs: List<String>, path: String): List<FileBean> {
+        val files = mutableListOf<FileBean>()
+        val directory = File(path)
+        if (directory.exists() && directory.isDirectory) {
+            val fileList = directory.listFiles()
+            if (fileList!= null) {
+                for (file in fileList) {
+                    if (file.isDirectory) {
+                        // 如果是目录，则递归调用该方法
+//                        files.addAll(getVideoFiles(file.absolutePath))
+                    } else {
+                        // 如果是文件，则检查扩展名是否为视频文件
+                        val fileName = file.name.lowercase()
+                        System.out.println("fileName $fileName")
+                        if (exs.any { fileName.endsWith(it) }) {
+                            val bean = FileBean()
+                            bean.name = file.nameWithoutExtension
+                            bean.path = file.path
+                            files.add(bean)
+                        }
+                    }
+                }
+            }
+        }
+        return files
+    }
+
     fun getDicFilesByExs(exs: List<String>, path: String): List<File> {
         val files = mutableListOf<File>()
         val directory = File(path)
@@ -129,6 +156,21 @@ object FileUtil {
             }
         }
         return files
+    }
+
+    @JvmStatic
+    fun getFromAssets(fileName: String, content: Context): String? {
+        return try {
+            val inputReader = InputStreamReader(content.resources.assets.open(fileName))
+            val bufReader = BufferedReader(inputReader)
+            var line: String? = ""
+            var res: String? = ""
+            while (bufReader.readLine().also { line = it } != null) res += line
+            res
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+    <androidx.drawerlayout.widget.DrawerLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/drawer_ly"
+            >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                    android:id="@+id/video_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:use_controller="false"
+                    tools:visibility="gone"
+                    />
+
+            <com.facebook.shimmer.ShimmerFrameLayout
+                    style="@style/main_bottom_right_bottom_btn_ly"
+                    android:id="@+id/shimmer_view_container1"
+                    app:shimmer_base_alpha="1"
+                    app:shimmer_duration="3000"
+                    app:shimmer_highlight_alpha="0.4"
+                    app:shimmer_tilt="180"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+
+                <ImageView
+                        style="@style/main_bottom_right_bottom_btn_btn"
+                        android:id="@+id/list_btn"
+                        android:src="@drawable/ic_list"
+                        />
+
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="@dimen/bottom_ly_left_side_width"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                >
+
+            <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/rv"
+                    android:layout_margin="10dp"
+                    />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+
+</layout>
+

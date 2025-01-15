@@ -35,16 +35,16 @@ android {
 //        if (isBuildModule.toBoolean())
         path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStore'))
-            storePassword project.property('keyStorePassword')
-            keyAlias project.property('keyAlias')
-            keyPassword project.property('keyStorePassword')
+            storeFile file(path + project.property('keyStoreAW'))
+            storePassword project.property('keyStorePassword_HOPE')
+            keyAlias project.property('keyAlias_HOPE')
+            keyPassword project.property('keyAliasPassword_HOPE')
         }
         release {
-            storeFile file(path + project.property('keyStore'))
-            storePassword project.property('keyStorePassword')
-            keyAlias project.property('keyAlias')
-            keyPassword project.property('keyAliasPassword')
+            storeFile file(path + project.property('keyStoreZY3399'))
+            storePassword project.property('keyStorePassword_ZY')
+            keyAlias project.property('keyAlias_ZY')
+            keyPassword project.property('keyStorePassword_ZY')
         }
     }
 
@@ -61,7 +61,7 @@ android {
             } else {
                 timeFormater = timeForReleaseFileFormater
             }
-            def tmp = "HQ_MP_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            def tmp = "TMP_CW_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
             println(tmp)
             outputFileName = tmp
         }
@@ -89,6 +89,7 @@ dependencies {
     implementation deps.support.core_ktx
 
     implementation deps.support.app_compat
+    implementation deps.support.recyclerview
     androidTestImplementation deps.support.app_compat
     implementation deps.support.design
     androidTestImplementation deps.support.design

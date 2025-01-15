@@ -12,4 +12,6 @@ public class BasePath {
 
     public static final String HOME_PATH = "/home/base";
 
+    public static final String LOG_PATH = "/log/base";
+
 }

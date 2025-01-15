@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="360dp"
+            android:layout_height="276dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="17dp"
+            android:background="@drawable/person_login_bg"
+            android:backgroundTint="#272727"
+    >
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:gravity="center"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/tip_title_tv"
+                android:text="@string/title_tip"
+        />
+
+        <View
+                style="@style/person_hor_line"
+                app:layout_constraintTop_toBottomOf="@+id/tip_title_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="7dp"
+        />
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/tip_title_tv"
+                tools:text="设备解绑后将无法使用当前账号，确认解绑当前设备吗？"
+                android:textColor="#cbcbcb"
+                android:textSize="19sp"
+                android:id="@+id/tip_content_tv"
+                android:layout_marginBottom="13dp"
+                android:layout_marginTop="23dp"
+                tools:visibility="gone"
+        />
+
+        <com.google.android.material.textfield.TextInputEditText
+                app:layout_constraintTop_toBottomOf="@+id/tip_title_tv"
+                android:layout_marginTop="23dp"
+                android:layout_width="match_parent"
+                android:layout_height="37dp"
+                android:background="@drawable/common_shape_corner_19dp"
+                android:id="@+id/text_et"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:textSize="17sp"
+                android:textColor="@color/white"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:imeOptions="actionDone"
+                android:inputType="textCapWords"
+        />
+
+        <TextView
+                android:layout_width="153dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/text_sure"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tip_tip_tv"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:background="@drawable/person_code_btn_normal"
+                android:foreground="@drawable/person_code_btn_selector"
+                android:id="@+id/sure_btn"
+                />
+
+        <TextView
+                android:layout_width="153dp"
+                android:layout_height="32dp"
+                android:text="@string/text_cancel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/sure_btn"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:background="@drawable/person_code_btn_normal"
+                android:backgroundTint="#14ffffff"
+                android:foreground="@drawable/person_code_btn_selector"
+                android:id="@+id/cancel_btn"
+        />
+
+        <TextView
+                android:layout_width="234dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/text_sure"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/tip_tip_tv"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:background="@drawable/person_code_btn_normal"
+                android:foreground="@drawable/person_code_btn_selector"
+                android:id="@+id/sure_btn2"
+                android:visibility="gone"
+        />
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="注：开通后的酷狗音乐基础服务可在其他设备通用，但会与本机免费会员重复生效！"
+                android:minHeight="0dp"
+                android:textColor="#ff4444"
+                android:textSize="12sp"
+                android:id="@+id/tip_tip_tv"
+                android:visibility="gone"
+        />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</layout>

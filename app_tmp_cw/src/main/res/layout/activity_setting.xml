@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bg_ly"
+            >
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/priority_tv"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintStart_toStartOf="parent"
+                  app:layout_constraintBottom_toTopOf="@+id/local_res_tv"
+                  android:layout_marginStart="@dimen/setting_view_margin_start"
+                  android:background="@drawable/selector_ic_priority"
+                  android:text="@string/setting_priority"
+                  app:layout_constraintVertical_chainStyle="packed"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/local_res_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/priority_tv"
+                  app:layout_constraintStart_toStartOf="@+id/priority_tv"
+                  app:layout_constraintBottom_toTopOf="@+id/log_tv"
+                  android:background="@drawable/selector_ic_local_res"
+                  android:text="@string/setting_local_res"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/log_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/local_res_tv"
+                  app:layout_constraintStart_toStartOf="@+id/local_res_tv"
+                  app:layout_constraintBottom_toTopOf="@+id/ex_save_tv"
+                  android:background="@drawable/selector_ic_log"
+                  android:text="@string/setting_log"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/ex_save_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/log_tv"
+                  app:layout_constraintStart_toStartOf="@+id/log_tv"
+                  app:layout_constraintBottom_toTopOf="@+id/auto_tv"
+                  android:background="@drawable/selector_ic_ex_save"
+                  android:text="@string/setting_ex_save"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/auto_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/ex_save_tv"
+                  app:layout_constraintStart_toStartOf="@+id/ex_save_tv"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  android:background="@drawable/selector_ic_auto"
+                  android:text="@string/setting_auto"
+                />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+                style="@style/main_bottom_right_bottom_btn_ly"
+                android:id="@+id/shimmer_view_container1"
+                app:shimmer_base_alpha="1"
+                app:shimmer_duration="3000"
+                app:shimmer_highlight_alpha="0.4"
+                app:shimmer_tilt="180"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+            <ImageView
+                    style="@style/main_bottom_right_bottom_btn_btn"
+                    android:id="@+id/back_btn"
+                    android:src="@drawable/icon_btn_back"
+                    />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

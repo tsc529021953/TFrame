@@ -1,6 +1,29 @@
 <resources>
     <string name="app_name">车窗互动系统</string>
     <string name="format_12_hour">yyyy年MM月dd日 EEEE hh:mm</string>
+    <string name="arrive">即将到达</string>
     <string name="arrived">已到达</string>
+    <string name="nextStation">下一站</string>
     <string name="no_make">功能暂未实现！</string>
+
+    <string name="stream_media">流媒体！</string>
+    <string name="interactive">交互模块</string>
+    <string name="local_video">本地视频</string>
+
+
+    <string name="in_guide">交互导航</string>
+    <string name="in_cate">地方特色美食</string>
+    <string name="in_line_search">地铁路线查询</string>
+    <string name="in_station_search">车站信息查询</string>
+    <string name="in_travel">地方特色旅游</string>
+
+    <string name="no_introduce">暂无相关描述</string>
+
+    <string name="setting_priority">优先级和功能</string>
+    <string name="setting_local_res">本地素材</string>
+    <string name="setting_log">工作日志和故障</string>
+    <string name="setting_ex_save">外部存储</string>
+    <string name="setting_auto">自动切换设置</string>
+    <string name="setting_please_enter_password">请输入工程设置密码！</string>
+    <string name="setting_password_error">工程密码错误！</string>
 </resources>

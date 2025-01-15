@@ -13,26 +13,33 @@ class PISBean {
     }
 
     var start = START_MESSAGE
-    var frameworkVersion: String = ""
-    var modifyVersion: String = ""
-    var lifeSignal: String = ""
-    var checkSignal: String = ""
-    var boardStatus: String = ""
-    var startCode: String = ""
-    var endCode: String = ""
-    var currentCode: String = ""
-    var nextCode: String = ""
-    var urgentNotifyCode: String = ""
-    var runDirection: String = ""
-    var carNumber: String = ""
-    var jiaoLuNumber: String = ""
-    var carCiNumber: String = ""
-    var lineNumber: String = ""
-    var ignoreStation: String = ""
-    var year: String = ""
-    var month: String = ""
-    var day: String = ""
-    var hout: String = ""
-    var minute: String = ""
-    var second: String = ""
+    var frameworkVersion: Int = -1
+    var modifyVersion: Int = -1
+    var lifeSignal: Int = -1
+    var checkSignal: Int = -1
+    var boardStatus: Int = -1
+
+    var startCode: Int = -1
+    var endCode: Int = -1
+    var currentCode: Int = -1
+    var nextCode: Int = -1
+
+    var urgentNotifyCode: Int = -1
+    var runDirection: Int = -1
+    var carNumber: Int = -1
+    var jiaoLuNumber: Int = -1
+    var carCiNumber: Int = -1
+    var lineNumber: Int = -1
+    var ignoreStation: Int = -1
+    var year: Int = -1
+    var month: Int = -1
+    var day: Int = -1
+    var hour: Int = -1
+    var minute: Int = -1
+    var second: Int = -1
+
+    override fun toString(): String {
+        return "PISBean(start='$start', frameworkVersion=$frameworkVersion, modifyVersion=$modifyVersion, lifeSignal=$lifeSignal, checkSignal=$checkSignal, boardStatus=$boardStatus, startCode=$startCode, endCode=$endCode, currentCode=$currentCode, nextCode=$nextCode, urgentNotifyCode=$urgentNotifyCode, runDirection=$runDirection, carNumber=$carNumber, jiaoLuNumber=$jiaoLuNumber, carCiNumber=$carCiNumber, lineNumber=$lineNumber, ignoreStation=$ignoreStation, year=$year, month=$month, day=$day, hour=$hour, minute=$minute, second=$second)"
+    }
+
 }

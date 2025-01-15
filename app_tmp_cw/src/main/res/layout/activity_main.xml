@@ -35,7 +35,6 @@
                     android:layout_height="@dimen/title_ly_height"
                     android:id="@+id/title_ly"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:background="#0f0"
                     >
 
                 <include

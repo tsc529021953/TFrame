@@ -7,10 +7,12 @@
     <dimen name="bottom_ly_height">300dp</dimen>
     <dimen name="bottom_ly_left_width">0dp</dimen>
     <dimen name="bottom_ly_right_width">150dp</dimen>
+    <dimen name="bottom_ly_left_side_width">160dp</dimen>
     <dimen name="bottom_ly_right_half_width">50dp</dimen>
 
     <dimen name="bottom_btn_list_size">30dp</dimen>
     <dimen name="bottom_btn_list_margin">20dp</dimen>
+    <dimen name="bottom_btn_list_margin2">60dp</dimen>
     <dimen name="bottom_btn_list_btn_size">60dp</dimen>
     <dimen name="bottom_btn_list_btn_text_size">20sp</dimen>
 
@@ -24,8 +26,36 @@
 
     <dimen name="main_title_logo_ly_width">300dp</dimen>
     <dimen name="main_title_logo_ly_height">50dp</dimen>
-    <dimen name="main_title_logo_ly_margin">0dp</dimen>
+    <dimen name="main_title_logo_ly_margin">20dp</dimen>
 
     <dimen name="sm_video_margin">20dp</dimen>
+
+    <!--交互-->
+    <dimen name="in_btn_ly_width">120dp</dimen>
+    <dimen name="in_btn_ly_height">160dp</dimen>
+    <dimen name="in_btn_tv_height">40dp</dimen>
+    <dimen name="in_btn_tv_size">20sp</dimen>
+    <dimen name="in_setting_size">50dp</dimen>
+
+    <dimen name="travel_btn_ly_width">140dp</dimen>
+    <dimen name="travel_btn_ly_height">150dp</dimen>
+    <dimen name="travel_btn_ly_margin">30dp</dimen>
+    <dimen name="travel_btn_ly_space">10dp</dimen>
+    <dimen name="travel_btn_iv_height">100dp</dimen>
+    <dimen name="travel_btn_tv_height">50dp</dimen>
+    <dimen name="travel_btn_tv_size">15sp</dimen>
+
+    <dimen name="introduce_text_size">20sp</dimen>
+    <dimen name="introduce_margin">20dp</dimen>
+
+    <!--设置-->
+    <dimen name="setting_view_margin_start">80dp</dimen>
+    <dimen name="setting_ly_width">400dp</dimen>
+    <dimen name="setting_ly_height">45dp</dimen>
+    <dimen name="setting_ly_margin_start">20dp</dimen>
+    <dimen name="setting_ly_margin_top">8dp</dimen>
+    <dimen name="setting_text_size">20sp</dimen>
+    <dimen name="setting_text_margin_start">90dp</dimen>
+
 
 </resources>

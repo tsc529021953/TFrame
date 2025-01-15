@@ -22,5 +22,10 @@
 <!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
 <!--            </intent-filter>-->
 <!--        </com.sc.nft.receiver>-->
+        <activity android:name=".activity.LogActivity"/>
+
+        <meta-data
+                android:name="com.nbhope.lib_frame"
+                android:value="PackageName"/>
     </application>
 </manifest>

@@ -1,11 +1,9 @@
 package com.sc.tmp_cw.di
 
 import androidx.lifecycle.ViewModel
-import com.sc.tmp_cw.vm.MainViewModel
 import com.nbhope.lib_frame.di.ViewModelKey
-import com.sc.tmp_cw.vm.SceneryViewModel
-import com.sc.tmp_cw.vm.StreamMediaViewModel
-import com.sc.tmp_cw.vm.UrgentNotifyViewModel
+import com.nbhope.lib_frame.viewmodel.LogViewModel
+import com.sc.tmp_cw.vm.*
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -31,6 +29,31 @@ abstract class ActivityViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(SettingViewModel::class)
+    abstract fun bindSettingViewModel(viewModel: SettingViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(StreamMediaViewModel::class)
     abstract fun bindStreamMediaViewModel(viewModel: StreamMediaViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TravelViewModel::class)
+    abstract fun bindTravelViewModel(viewModel: TravelViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CateViewModel::class)
+    abstract fun bindCateViewModel(viewModel: CateViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(IntroduceViewModel::class)
+    abstract fun bindIntroduceViewModel(viewModel: IntroduceViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LocalViewModel::class)
+    abstract fun bindLocalViewModel(viewModel: LocalViewModel): ViewModel
 }

@@ -1,10 +1,10 @@
 package com.sc.tmp_cw.view
 
 import com.nbhope.lib_frame.base.BaseBindingFragment
-import com.nbhope.lib_frame.base.BaseVMFragment
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.databinding.FragmentTitleInfoBinding
+import com.sc.tmp_cw.databinding.FragmentLineBinding
+import com.sc.tmp_cw.databinding.FragmentTravelBinding
 
 /**
  * @author  tsc
@@ -12,9 +12,9 @@ import com.sc.tmp_cw.databinding.FragmentTitleInfoBinding
  * @version 0.0.0-1
  * @description
  */
-class TitleInfoFragment: BaseBindingFragment<FragmentTitleInfoBinding, BaseViewModel>() {
+class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
-    override var layoutId: Int = R.layout.fragment_title_info
+    override var layoutId: Int = R.layout.fragment_line
 
     override fun linkViewModel() {
 
@@ -22,7 +22,9 @@ class TitleInfoFragment: BaseBindingFragment<FragmentTitleInfoBinding, BaseViewM
 
 
     override fun subscribeUi() {
-
+        binding.backBtn.setOnClickListener {
+            InteractiveFragment.navCallBack?.invoke()
+        }
     }
 
     override fun initData() {

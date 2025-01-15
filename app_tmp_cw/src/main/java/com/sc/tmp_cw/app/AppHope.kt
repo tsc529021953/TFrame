@@ -3,6 +3,7 @@ package com.sc.tmp_cw.app
 import com.sc.tmp_cw.di.DaggerAppComponent
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.di.DaggerBaseAppComponent
 import timber.log.Timber
 
 /**
@@ -38,6 +39,5 @@ class AppHope : HopeBaseApp() {
         Timber.d("$packageName $component")
         component.inject(this)
         getInjectors()[packageName] = component.androidInjector
-        Timber.d("DaggerAppComponent 注入")
     }
 }

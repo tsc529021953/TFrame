@@ -9,19 +9,19 @@
     <keep_state_fragment
         android:id="@+id/navigation_stream_media"
         android:name="com.sc.tmp_cw.view.StreamMediaFragment"
-        android:label="流媒体"
+        android:label="@string/stream_media"
         tools:layout="@layout/fragment_stream_media" />
 
-<!--    <keep_state_fragment-->
-<!--        android:id="@+id/navigation_list_local_song_list"-->
-<!--        android:name="com.nbhope.music.playlist.local.LocalSongListFragment"-->
-<!--        android:label="自建歌单"-->
-<!--        tools:layout="@layout/fragment_list_song_local" />-->
+    <keep_state_fragment
+        android:id="@+id/navigation_interactive"
+        android:name="com.sc.tmp_cw.view.InteractiveFragment"
+        android:label="@string/interactive"
+        tools:layout="@layout/fragment_interactive" />
 
-<!--    <keep_state_fragment-->
-<!--            android:id="@+id/navigation_list_local_song_folder"-->
-<!--            android:name="com.nbhope.music.playlist.local.LocalSongFolderFragment"-->
-<!--            android:label="@string/music_local_folder_title"-->
-<!--            tools:layout="@layout/fragment_list_song_local" />-->
+    <keep_state_fragment
+            android:id="@+id/navigation_local"
+            android:name="com.sc.tmp_cw.view.LocalFragment"
+            android:label="@string/local_video"
+            tools:layout="@layout/fragment_local_video" />
 
 </navigation>

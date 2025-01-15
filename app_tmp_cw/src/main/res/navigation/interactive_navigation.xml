@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_guide"
+    tools:ignore="UnusedNavigation">
+
+    <keep_state_fragment
+            android:id="@+id/navigation_guide"
+            android:name="com.sc.tmp_cw.view.InteractiveGuideFragment"
+            android:label="@string/in_guide"
+            tools:layout="@layout/fragment_interactive_guide" />
+
+    <keep_state_fragment
+        android:id="@+id/navigation_station_search"
+        android:name="com.sc.tmp_cw.view.StationInfoSearchFragment"
+        android:label="@string/in_station_search"
+        tools:layout="@layout/fragment_station_info_search" />
+
+    <keep_state_fragment
+        android:id="@+id/navigation_travel"
+        android:name="com.sc.tmp_cw.view.TravelFragment"
+        android:label="@string/in_travel"
+        tools:layout="@layout/fragment_travel" />
+
+    <keep_state_fragment
+            android:id="@+id/navigation_cate"
+            android:name="com.sc.tmp_cw.view.CateFragment"
+            android:label="@string/in_cate"
+            tools:layout="@layout/fragment_cate" />
+
+    <keep_state_fragment
+            android:id="@+id/navigation_line"
+            android:name="com.sc.tmp_cw.view.LineFragment"
+            android:label="@string/in_line_search"
+            tools:layout="@layout/fragment_line" />
+
+</navigation>

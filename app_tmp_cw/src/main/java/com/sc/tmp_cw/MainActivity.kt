@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,7 +15,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.navigation.fragment.NavHostFragment
 import com.alibaba.android.arouter.launcher.ARouter
+import com.nbhope.lib_frame.activity.LogActivity
 import com.nbhope.lib_frame.base.BaseBindingActivity
+import com.nbhope.lib_frame.common.BasePath
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.utils.AnimationUtil
@@ -134,17 +137,16 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         }
         binding.localBtn.setOnClickListener {
             layoutClick(binding.localBtn) {
-                ToastUtil.showS(R.string.no_make)
+                navController.navigate(R.id.navigation_local, null)
             }
         }
         binding.fjBtn.setOnClickListener {
             ARouter.getInstance().build(MessageConstant.ROUTH_SCENERY).navigation(this)
         }
         binding.jhBtn.setOnClickListener {
-            TmpServiceDelegate.service()?.test("")
+//            TmpServiceDelegate.service()?.test("")
             layoutClick(binding.jhBtn) {
-                ToastUtil.showS(R.string.no_make)
-//                ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this)
+                navController.navigate(R.id.navigation_interactive, null)
             }
         }
     }

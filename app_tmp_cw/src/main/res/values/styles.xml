@@ -13,6 +13,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_marginEnd">@dimen/main_title_clock_margin_end</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="main_title_station">
@@ -22,6 +23,7 @@
         <item name="android:textSize">@dimen/main_title_clock_text_size</item>
         <item name="android:textColor">@color/text_color</item>
         <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="main_title_station_ly">
@@ -43,6 +45,15 @@
         <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
         <item name="android:elevation">4dp</item>
         <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin</item>
+        <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
+        <item name="android:layout_marginStart">@dimen/bottom_btn_list_margin</item>
+    </style>
+
+    <style name="main_bottom_right_bottom_btn_ly2">
+        <item name="android:layout_width">@dimen/bottom_btn_list_size</item>
+        <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
+        <item name="android:elevation">4dp</item>
+        <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin2</item>
         <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
     </style>
 
@@ -74,6 +85,55 @@
 <!--        <item name="android:layout_gravity">bottom</item>-->
         <item name="android:textSize">@dimen/bottom_btn_list_btn_text_size</item>
         <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <!--交互板块-->
+    <style name="in_btn_ly">
+        <item name="android:layout_width">@dimen/in_btn_ly_width</item>
+        <item name="android:layout_height">@dimen/in_btn_ly_height</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="in_btn_iv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/in_btn_ly_width</item>
+        <item name="android:clickable">true</item>
+    </style>
+    <style name="in_btn_tv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/in_btn_tv_height</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/in_btn_tv_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="travel_btn_ly">
+        <item name="android:layout_width">@dimen/travel_btn_ly_width</item>
+        <item name="android:layout_height">@dimen/travel_btn_ly_height</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="travel_btn_iv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/travel_btn_iv_height</item>
+    </style>
+    <style name="travel_btn_tv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/travel_btn_tv_height</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/travel_btn_tv_size</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <!--设置-->
+    <style name="setting_ly">
+        <item name="android:layout_width">@dimen/setting_ly_width</item>
+        <item name="android:layout_height">@dimen/setting_ly_height</item>
+        <item name="android:layout_marginStart">@dimen/setting_ly_margin_start</item>
+        <item name="android:paddingStart">@dimen/setting_text_margin_start</item>
+        <item name="android:textSize">@dimen/setting_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:layout_marginTop">@dimen/setting_ly_margin_top</item>
+        <item name="android:gravity">start |center_vertical</item>
+        <item name="android:clickable">true</item>
     </style>
 
 </resources>

@@ -9,6 +9,7 @@ import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityUrgentNotifyBinding
+import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.UrgentNotifyViewModel
 import javax.inject.Inject
 
@@ -29,12 +30,16 @@ class UrgentNotifyActivity : BaseBindingActivity<ActivityUrgentNotifyBinding, Ur
         it as RemoteMessageEvent
         when (it.cmd) {
             MessageConstant.CMD_URGENT_NOTICE -> {
-
+                if (TmpServiceDelegate.service()?.urgentNotifyMsgObs?.get().isNullOrEmpty()) {
+                    finish()
+                }
             }
         }
     }
 
     override fun subscribeUi() {
+        if (TmpServiceDelegate.service() != null)
+            binding.service = TmpServiceDelegate.service()!!
 //        binding.backBtn.setOnClickListener {
 //            finish()
 //        }

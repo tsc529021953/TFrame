@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        >
+
+    <LinearLayout style="@style/travel_btn_ly"
+                  android:id="@+id/bg_ly"
+            >
+
+        <ImageView style="@style/travel_btn_iv"
+                   android:id="@+id/iv"
+                />
+
+        <TextView style="@style/travel_btn_tv"
+                  android:id="@+id/tv"
+                />
+
+    </LinearLayout>
+</layout>
+

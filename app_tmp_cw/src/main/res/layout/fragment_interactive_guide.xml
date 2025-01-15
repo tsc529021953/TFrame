@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        <LinearLayout style="@style/in_btn_ly"
+                      android:id="@+id/line_ly"
+                      app:layout_constraintStart_toStartOf="parent"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintBottom_toBottomOf="parent"
+                      app:layout_constraintEnd_toStartOf="@+id/cate_ly"
+                >
+
+            <ImageView style="@style/in_btn_iv"
+                       android:id="@+id/line_iv"
+                       android:src="@drawable/selector_icon_line_search"
+                    />
+            <TextView style="@style/in_btn_tv"
+                      android:text="@string/in_line_search"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/in_btn_ly"
+                      android:id="@+id/cate_ly"
+                      app:layout_constraintStart_toEndOf="@+id/line_ly"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintBottom_toBottomOf="parent"
+                      app:layout_constraintEnd_toStartOf="@+id/si_ly"
+                >
+
+            <ImageView style="@style/in_btn_iv"
+                       android:id="@+id/cate_iv"
+                       android:src="@drawable/selector_icon_cate"
+                    />
+            <TextView style="@style/in_btn_tv"
+                      android:text="@string/in_cate"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/in_btn_ly"
+                      android:id="@+id/si_ly"
+                      app:layout_constraintStart_toEndOf="@+id/cate_ly"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintBottom_toBottomOf="parent"
+                      app:layout_constraintEnd_toStartOf="@+id/travel_ly"
+                >
+
+            <ImageView style="@style/in_btn_iv"
+                       android:id="@+id/si_iv"
+                       android:src="@drawable/selector_icon_si_search"
+                    />
+            <TextView style="@style/in_btn_tv"
+                      android:text="@string/in_station_search"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/in_btn_ly"
+                      android:id="@+id/travel_ly"
+                      app:layout_constraintStart_toEndOf="@+id/si_ly"
+                      app:layout_constraintTop_toTopOf="parent"
+                      app:layout_constraintBottom_toBottomOf="parent"
+                      app:layout_constraintEnd_toEndOf="parent"
+                >
+
+            <ImageView style="@style/in_btn_iv"
+                       android:id="@+id/travel_iv"
+                       android:src="@drawable/selector_icon_travel"
+                    />
+            <TextView style="@style/in_btn_tv"
+                      android:text="@string/in_travel"
+                    />
+
+        </LinearLayout>
+
+        <View
+                android:layout_width="@dimen/in_setting_size"
+                android:layout_height="@dimen/in_setting_size"
+                android:id="@+id/setting_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:background="@drawable/selector_transparent_btn"
+                />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

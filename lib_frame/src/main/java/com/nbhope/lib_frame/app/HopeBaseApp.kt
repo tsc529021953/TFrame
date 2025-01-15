@@ -13,6 +13,7 @@ import com.nbhope.lib_frame.BuildConfig
 import com.nbhope.lib_frame.R
 import com.nbhope.lib_frame.constants.HopeConstants
 import com.nbhope.lib_frame.di.BaseAppComponent
+import com.nbhope.lib_frame.di.DaggerBaseAppComponent
 import com.nbhope.lib_frame.integration.AppLifecycles
 import com.nbhope.lib_frame.utils.FileLoggingTree
 import com.nbhope.lib_frame.utils.HopeUtils
@@ -186,7 +187,11 @@ open class HopeBaseApp : Application(), App {
 
 
     open fun inject() {
-//        DaggerBaseAppComponent.builder().application(this).build().inject(this)
+//        DaggerBaseAppComponent.builder().application(this).build().inject(mAppDelegate as AppDelegate)
+//        val component = DaggerBaseAppComponent.builder().application(this).build()
+//        Timber.d("$packageName $component")
+//        component.inject(this)
+//        getInjectors()[packageName] = component.androidInjector
     }
 
     override fun getAppComponent(): BaseAppComponent {
@@ -207,6 +212,7 @@ open class HopeBaseApp : Application(), App {
 
     fun getInjector(className: String): DispatchingAndroidInjector<Any>? {
         val key = packageNameList().find {
+            System.out.println("getInjector " + it + " " + className)
             className.startsWith(it)
         }
         return injectorMap.get(key)

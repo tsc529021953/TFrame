@@ -12,6 +12,7 @@ import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjectionModule
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
@@ -19,7 +20,10 @@ import javax.inject.Singleton
 @Component(
         modules = [
             BaseAppModule::class,
-            NetworkAppModule::class
+            NetworkAppModule::class,
+//            AndroidInjectionModule::class,
+//            ActivityBindModule::class,
+//            ActivityViewModelModule::class
         ]
 )
 interface BaseAppComponent {

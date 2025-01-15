@@ -17,16 +17,6 @@
                 android:layout_marginBottom="@dimen/sm_video_margin"
                 />
 
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/test_Tv"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="40sp"
-                android:text="Hi Bro"
-                />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 

@@ -42,6 +42,7 @@ dependencies {
 
     implementation deps.support.app_compat
     implementation deps.support.annotations
+    implementation deps.support.design
     api deps.support.swiperefreshlayout
     api deps.lifecycle.viewmodel_ktx
     implementation deps.support.recyclerview

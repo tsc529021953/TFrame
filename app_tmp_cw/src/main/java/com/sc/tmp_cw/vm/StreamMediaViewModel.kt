@@ -14,9 +14,11 @@ import javax.inject.Inject
  */
 class StreamMediaViewModel@Inject constructor(val spManager: SharedPreferencesManager) : BaseViewModel() {
 
-    var rstpURL = "rtsp://807e9439d5ca.entrypoint.cloud.wowza.com:1935/app-rC94792j/068b9c9a_stream2ss"
+    var rtspURL = ""
 
     lateinit var player: SimpleExoPlayer
+
+    var initListener = false
 
     init {
         Timber.i("StreamMediaViewModel init")

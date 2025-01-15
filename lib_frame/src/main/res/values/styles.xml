@@ -79,4 +79,10 @@
         <item name="android:layout_height">0dp</item>
     </style>
 
+    <style name="person_hor_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#3b3a3a</item>
+    </style>
+
 </resources>
