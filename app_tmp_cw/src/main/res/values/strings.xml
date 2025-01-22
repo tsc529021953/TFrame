@@ -10,6 +10,8 @@
     <string name="interactive">交互模块</string>
     <string name="local_video">本地视频</string>
 
+    <string name="notify_arrive">即将到站</string>
+    <string name="notify_leave">离站提醒</string>
 
     <string name="in_guide">交互导航</string>
     <string name="in_cate">地方特色美食</string>
@@ -24,6 +26,8 @@
     <string name="setting_log">工作日志和故障</string>
     <string name="setting_ex_save">外部存储</string>
     <string name="setting_auto">自动切换设置</string>
+    <string name="setting_param">参数设置</string>
+    <string name="setting_system">系统设置</string>
     <string name="setting_please_enter_password">请输入工程设置密码！</string>
     <string name="setting_password_error">工程密码错误！</string>
 </resources>

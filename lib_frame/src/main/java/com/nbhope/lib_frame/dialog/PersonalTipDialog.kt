@@ -27,6 +27,8 @@ class PersonalTipDialog: BaseDialogFragment<PersonalLayoutTipBinding, BaseViewMo
 
     var msgCallBack : ((msg: String?) -> String?)? = null
 
+    var dismissCallBack: (() -> Unit)? = null
+
     override fun initView() {
         tipType = arguments?.getInt(TIP_TYPE)
         tipContent = arguments?.getString(TIP_CONTENT)
@@ -163,9 +165,10 @@ class PersonalTipDialog: BaseDialogFragment<PersonalLayoutTipBinding, BaseViewMo
 //            return fragment
 //        }
 
-        fun inputNameDialog(title: String?, content: String? = null, callBack : ((msg: String?) -> String?)?): PersonalTipDialog {
+        fun inputNameDialog(title: String?, content: String? = null, callBack : ((msg: String?) -> String?)?, dismissCallBack: (() -> Unit)?): PersonalTipDialog {
             val fragment = newInstance(INPUT_TIP, content, titleContent = title)
             fragment.msgCallBack = callBack
+            fragment.dismissCallBack = dismissCallBack
             return fragment
         }
 
@@ -185,5 +188,10 @@ class PersonalTipDialog: BaseDialogFragment<PersonalLayoutTipBinding, BaseViewMo
     override fun onStart() {
         super.onStart()
         initWindowsView(361f, 276f)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
     }
 }

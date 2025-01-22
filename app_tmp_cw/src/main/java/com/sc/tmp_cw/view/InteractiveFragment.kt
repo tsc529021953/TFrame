@@ -7,9 +7,12 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.HandleClick
+import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.base.CWBaseBindingFragment
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentInteractiveBinding
+import com.sc.tmp_cw.inter.IFragment
 import com.sc.tmp_cw.service.MessageHandler
 import com.sc.tmp_cw.weight.KeepStateNavigator
 
@@ -19,17 +22,18 @@ import com.sc.tmp_cw.weight.KeepStateNavigator
  * @version 0.0.0-1
  * @description
  */
-class InteractiveFragment: BaseBindingFragment<FragmentInteractiveBinding, BaseViewModel>() {
+class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, BaseViewModel>(), IFragment {
 
     override var layoutId: Int = R.layout.fragment_interactive
 
     private lateinit var mNavHostFragment: NavHostFragment
 
     companion object {
-        var navController: NavController? = null
 
-        var navCallBack: (() -> Unit)? = null
+        var iFragment: IFragment? = null
     }
+
+    var navController: NavController? = null
 
     override fun linkViewModel() {
 
@@ -44,22 +48,49 @@ class InteractiveFragment: BaseBindingFragment<FragmentInteractiveBinding, BaseV
         navController = mNavHostFragment.navController
         navController?.navigatorProvider?.addNavigator(navigator)
         navController?.setGraph(R.navigation.interactive_navigation)
-        navCallBack = {
+        MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
+        super.rootLy = binding.bgLy
+        super.finish = {
             hide()
+            MainActivity.iMain?.home()
+        }
+        iFragment = this
+        super.subscribeUi()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
         }
     }
 
-    fun hide() {
+    private fun hide() {
         navController?.navigate(R.id.navigation_guide, null)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         navController = null
-        navCallBack = null
     }
 
     override fun initData() {
 
+    }
+
+    override fun back() {
+        reset()
+    }
+
+    override fun navigate(resId: Int) {
+        navController?.navigate(resId, null)
+    }
+
+    override fun clicked() {
+        reset()
+    }
+
+    override fun stop2() {
+        stop()
     }
 }

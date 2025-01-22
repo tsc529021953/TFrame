@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.base.CWBaseBindingActivity
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivitySceneryBinding
 import com.sc.tmp_cw.service.TmpServiceDelegate
@@ -21,15 +22,9 @@ import javax.inject.Inject
  * @description
  */
 @Route(path = MessageConstant.ROUTH_SCENERY)
-class SceneryActivity : BaseBindingActivity<ActivitySceneryBinding, SceneryViewModel>() {
-
-    companion object {
-        const val FINISH_TIME = 30000L
-    }
+class SceneryActivity : CWBaseBindingActivity<ActivitySceneryBinding, SceneryViewModel>() {
 
     override var layoutId: Int = R.layout.activity_scenery
-
-    var timerHandler: TimerHandler? = null
 
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
@@ -41,16 +36,12 @@ class SceneryActivity : BaseBindingActivity<ActivitySceneryBinding, SceneryViewM
     }
 
     override fun subscribeUi() {
+
         binding.backBtn.setOnClickListener {
             finish()
         }
-        binding.bgLy.setOnClickListener {
-            timerHandler?.start()
-        }
-        timerHandler = TimerHandler(FINISH_TIME) {
-            finish()
-        }
-        timerHandler?.start()
+        super.rootLy = binding.bgLy
+        super.subscribeUi()
     }
 
     override fun initData() {
@@ -63,7 +54,6 @@ class SceneryActivity : BaseBindingActivity<ActivitySceneryBinding, SceneryViewM
 
     override fun onDestroy() {
         super.onDestroy()
-        timerHandler?.stop()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
     }
 

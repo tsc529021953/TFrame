@@ -23,7 +23,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
     override fun subscribeUi() {
         binding.backBtn.setOnClickListener {
-            InteractiveFragment.navCallBack?.invoke()
+            InteractiveFragment.iFragment?.back()
         }
     }
 

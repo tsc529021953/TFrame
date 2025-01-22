@@ -1,13 +1,9 @@
 package com.sc.tmp_cw.service
 
-import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.DataUtil
-import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.sc.tmp_cw.bean.PISBean
 import timber.log.Timber
-import java.lang.StringBuilder
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.constant.MessageConstant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -19,11 +15,13 @@ import kotlinx.coroutines.launch
  */
 object MessageHandler {
 
-    val testData1 = "50 41 00 00 00 00 01 00 00 00 00 1D 00 01 00 6f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 32"
-    val testData2 = "50 41 00 00 00 00 01 00 00 00 00 1D 00 01 00 70 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 09 34 32"
-    val testData3 = "50 41 00 00 00 00 01 00 00 00 00 1D 00 01 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 34"
+    val testData1 = "50 41 00 00 00 00 01 00 ff 00 00 1D 00 01 00 6f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 32"
+    val testData2 = "50 41 00 00 00 00 01 00 01 00 00 1D 03 04 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 09 34 32"
+    val testData3 = "50 41 00 00 00 00 01 ff 00 00 00 1D 00 01 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 34"
 
     val IS_JUDGE_LENGTH = false
+
+    val MAX_LENGTH = 100
 
     /**
      *
@@ -40,7 +38,7 @@ object MessageHandler {
 //            System.out.println("message:$data")
 //        }
         service.mScope.launch {
-            handleMessage(testData1.replace(" ", ""), service)
+            handleMessage(testData2.replace(" ", ""), service)
 //            delay(5000)
 //            handleMessage(testData2.replace(" ", ""), service)
             delay(5000)
@@ -55,8 +53,8 @@ object MessageHandler {
         } else {
             val len = msg.length
             // 获取数据长度
-            if (len <= 8) {
-                Timber.e("消息长度不够")
+            if (len <= 8 || len < 100) {
+                Timber.e("消息长度不够:$len")
                 return
             }
             val len2 = getInfoByIndex(msg, 4, 8)
@@ -76,6 +74,7 @@ object MessageHandler {
                 pisBean.endCode = getInfoByIndex(msg, 22, 24)
                 pisBean.currentCode = getInfoByIndex(msg, 24, 26)
                 pisBean.nextCode = getInfoByIndex(msg, 26, 28)
+                service.stationNotifyObs.set(pisBean.boardStatus)
                 if (pisBean.boardStatus != -1) {
                     when (pisBean.boardStatus) {
                         0 -> {
@@ -89,6 +88,9 @@ object MessageHandler {
                         2 -> {
                             service.stationStatusObs.set(service.getString(R.string.arrived))
                             service.stationObs.set(service.getStationStr(pisBean.currentCode))
+                        }
+                        else -> {
+                            // 如果界面还打开着，关闭界面
                         }
                     }
                 }

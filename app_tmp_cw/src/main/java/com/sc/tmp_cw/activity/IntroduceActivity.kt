@@ -16,6 +16,7 @@ import com.nbhope.lib_frame.utils.FileUtil
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.base.CWBaseBindingActivity
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityIntroduceBinding
 import com.sc.tmp_cw.service.TmpServiceDelegate
@@ -33,12 +34,9 @@ import javax.inject.Inject
  * @description
  */
 @Route(path = MessageConstant.ROUTH_INTRODUCE)
-class IntroduceActivity : BaseBindingActivity<ActivityIntroduceBinding, IntroduceViewModel>() {
+class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, IntroduceViewModel>() {
 
     companion object {
-
-
-
     }
 
     override var layoutId: Int = R.layout.activity_introduce
@@ -56,6 +54,8 @@ class IntroduceActivity : BaseBindingActivity<ActivityIntroduceBinding, Introduc
         binding.backBtn.setOnClickListener {
             finish()
         }
+        super.rootLy = binding.bgLy
+        super.subscribeUi()
     }
 
     override fun initData() {

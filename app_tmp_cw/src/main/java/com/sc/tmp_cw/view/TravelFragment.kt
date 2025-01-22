@@ -39,7 +39,7 @@ class TravelFragment: BaseBindingFragment<FragmentTravelBinding, TravelViewModel
 
     override fun subscribeUi() {
         binding.backBtn.setOnClickListener {
-            InteractiveFragment.navCallBack?.invoke()
+            InteractiveFragment.iFragment?.back()
         }
         adapter = FileImgAdapter(viewModel.smallListObs.value ?: arrayListOf(), this)
         val ly = WrapGridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, true)

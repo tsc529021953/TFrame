@@ -18,7 +18,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/black"
             >
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +61,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 >
 
-            <TextView
+            <com.nbhope.lib_frame.widget.MarqueeTextView
                     style="@style/main_title_station"
                     android:layout_weight="1"
                     android:text="@{service.stationStatusObs}"

@@ -24,6 +24,11 @@ abstract class ActivityViewModelModule {
 
     @Binds
     @IntoMap
+    @ViewModelKey(StationNotifyViewModel::class)
+    abstract fun bindStationNotifyViewModel(viewModel: StationNotifyViewModel): ViewModel
+
+    @Binds
+    @IntoMap
     @ViewModelKey(SceneryViewModel::class)
     abstract fun bindSceneryViewModel(viewModel: SceneryViewModel): ViewModel
 

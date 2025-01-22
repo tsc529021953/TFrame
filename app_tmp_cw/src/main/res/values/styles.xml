@@ -34,6 +34,15 @@
         <item name="android:paddingStart">@dimen/main_title_station_margin</item>
     </style>
 
+    <style name="main_notify_station">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/main_title_station_ly_height</item>
+        <item name="android:textSize">@dimen/main_title_clock_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="main_bottom_right_ly">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
@@ -45,6 +54,14 @@
         <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
         <item name="android:elevation">4dp</item>
         <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin</item>
+        <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
+        <!--        <item name="android:layout_marginStart">@dimen/bottom_btn_list_margin</item>-->
+    </style>
+
+    <style name="main_bottom_left_bottom_btn_ly">
+        <item name="android:layout_width">@dimen/bottom_btn_list_size</item>
+        <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
+        <item name="android:elevation">4dp</item>
         <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
         <item name="android:layout_marginStart">@dimen/bottom_btn_list_margin</item>
     </style>
@@ -68,7 +85,7 @@
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:orientation">vertical</item>
-<!--        <item name="android:foreground">@drawable/home_selector_kg_item_bg</item>-->
+        <!--        <item name="android:foreground">@drawable/home_selector_kg_item_bg</item>-->
     </style>
 
     <style name="main_bottom_right_image">
@@ -82,7 +99,7 @@
         <item name="android:layout_width">@dimen/bottom_btn_list_btn_size</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center</item>
-<!--        <item name="android:layout_gravity">bottom</item>-->
+        <!--        <item name="android:layout_gravity">bottom</item>-->
         <item name="android:textSize">@dimen/bottom_btn_list_btn_text_size</item>
         <item name="android:textColor">@color/text_color</item>
     </style>
@@ -93,11 +110,13 @@
         <item name="android:layout_height">@dimen/in_btn_ly_height</item>
         <item name="android:orientation">vertical</item>
     </style>
+
     <style name="in_btn_iv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/in_btn_ly_width</item>
         <item name="android:clickable">true</item>
     </style>
+
     <style name="in_btn_tv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/in_btn_tv_height</item>
@@ -111,10 +130,12 @@
         <item name="android:layout_height">@dimen/travel_btn_ly_height</item>
         <item name="android:orientation">vertical</item>
     </style>
+
     <style name="travel_btn_iv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/travel_btn_iv_height</item>
     </style>
+
     <style name="travel_btn_tv">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/travel_btn_tv_height</item>
@@ -134,6 +155,12 @@
         <item name="android:layout_marginTop">@dimen/setting_ly_margin_top</item>
         <item name="android:gravity">start |center_vertical</item>
         <item name="android:clickable">true</item>
+    </style>
+
+    <style name="ly_no_title">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">@dimen/title_ly_height</item>
     </style>
 
 </resources>

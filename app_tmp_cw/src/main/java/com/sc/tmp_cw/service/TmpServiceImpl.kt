@@ -23,7 +23,9 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.*
+import com.nbhope.phfame.utils.VoiceUtil
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.activity.StationNotifyActivity
 import com.sc.tmp_cw.activity.UrgentNotifyActivity
 import com.sc.tmp_cw.bean.CWInfo
 import com.sc.tmp_cw.constant.MessageConstant
@@ -35,7 +37,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.lang.ref.WeakReference
-import java.util.*
 
 
 /**
@@ -119,6 +120,18 @@ class TmpServiceImpl : ITmpService, Service() {
                 }
             }
         })
+        stationNotifyObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+            override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
+                val m = stationNotifyObs.get()
+                Timber.e("站点提示 $m")
+                LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
+                if (m in 0..9 && AppManager.appManager?.topActivity != null && AppManager.appManager!!.topActivity!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName) {
+                    ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
+                }
+            }
+        })
+        // 静音设置
+        VoiceUtil.setScience(this)
     }
 
     override fun onDestroy() {
@@ -159,6 +172,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
     override var stationStatusObs = ObservableField<String>("")
     override var stationObs = ObservableField<String>("")
+    override var stationNotifyObs = ObservableInt(-1)
     override var timeObs = ObservableField<String>("")
     override var titleObs = ObservableField<String>("")
     override var rtspUrlObs = ObservableField<String>("")
@@ -195,11 +209,15 @@ class TmpServiceImpl : ITmpService, Service() {
 
         override fun onReceive(ipAddress: String, port: Int, time: Long, data: ByteArray) {
             // 接受到信息，ipAddress消息来源地址，port消息来源端口，time消息到达时间，data消息内容
-            var msg = DataUtil.byteArray2HexString(data)
-            Timber.i("onReceive $ipAddress $port $time ${data.size} $msg")
-            // 判断是否是hex
-            mScope.launch {
-                MessageHandler.handleMessage(msg, this@TmpServiceImpl)
+            try {
+                var msg = DataUtil.byteArray2HexString(data)
+                Timber.i("onReceive $ipAddress $port $time ${data.size} $msg")
+                // 判断是否是hex
+                mScope.launch {
+                    MessageHandler.handleMessage(msg, this@TmpServiceImpl)
+                }
+            } catch (e: Exception) {
+                Timber.e("onReceive err ${e.message}")
             }
         }
     }

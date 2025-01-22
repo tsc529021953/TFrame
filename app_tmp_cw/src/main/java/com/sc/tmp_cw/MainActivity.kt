@@ -9,10 +9,13 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.activity.LogActivity
@@ -21,11 +24,13 @@ import com.nbhope.lib_frame.common.BasePath
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.utils.AnimationUtil
+import com.nbhope.lib_frame.utils.AppUtils
 import com.nbhope.lib_frame.utils.DisplayUtil
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityMainBinding
+import com.sc.tmp_cw.inter.IMainView
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
@@ -57,11 +62,17 @@ import javax.inject.Inject
 3）资源管理【密码】
 4）系统设置【密码】
 5）观景模式
-
+0.0.0-2
+ 1）自动设置为主程序
+ 2）列车开进来的动画
  */
-class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), IMainView {
 
     companion object {
+
+        const val TAG_LIST = "TAG_LIST"
+        const val TAG_HOME = "TAG_HOME"
+        const val TAG_BACK = "TAG_BACK"
 
         const val REQUEST_CODE = 10085
 
@@ -72,6 +83,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
         const val PLAY_IMAGE_TIME = 15000L
         const val CTRL_LAYOUT_VIEW_TIME = 10000L
+
+        var iMain: IMainView? = null
 
     }
 
@@ -87,6 +100,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     private var currLayout: View? = null
 
+    private lateinit var navController: NavController
+
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
         when (it.cmd) {
@@ -99,19 +114,24 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        iMain = this
         super.onCreate(savedInstanceState)
         hideSystemUI()
         System.out.println("onCreate ??? $requestedOrientation ${requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}")
         if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
+        binding.rightLy.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+    }
 
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun subscribeUi() {
-        binding.vm = viewModel
         if (TmpServiceDelegate.service() != null)
             binding.service = TmpServiceDelegate.service()!!
+        binding.vm = viewModel
         if (checkPermissions(true)) {
             init()
         }
@@ -120,51 +140,62 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         mNavHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         // setup custom navigator
         val navigator = KeepStateNavigator(this, mNavHostFragment.childFragmentManager, R.id.nav_host_fragment)
-        val navController = mNavHostFragment.navController
+        navController = mNavHostFragment.navController
         navController.navigatorProvider.addNavigator(navigator)
         navController.setGraph(R.navigation.home_navigation)
-        layoutClick(binding.rtspBtn)
+//        layoutClick(binding.rtspBtn)
 
 
         binding.listBtn.setOnClickListener {
             binding.rightLy.openDrawer(Gravity.RIGHT)
         }
+        binding.homeBtn.setOnClickListener {
+            home()
+        }
 
-        binding.rtspBtn.setOnClickListener {
-            layoutClick(binding.rtspBtn) {
-                navController.navigate(R.id.navigation_stream_media, null)
-            }
-        }
-        binding.localBtn.setOnClickListener {
-            layoutClick(binding.localBtn) {
-                navController.navigate(R.id.navigation_local, null)
-            }
-        }
+//        binding.rtspBtn.setOnClickListener {
+//            layoutClick(binding.rtspBtn) {
+//                navController.navigate(R.id.navigation_stream_media, null)
+//            }
+//        }
+//        binding.localBtn.setOnClickListener {
+//            layoutClick(binding.localBtn) {
+//                navController.navigate(R.id.navigation_local, null)
+//            }
+//        }
         binding.fjBtn.setOnClickListener {
-            ARouter.getInstance().build(MessageConstant.ROUTH_SCENERY).navigation(this)
+            layoutClick(binding.jhBtn, true) {
+                ARouter.getInstance().build(MessageConstant.ROUTH_SCENERY).navigation(this)
+            }
         }
         binding.jhBtn.setOnClickListener {
 //            TmpServiceDelegate.service()?.test("")
-            layoutClick(binding.jhBtn) {
+            layoutClick(binding.jhBtn, true) {
                 navController.navigate(R.id.navigation_interactive, null)
             }
+
+//            TmpServiceDelegate.service()?.test("")
         }
     }
 
-    private fun layoutClick(view: View, callback: (() -> Unit)? = null) {
+    private fun layoutClick(view: View, hideDL: Boolean = false, callback: (() -> Unit)? = null) {
         if (currLayout == view) return
+
         callback?.invoke()
-        if (currLayout != null) {
-            currLayout!!.isSelected = false
-            currLayout!!.scaleX = 1f
-            currLayout!!.scaleY = 1f
+        if (hideDL) {
+            binding.rightLy.closeDrawer(Gravity.RIGHT)
         }
-//        if (currLayout is TextView)
-//            (currLayout as TextView).textSize = DisplayUtil.px2sp(this, resources.getDimension(R.dimen.home_text_tab_size)).toFloat()
-        view.isSelected = true
-        currLayout = view
-        currLayout!!.scaleX = 1.2f
-        currLayout!!.scaleY = 1.2f
+//        if (currLayout != null) {
+//            currLayout!!.isSelected = false
+//            currLayout!!.scaleX = 1f
+//            currLayout!!.scaleY = 1f
+//        }
+////        if (currLayout is TextView)
+////            (currLayout as TextView).textSize = DisplayUtil.px2sp(this, resources.getDimension(R.dimen.home_text_tab_size)).toFloat()
+//        view.isSelected = true
+//        currLayout = view
+//        currLayout!!.scaleX = 1.2f
+//        currLayout!!.scaleY = 1.2f
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -210,7 +241,16 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         return hasPermission
     }
 
-    val handler = Handler()
+
+    override fun show(tag: ArrayList<String>) {
+        System.out.println("show tag $tag")
+        binding.listSf.visibility = if (tag.contains(TAG_LIST)) View.VISIBLE else View.GONE
+        binding.homeSf.visibility = if (tag.contains(TAG_HOME)) View.VISIBLE else View.GONE
+    }
+
+    override fun home() {
+        navController.navigate(R.id.navigation_local, null)
+    }
 
 
 }

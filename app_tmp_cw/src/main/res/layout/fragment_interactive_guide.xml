@@ -87,8 +87,8 @@
                 android:id="@+id/setting_iv"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:background="@drawable/selector_transparent_btn"
                 />
+<!--        android:background="@drawable/selector_transparent_btn"-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

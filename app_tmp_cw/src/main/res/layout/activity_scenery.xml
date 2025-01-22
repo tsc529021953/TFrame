@@ -22,7 +22,7 @@
             <ImageView
                     style="@style/main_bottom_right_bottom_btn_btn"
                     android:id="@+id/back_btn"
-                    android:src="@drawable/icon_btn_back"
+                    android:src="@drawable/ic_home"
                     />
 
         </com.facebook.shimmer.ShimmerFrameLayout>

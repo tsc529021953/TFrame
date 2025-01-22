@@ -19,9 +19,9 @@ object AnimationUtil {
     const val ANIMATION_TIMER = 2000L
     const val HIDE_TIMER = 2000L
 
-    fun setInitPoint(slidingView: View, isRight: Boolean = true) {
+    fun setInitPoint(slidingView: View, pointX: Float = -1f, isRight: Boolean = true) {
         var w = slidingView.width.toFloat()
-        slidingView.translationX = if (isRight) w else -w
+        slidingView.translationX = if (pointX >= 0) pointX else if (isRight) w else -w
     }
 
     fun showSlidingView(
@@ -52,6 +52,17 @@ object AnimationUtil {
                             }
                         }
                     }
+                }
+    }
+
+    fun slideToEnd(slidingView: View, aTime: Long = ANIMATION_TIMER) {
+        var width = DisplayUtil.getScreenWidth(HopeBaseApp.getContext()).toFloat()
+        slidingView.animate()
+                .translationX(width)  // 滑出屏幕
+                .setDuration(aTime)  // 1秒钟滑出
+                .withEndAction {
+                    // 动画结束后隐藏视图
+//                    slidingView.visibility = View.GONE
                 }
     }
 

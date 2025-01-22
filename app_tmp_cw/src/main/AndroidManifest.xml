@@ -32,6 +32,7 @@
         <activity android:name=".activity.IntroduceActivity"/>
         <activity android:name="com.nbhope.lib_frame.activity.LogActivity"/>
         <activity android:name=".activity.UrgentNotifyActivity" android:launchMode="singleTop"/>
+        <activity android:name=".activity.StationNotifyActivity" android:launchMode="singleTop"/>
 
         <receiver
                 android:name="com.sc.tmp_cw.receiver.StartReceiver"

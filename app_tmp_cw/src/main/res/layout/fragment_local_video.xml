@@ -22,7 +22,7 @@
                     />
 
             <com.facebook.shimmer.ShimmerFrameLayout
-                    style="@style/main_bottom_right_bottom_btn_ly"
+                    style="@style/main_bottom_left_bottom_btn_ly"
                     android:id="@+id/shimmer_view_container1"
                     app:shimmer_base_alpha="1"
                     app:shimmer_duration="3000"
@@ -46,6 +46,7 @@
                 android:layout_width="@dimen/bottom_ly_left_side_width"
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
+                android:layout_marginTop="@dimen/title_ly_height"
                 >
 
             <androidx.recyclerview.widget.RecyclerView

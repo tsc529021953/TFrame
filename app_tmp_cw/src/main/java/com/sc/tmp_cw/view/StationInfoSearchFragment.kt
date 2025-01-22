@@ -25,7 +25,7 @@ class StationInfoSearchFragment: BaseBindingFragment<FragmentStationInfoSearchBi
 
     override fun subscribeUi() {
         binding.backBtn.setOnClickListener {
-            InteractiveFragment.navCallBack?.invoke()
+            InteractiveFragment.iFragment?.back()
         }
     }
 

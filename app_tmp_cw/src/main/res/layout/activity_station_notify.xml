@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <data>
+
+        <variable
+                name="service"
+                type="com.sc.tmp_cw.inter.ITmpService"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bg_ly"
+            >
+
+        <TextView
+                style="@style/main_notify_station"
+                tools:text="@string/arrive"
+                android:text='@{service.stationStatusObs + "：" + service.stationObs}'
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/car_iv"
+                app:layout_constraintBottom_toTopOf="@+id/floor_iv"
+                android:src="@mipmap/ic_station_car"
+                android:scaleType="fitEnd"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                />
+
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/floor_iv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@mipmap/ic_station_floor"
+                android:scaleType="fitXY"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

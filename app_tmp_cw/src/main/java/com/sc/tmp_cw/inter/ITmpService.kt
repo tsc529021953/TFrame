@@ -15,6 +15,7 @@ interface  ITmpService: IProvider {
 
     var stationStatusObs: ObservableField<String>
     var stationObs: ObservableField<String>
+    var stationNotifyObs: ObservableInt
     var timeObs: ObservableField<String>
     var titleObs: ObservableField<String>
     var rtspUrlObs: ObservableField<String>

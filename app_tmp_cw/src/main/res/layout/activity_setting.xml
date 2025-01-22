@@ -50,9 +50,27 @@
                   android:id="@+id/auto_tv"
                   app:layout_constraintTop_toBottomOf="@+id/ex_save_tv"
                   app:layout_constraintStart_toStartOf="@+id/ex_save_tv"
-                  app:layout_constraintBottom_toBottomOf="parent"
+                  app:layout_constraintBottom_toTopOf="@+id/param_tv"
                   android:background="@drawable/selector_ic_auto"
                   android:text="@string/setting_auto"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/param_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/auto_tv"
+                  app:layout_constraintStart_toStartOf="@+id/auto_tv"
+                  app:layout_constraintBottom_toTopOf="@+id/system_tv"
+                  android:background="@drawable/selector_ic_priority"
+                  android:text="@string/setting_param"
+                />
+
+        <TextView style="@style/setting_ly"
+                  android:id="@+id/system_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/param_tv"
+                  app:layout_constraintStart_toStartOf="@+id/param_tv"
+                  app:layout_constraintBottom_toBottomOf="parent"
+                  android:background="@drawable/selector_ic_local_res"
+                  android:text="@string/setting_system"
                 />
 
         <com.facebook.shimmer.ShimmerFrameLayout

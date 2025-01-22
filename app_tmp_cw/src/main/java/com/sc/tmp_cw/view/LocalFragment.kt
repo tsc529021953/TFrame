@@ -15,6 +15,7 @@ import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.view.SpaceItemDecoration
 import com.nbhope.lib_frame.widget.WrapGridLayoutManager
 import com.nbhope.lib_frame.widget.WrapLinearLayoutManager
+import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.adapter.FileImgAdapter
 import com.sc.tmp_cw.adapter.FileVideoAdapter
@@ -57,6 +58,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line, 0, line, line)))
         binding.rv.adapter = adapter
         binding.rv.layoutManager = ly
+        MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
     }
 
     private fun initPlayer() {
@@ -84,18 +86,27 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         })
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        System.out.println("local onHiddenChanged $hidden")
+        if (!hidden) MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+    }
+
     override fun onResume() {
         super.onResume()
-        if (adapter != null && adapter!!.data.size > 0) {
-            viewModel.player?.play()
-        }
+        System.out.println("local onResume ")
+//        if (adapter != null && adapter!!.data.size > 0) {
+//            viewModel.player?.play()
+//        }
     }
+
 
     override fun onPause() {
         super.onPause()
-        if (adapter != null && adapter!!.data.size > 0) {
-            viewModel.player?.pause()
-        }
+        System.out.println("local onPause ")
+//        if (adapter != null && adapter!!.data.size > 0) {
+//            viewModel.player?.pause()
+//        }
     }
 
     override fun initData() {

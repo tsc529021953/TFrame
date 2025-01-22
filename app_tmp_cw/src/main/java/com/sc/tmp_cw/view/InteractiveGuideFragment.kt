@@ -35,13 +35,17 @@ class InteractiveGuideFragment: BaseBindingFragment<FragmentInteractiveGuideBind
         if (handleClick == null)
             handleClick = HandleClick()
         binding.settingIv.setOnClickListener {
+            InteractiveFragment.iFragment?.clicked()
             handleClick?.handle {
+                InteractiveFragment.iFragment?.stop2()
                 // TODO 弹出密码框
-                PersonalTipDialog.inputNameDialog(context!!.resources.getString(R.string.setting_please_enter_password)) {
+                PersonalTipDialog.inputNameDialog(context!!.resources.getString(R.string.setting_please_enter_password), null, {
                     if (it == "8888") {
                         ARouter.getInstance().build(MessageConstant.ROUTH_SETTING).navigation(this.context)
                         return@inputNameDialog null
                     } else return@inputNameDialog context!!.resources.getString(R.string.setting_password_error)
+                }) {
+                    InteractiveFragment.iFragment?.clicked()
                 }.show(
                         activity!!.supportFragmentManager,
                         "personalTipDialog"
@@ -77,7 +81,8 @@ class InteractiveGuideFragment: BaseBindingFragment<FragmentInteractiveGuideBind
     }
 
     private fun navigate(resId: Int) {
-        InteractiveFragment.navController?.navigate(resId, null)
+        InteractiveFragment.iFragment?.clicked()
+        InteractiveFragment.iFragment?.navigate(resId)
     }
 
     override fun onDestroy() {

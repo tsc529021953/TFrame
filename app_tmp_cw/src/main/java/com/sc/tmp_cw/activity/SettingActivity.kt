@@ -1,11 +1,13 @@
 package com.sc.tmp_cw.activity
 
+import android.os.Environment
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.common.BasePath
 import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.AppUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.nbhope.lib_frame.utils.toast.ToastUtil
@@ -49,8 +51,8 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
             ToastUtil.showS(R.string.no_make)
         }
         binding.localResTv.setOnClickListener {
-            ToastUtil.showS(R.string.no_make)
             // 打开本地资源位置
+            AppUtils.openRockExplorer(this, Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_BASE_FILE)
         }
         binding.logTv.setOnClickListener {
 //            ToastUtil.showS(R.string.no_make)
@@ -58,11 +60,18 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
             ARouter.getInstance().build(BasePath.LOG_PATH).navigation(this)
         }
         binding.exSaveTv.setOnClickListener {
-            ToastUtil.showS(R.string.no_make)
             // 打开文件管理器
+            AppUtils.openRockExplorer(this)
         }
         binding.autoTv.setOnClickListener {
             ToastUtil.showS(R.string.no_make)
+        }
+        binding.paramTv.setOnClickListener {
+            // TODO 参数设置
+            ToastUtil.showS(R.string.no_make)
+        }
+        binding.systemTv.setOnClickListener {
+            AppUtils.openSetting(this)
         }
     }
 
