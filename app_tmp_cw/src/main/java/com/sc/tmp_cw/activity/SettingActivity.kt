@@ -67,8 +67,10 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
             ToastUtil.showS(R.string.no_make)
         }
         binding.paramTv.setOnClickListener {
-            // TODO 参数设置
-            ToastUtil.showS(R.string.no_make)
+            ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
+        }
+        binding.videoTv.setOnClickListener {
+            ARouter.getInstance().build(MessageConstant.ROUTH_PLAYLIST).navigation(this)
         }
         binding.systemTv.setOnClickListener {
             AppUtils.openSetting(this)

@@ -63,6 +63,7 @@
 
             <com.nbhope.lib_frame.widget.MarqueeTextView
                     style="@style/main_title_station"
+                    android:id="@+id/status_tv"
                     android:layout_weight="1"
                     android:text="@{service.stationStatusObs}"
                     android:gravity="start |center_vertical"
@@ -79,6 +80,7 @@
 
             <com.nbhope.lib_frame.widget.MarqueeTextView
                     style="@style/main_title_station"
+                    android:id="@+id/station_tv"
                     android:text="@{service.stationObs}"
                     />
 

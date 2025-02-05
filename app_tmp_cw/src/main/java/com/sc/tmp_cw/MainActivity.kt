@@ -1,40 +1,30 @@
 package com.sc.tmp_cw
 
 import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
+import android.provider.Settings
 import android.view.Gravity
 import android.view.View
-import android.widget.TextView
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alibaba.android.arouter.launcher.ARouter
-import com.nbhope.lib_frame.activity.LogActivity
 import com.nbhope.lib_frame.base.BaseBindingActivity
-import com.nbhope.lib_frame.common.BasePath
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
-import com.nbhope.lib_frame.utils.AnimationUtil
-import com.nbhope.lib_frame.utils.AppUtils
-import com.nbhope.lib_frame.utils.DisplayUtil
 import com.nbhope.lib_frame.utils.LiveEBUtil
-import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityMainBinding
 import com.sc.tmp_cw.inter.IMainView
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -126,6 +116,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     override fun onResume() {
         super.onResume()
+        checkSpeed()
     }
 
     override fun subscribeUi() {
@@ -175,6 +166,18 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             }
 
 //            TmpServiceDelegate.service()?.test("")
+        }
+//        ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
+
+    }
+
+    private fun checkSpeed() {
+        val speed = viewModel.spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f)
+        System.out.println("当前速度 $speed")
+        if (speed != viewModel.speedObs.get()) {
+            Timber.i("当前速度 $speed")
+            binding.titleLy2.stationTv.setMarqueeSpeed(speed)
+            binding.titleLy2.statusTv.setMarqueeSpeed(speed)
         }
     }
 
@@ -236,8 +239,20 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             if (!hasPermission && request) {
                 //
                 this.requestPermissions(PERMISSIONS.toTypedArray(), REQUEST_CODE)
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    // 检查是否有存储权限
+                    val granted = Environment.isExternalStorageManager()
+                    if (!granted) {
+                        // 在activity中请求存储权限
+                        val intent: Intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                            .setData(Uri.parse("package:$packageName"))
+                        startActivityForResult(intent, 0)
+                    }
+                }
             }
         }
+
         return hasPermission
     }
 

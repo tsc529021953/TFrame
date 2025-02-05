@@ -28,6 +28,8 @@
     <string name="setting_auto">自动切换设置</string>
     <string name="setting_param">参数设置</string>
     <string name="setting_system">系统设置</string>
+    <string name="setting_video_list">播放列表设置</string>
     <string name="setting_please_enter_password">请输入工程设置密码！</string>
     <string name="setting_password_error">工程密码错误！</string>
+    <string name="setting_is_save_or_cancel">是否保存变更的参数！</string>
 </resources>

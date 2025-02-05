@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.utils.FileUtil
@@ -17,6 +18,7 @@ import com.sc.tmp_cw.constant.MessageConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -42,14 +44,43 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
 
     var videoListObs = MutableLiveData<ArrayList<FileBean>>()
 
+    var list: List<FileBean>? = null
+
     var playStatusObs = ObservableBoolean(false)
     var playIndex = 0
 
+    var lastStr = ""
+
     fun initData() {
         var path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_VIDEO
-        val list = FileUtil.getDicFileBeansByExs(FileUtil.VIDEO_EXTENSIONS, path) ?: return
+        list = FileUtil.getDicFileBeansByExs(FileUtil.VIDEO_EXTENSIONS, path) ?: return
+        lastStr = spManager.getString(MessageConstant.SP_PLAYLIST_CHECK, "")
+        checkVideo(false)
+    }
+
+    fun checkVideo(check: Boolean = true) {
+        if (check) {
+            val record = spManager.getString(MessageConstant.SP_PLAYLIST_CHECK, "")
+            if (record == lastStr) {
+                System.out.println("相同数据，无需校验！")
+                return
+            } else lastStr = record
+        }
+
+        val local = spManager.getString(MessageConstant.SP_PLAYLIST, "")
         val list3 = ArrayList<FileBean>()
-        list3.addAll(list!!)
+        if (local.isNullOrEmpty()) {
+
+        } else {
+            val record = gson.fromJson<ArrayList<FileBean>>(local, object : TypeToken<List<FileBean?>?>() {}.type)
+            list!!.map { it ->
+                val item = record.find { it2 -> it.path == it2.path }
+                if (item != null) {
+                    list3.add(it)
+                    it.status = 1
+                } else it.status = 0
+            }
+        }
         videoListObs.postValue(list3)
     }
 
@@ -80,6 +111,16 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         player!!.setMediaItem(mediaItem)
         player!!.prepare()
         player!!.play()
+    }
+
+    fun stop() {
+        if (videoListObs.value == null) return
+        try {
+            player?.stop()
+            player?.next()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }

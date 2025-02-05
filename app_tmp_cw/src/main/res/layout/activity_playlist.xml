@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bg_ly"
+            >
+
+        <androidx.recyclerview.widget.RecyclerView android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:id="@+id/rv"
+                                                   android:padding="@dimen/setting_item_margin"
+                />
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+                style="@style/main_bottom_right_bottom_btn_ly"
+                android:id="@+id/shimmer_view_container1"
+                app:shimmer_base_alpha="1"
+                app:shimmer_duration="3000"
+                app:shimmer_highlight_alpha="0.4"
+                app:shimmer_tilt="180"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+            <ImageView
+                    style="@style/main_bottom_right_bottom_btn_btn"
+                    android:id="@+id/back_btn"
+                    android:src="@drawable/icon_btn_back"
+                    />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

@@ -22,5 +22,6 @@ class FileBean {
      */
     var ex: String = ""
     var type: Int = UNKNOW
+    var status: Int = 0
 
 }

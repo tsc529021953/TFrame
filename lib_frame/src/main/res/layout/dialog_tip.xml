@@ -13,7 +13,7 @@
             android:layout_width="352dp"
             android:layout_height="173dp"
             android:background="@drawable/shape_common_corner_8dp"
-            android:backgroundTint="#202020"
+            android:backgroundTint="#3C3C3C"
     >
         <TextView
                 android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                 android:text="当前网络未连接，请进入系统设置连接WiFi或接上网线后操作！"
                 android:textColor="#cbcbcb"
                 android:textSize="16sp"
-                android:gravity="left"
+                android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@+id/title_tv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

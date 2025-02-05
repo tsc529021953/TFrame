@@ -18,6 +18,7 @@ class TimerHandler(private val interval: Long, private var hour: Int = -1, var c
                 System.out.println("onPlayerStateChanged时间到达 $this $runnable")
                 if (runnable == null) return
                 callback()
+                if (runnable == null) return
                 handler.postDelayed(this, interval)
             }
         }

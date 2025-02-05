@@ -163,4 +163,50 @@
         <item name="android:layout_marginTop">@dimen/title_ly_height</item>
     </style>
 
+    <style name="setting_item_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/setting_item_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">@dimen/setting_item_margin</item>
+        <item name="android:paddingEnd">@dimen/setting_item_margin</item>
+    </style>
+
+    <style name="setting_item_text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">start |center_vertical</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/setting_text_size</item>
+    </style>
+
+    <style name="setting_item_slider_style">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">@dimen/setting_item_slider_width</item>
+        <item name="android:progressDrawable">@drawable/setting_seekbar_progress</item>
+        <item name="android:thumb">@drawable/setting_seekbar_thumb</item>
+        <item name="android:splitTrack">false</item>
+        <item name="android:maxHeight">12dp</item>
+    </style>
+
+    <style name="playlist_ly">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/setting_item_height</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="playlist_iv">
+        <item name="android:layout_width">@dimen/setting_item_height</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="playlist_tv">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/travel_btn_tv_size</item>
+        <item name="android:gravity">start |center_vertical</item>
+        <item name="android:layout_marginStart">@dimen/setting_item_margin</item>
+    </style>
+
 </resources>

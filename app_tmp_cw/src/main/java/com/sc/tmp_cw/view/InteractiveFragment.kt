@@ -62,6 +62,8 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
         super.onHiddenChanged(hidden)
         if (!hidden) {
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
+        } else {
+            hide()
         }
     }
 
@@ -80,6 +82,7 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
 
     override fun back() {
         reset()
+        hide()
     }
 
     override fun navigate(resId: Int) {

@@ -132,6 +132,7 @@ class TmpServiceImpl : ITmpService, Service() {
         })
         // 静音设置
         VoiceUtil.setScience(this)
+//        stationObs.set("收到卡里的克拉斯打开的大是大非撒啊发发发")
     }
 
     override fun onDestroy() {

@@ -61,4 +61,14 @@ abstract class ActivityViewModelModule {
     @IntoMap
     @ViewModelKey(LocalViewModel::class)
     abstract fun bindLocalViewModel(viewModel: LocalViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ParamViewModel::class)
+    abstract fun bindParamViewModel(viewModel: ParamViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PlaylistViewModel::class)
+    abstract fun bindPlaylistViewModel(viewModel: PlaylistViewModel): ViewModel
 }

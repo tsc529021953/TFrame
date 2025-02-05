@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/secondaryProgress"
+        android:gravity="center"
+        android:bottom="15dp"
+        android:top="15dp"
+        android:right="15dp"
+        android:left="15dp">
+        <shape
+            android:shape="rectangle">
+            <corners
+                android:radius="8dp"/>
+            <size
+                android:width="12dp"
+                android:height="25dp" />
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+
+</layer-list>

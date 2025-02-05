@@ -34,4 +34,12 @@ abstract class ActivityBindModule {
     @ActivityScope
     @ContributesAndroidInjector
     abstract fun contributeIntroduceActivity(): IntroduceActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributePlatylistActivity(): PlatylistActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector
+    abstract fun contributeParamActivity(): ParamActivity
 }

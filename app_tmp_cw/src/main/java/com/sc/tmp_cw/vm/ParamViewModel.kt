@@ -1,13 +1,13 @@
 package com.sc.tmp_cw.vm
 
 import androidx.databinding.ObservableBoolean
-import androidx.databinding.ObservableFloat
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
+import com.sc.tmp_cw.constant.MessageConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,32 +21,24 @@ import javax.inject.Inject
  * @version 0.0.0-1
  * @description
  */
-class MainViewModel @Inject constructor(val spManager: SharedPreferencesManager) : BaseViewModel() {
+class ParamViewModel @Inject constructor(val spManager: SharedPreferencesManager) : BaseViewModel() {
 
     companion object {
 
-        const val BASE_FILE = "/THREDIM_MEDIA/"
-        const val CONFIG_FILE = "AppInfo.json"
+
     }
 
     var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     var gson = Gson()
 
-    var playStatusObs = ObservableBoolean(false)
+    var volumeObs = ObservableInt(0)
 
-    var filesObs = MutableLiveData<List<File>>()
-
-    var isImage: Boolean? = null
-
-    var playIndex = 0
-
-    var speedObs = ObservableFloat(1f)
-
-    lateinit var timerHandler: TimerHandler
+    var speedObs = ObservableInt(0)
 
     fun initData() {
-
+        val speed = (spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f) * 10).toInt()
+        speedObs.set(speed)
     }
 
 

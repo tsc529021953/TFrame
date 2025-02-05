@@ -27,6 +27,7 @@ abstract class CWBaseBindingFragment<T : ViewDataBinding, VM : BaseViewModel> : 
         }
         timerHandler = TimerHandler(MessageConstant.FINISH_TIME) {
             System.out.println("定时到达！！")
+            stop()
             finish?.invoke()
         }
         reset()

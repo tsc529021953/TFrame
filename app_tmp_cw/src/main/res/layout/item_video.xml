@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <LinearLayout style="@style/playlist_ly"
+                  android:id="@+id/bg_ly"
+            >
+
+        <ImageView style="@style/playlist_iv"
+                   android:id="@+id/iv"
+                />
+
+        <TextView style="@style/playlist_tv"
+                  android:id="@+id/tv"
+                  tools:text="sss"
+                />
+
+        <ImageView style="@style/playlist_iv"
+                   android:id="@+id/select_iv"
+                   android:src="@drawable/ic_selected"
+                   android:padding="15dp"
+                />
+
+    </LinearLayout>
+</layout>
+

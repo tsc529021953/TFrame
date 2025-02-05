@@ -26,6 +26,7 @@ abstract class CWBaseBindingActivity<T : ViewDataBinding, VM : BaseViewModel>: B
             reset()
         }
         timerHandler = TimerHandler(MessageConstant.FINISH_TIME) {
+            timerHandler?.stop()
             finish()
         }
         timerHandler?.start()

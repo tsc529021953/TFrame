@@ -89,7 +89,9 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         System.out.println("local onHiddenChanged $hidden")
-        if (!hidden) MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+        if (!hidden) {
+            MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+        }
     }
 
     override fun onResume() {
@@ -98,6 +100,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.play()
 //        }
+        viewModel.checkVideo()
     }
 
 
@@ -115,7 +118,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
             adapter?.setNewInstance(it)
             if (it.size > 0) {
                 viewModel.play(it[0])
-            }
+            } else viewModel.stop()
         }
         viewModel.initData()
         initPlayer()
