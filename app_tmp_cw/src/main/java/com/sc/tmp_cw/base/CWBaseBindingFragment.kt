@@ -30,7 +30,6 @@ abstract class CWBaseBindingFragment<T : ViewDataBinding, VM : BaseViewModel> : 
             stop()
             finish?.invoke()
         }
-        reset()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -50,6 +49,16 @@ abstract class CWBaseBindingFragment<T : ViewDataBinding, VM : BaseViewModel> : 
 
     fun stop() {
         timerHandler?.stop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reset()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stop()
     }
 
     override fun onDestroy() {

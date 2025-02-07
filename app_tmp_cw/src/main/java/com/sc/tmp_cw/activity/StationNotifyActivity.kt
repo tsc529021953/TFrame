@@ -104,7 +104,9 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 // 移动到中间
                 AnimationUtil.setInitPoint(binding.carIv, 0f)
                 // 开始动画移动到最右边
-                AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME)
+                AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
+//                    finish() // 离站动画结束后
+                }
             }
             1 -> {
                 // 移动到最左边

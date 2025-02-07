@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
 
     <data>
+
         <variable
                 name="vm"
                 type="com.sc.tmp_cw.vm.ParamViewModel"/>
@@ -13,6 +16,7 @@
             android:layout_height="match_parent"
             android:id="@+id/bg_ly"
             >
+
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -21,8 +25,29 @@
 
             <LinearLayout style="@style/setting_item_style">
 
-                <TextView style="@style/setting_item_text_style"
-                          android:text="音量设置："
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="静音开关："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="200dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_height="20dp"
+                        android:id="@+id/mute_sc"
+                        android:thumb="@drawable/setting_switch_thumb_setting"
+                        app:track="@drawable/setting_switch_setting_track"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="音量设置："
                         />
 
                 <View style="@style/horizontal_space_style"/>
@@ -39,8 +64,9 @@
 
             <LinearLayout style="@style/setting_item_style">
 
-                <TextView style="@style/setting_item_text_style"
-                          android:text="跑马灯速度："
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="跑马灯速度："
                         />
 
                 <View style="@style/horizontal_space_style"/>
@@ -55,8 +81,9 @@
 
             </LinearLayout>
 
-        </LinearLayout>
 
+
+        </LinearLayout>
 
 
         <com.facebook.shimmer.ShimmerFrameLayout

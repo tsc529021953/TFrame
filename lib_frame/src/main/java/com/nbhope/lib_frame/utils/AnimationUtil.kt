@@ -55,7 +55,7 @@ object AnimationUtil {
                 }
     }
 
-    fun slideToEnd(slidingView: View, aTime: Long = ANIMATION_TIMER) {
+    fun slideToEnd(slidingView: View, aTime: Long = ANIMATION_TIMER, runEndCB: (() -> Unit)? = null) {
         var width = DisplayUtil.getScreenWidth(HopeBaseApp.getContext()).toFloat()
         slidingView.animate()
                 .translationX(width)  // 滑出屏幕
@@ -63,6 +63,7 @@ object AnimationUtil {
                 .withEndAction {
                     // 动画结束后隐藏视图
 //                    slidingView.visibility = View.GONE
+                    runEndCB?.invoke()
                 }
     }
 

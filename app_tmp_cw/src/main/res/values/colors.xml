@@ -14,4 +14,7 @@
     <color name="un_text_color">#fd730c</color>
     <color name="setting_btn_color">#4DFFFFFF</color>
 
+    <color name="switch_open_color">#2196F3</color>
+    <color name="switch_close_color">#7A7A7A</color>
+
 </resources>

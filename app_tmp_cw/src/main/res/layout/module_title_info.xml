@@ -53,38 +53,55 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
-                style="@style/main_title_station_ly"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                >
+<!--        <com.facebook.shimmer.ShimmerFrameLayout-->
+<!--                app:layout_constraintTop_toTopOf="parent"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/home_sf"-->
+<!--                app:shimmer_base_alpha="1"-->
+<!--                app:shimmer_duration="3000"-->
+<!--                app:shimmer_highlight_alpha="0.4"-->
+<!--                app:shimmer_tilt="180"-->
+<!--                >-->
 
-            <com.nbhope.lib_frame.widget.MarqueeTextView
-                    style="@style/main_title_station"
-                    android:id="@+id/status_tv"
-                    android:layout_weight="1"
-                    android:text="@{service.stationStatusObs}"
-                    android:gravity="start |center_vertical"
-                    />
+            <LinearLayout
+                    style="@style/main_title_station_ly"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    >
 
-            <ImageView
-                    android:layout_width="@dimen/main_title_station_icon_height"
-                    android:layout_height="@dimen/main_title_station_icon_height"
-                    android:src="@drawable/icon_title_station"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/main_title_station_margin"
-                    android:layout_marginEnd="@dimen/main_title_station_margin"
-                    />
+                <com.nbhope.lib_frame.widget.MarqueeTextView
+                        style="@style/main_title_station"
+                        android:id="@+id/status_tv"
+                        android:layout_weight="1"
+                        android:text="@{service.stationStatusObs}"
+                        android:gravity="start |center_vertical"
+                        />
 
-            <com.nbhope.lib_frame.widget.MarqueeTextView
-                    style="@style/main_title_station"
-                    android:id="@+id/station_tv"
-                    android:text="@{service.stationObs}"
-                    />
+                <ImageView
+                        android:layout_width="@dimen/main_title_station_icon_height"
+                        android:layout_height="@dimen/main_title_station_icon_height"
+                        android:src="@drawable/icon_title_station"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="@dimen/main_title_station_margin"
+                        android:layout_marginEnd="@dimen/main_title_station_margin"
+                        />
 
-        </LinearLayout>
+                <com.nbhope.lib_frame.widget.MarqueeTextView
+                        style="@style/main_title_station"
+                        android:id="@+id/station_tv"
+                        android:text="@{service.stationObs}"
+                        />
+
+            </LinearLayout>
+
+<!--        </com.facebook.shimmer.ShimmerFrameLayout>-->
+
 
         <TextView
                 style="@style/main_title_clock"

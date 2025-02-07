@@ -3,6 +3,8 @@ package com.sc.tmp_cw.constant
 object MessageConstant {
 
     const val FINISH_TIME = 30000L
+    const val MAIN_ANIMATION_TIME = 5000L
+    const val MAIN_ANIMATION_TIME_INTERVAL = MAIN_ANIMATION_TIME * 4
 
     const val ROUTH_SCENERY = "/activity/scenery"
     const val ROUTH_URGENT_NOTIFY = "/activity/urgent_notify"
@@ -34,6 +36,7 @@ object MessageConstant {
     const val CMD_URGENT_NOTICE = "CMD_URGENT_NOTICE"
     const val CMD_STATION_NOTICE = "CMD_URGENT_NOTICE"
     const val CMD_RTSP_URL_LOADED = "CMD_RTSP_URL_LOADED"
+    const val CMD_BACK_HOME = "CMD_BACK_HOME"
 
     const val SERVICE_INIT_SUCCESS = "SERVICE_INIT_SUCCESS"
 }

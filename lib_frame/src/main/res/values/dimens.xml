@@ -74,5 +74,8 @@
     <dimen name="float_dialog_tip_height">173dp</dimen>
 
     <!--common-->
+    <dimen name="main_switch_radius">20dp</dimen>
+    <dimen name="main_switch_height">20dp</dimen>
+    <dimen name="main_switch_padding">2dp</dimen>
 
 </resources>

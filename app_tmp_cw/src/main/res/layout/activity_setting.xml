@@ -6,6 +6,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/bg_ly"
+            android:paddingStart="@dimen/setting_view_margin_start"
             >
 
         <TextView style="@style/setting_ly"
@@ -13,10 +14,10 @@
                   app:layout_constraintTop_toTopOf="parent"
                   app:layout_constraintStart_toStartOf="parent"
                   app:layout_constraintBottom_toTopOf="@+id/local_res_tv"
-                  android:layout_marginStart="@dimen/setting_view_margin_start"
                   android:background="@drawable/selector_ic_priority"
                   android:text="@string/setting_priority"
                   app:layout_constraintVertical_chainStyle="packed"
+                  android:visibility="gone"
                 />
 
         <TextView style="@style/setting_ly"
@@ -53,6 +54,7 @@
                   app:layout_constraintBottom_toTopOf="@+id/param_tv"
                   android:background="@drawable/selector_ic_auto"
                   android:text="@string/setting_auto"
+                  android:visibility="gone"
                 />
 
         <TextView style="@style/setting_ly"

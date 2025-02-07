@@ -43,6 +43,9 @@ object MessageHandler {
 //            handleMessage(testData2.replace(" ", ""), service)
             delay(5000)
             handleMessage(testData3.replace(" ", ""), service)
+
+            delay(10000)
+            handleMessage(testData2.replace(" ", ""), service)
         }
 
     }

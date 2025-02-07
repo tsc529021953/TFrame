@@ -4,6 +4,8 @@ import android.view.View
 import androidx.databinding.ViewDataBinding
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivitySceneryBinding
@@ -28,6 +30,8 @@ abstract class CWBaseBindingActivity<T : ViewDataBinding, VM : BaseViewModel>: B
         timerHandler = TimerHandler(MessageConstant.FINISH_TIME) {
             timerHandler?.stop()
             finish()
+            // 发送返回主页
+            LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_BACK_HOME, ""))
         }
         timerHandler?.start()
     }

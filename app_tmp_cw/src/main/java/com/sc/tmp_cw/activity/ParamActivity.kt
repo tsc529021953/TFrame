@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.dialog.TipDialog
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.volume.VolumeChangeObserver
 import com.nbhope.phfame.utils.VoiceUtil
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
@@ -22,9 +23,12 @@ import javax.inject.Inject
  * @description
  */
 @Route(path = MessageConstant.ROUTH_PARAM)
-class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>() {
+class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(),
+    VolumeChangeObserver.VolumeChangeListener {
 
     override var layoutId: Int = R.layout.activity_param
+
+    private var mVolumeChangeObserver: VolumeChangeObserver? = null;
 
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
@@ -64,12 +68,25 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+        binding.muteSc.setOnCheckedChangeListener { p0, p1 ->
+            if (p0.isPressed) {
+                if (p1) {
+                    VoiceUtil.setScience(this)
+                } else {
+                    VoiceUtil.recoverVoice(this)
+                }
+            }
+        }
+        mVolumeChangeObserver = VolumeChangeObserver(this)
+        mVolumeChangeObserver?.volumeChangeListener = this
     }
 
     override fun initData() {
         binding.vm = viewModel
         LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
-        viewModel.volumeObs.set(VoiceUtil.getVolume(this))
+        val volume = VoiceUtil.getVolume(this)
+        viewModel.volumeObs.set(volume)
+        binding.muteSc.isChecked = volume == 0
         viewModel.initData()
     }
 
@@ -87,8 +104,12 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
 
     override fun finish() {
         // 弹出框
-        TipDialog.showInfoTip(this, getString(R.string.title_tip), getString(R.string.setting_is_save_or_cancel)
-            , getString(R.string.text_no), getString(R.string.text_yes), {
+        TipDialog.showInfoTip(this,
+            getString(R.string.title_tip),
+            getString(R.string.setting_is_save_or_cancel),
+            getString(R.string.text_no),
+            getString(R.string.text_yes),
+            {
                 // 保存
                 val speed = binding.speedSb.progress / 10.0f
                 System.out.println("speed???:$speed")
@@ -96,9 +117,30 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
 
                 super.finish()
                 return@showInfoTip true
-            }, {
+            },
+            {
                 super.finish()
                 return@showInfoTip true
             })
+    }
+
+    override fun onPause() {
+        mVolumeChangeObserver?.unregisterReceiver()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        mVolumeChangeObserver?.registerReceiver()
+        super.onResume()
+    }
+
+    override fun onVolumeChanged(volume: Int) {
+        Timber.d("onVolumeChange $volume")
+        viewModel.volumeObs.set(volume)
+        if (volume <= 0) {
+            if (!binding.muteSc.isChecked) binding.muteSc.isChecked = true
+        } else {
+            if (binding.muteSc.isChecked) binding.muteSc.isChecked = false
+        }
     }
 }

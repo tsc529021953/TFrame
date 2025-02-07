@@ -1,6 +1,7 @@
 package com.sc.tmp_cw
 
 import android.Manifest
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -19,12 +20,16 @@ import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityMainBinding
 import com.sc.tmp_cw.inter.IMainView
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -92,6 +97,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     private lateinit var navController: NavController
 
+    var iconAnimator: ObjectAnimator? = null
+
+    var timerHandler: TimerHandler? = null
+
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
         when (it.cmd) {
@@ -99,6 +108,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
                 if (TmpServiceDelegate.service() != null)
                     binding.service = TmpServiceDelegate.service()!!
                 Timber.i("SERVICE_INIT_SUCCESS ${TmpServiceDelegate.service()}")
+            }
+            MessageConstant.CMD_BACK_HOME -> {
+                homeDelay()
             }
         }
     }
@@ -117,6 +129,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onResume() {
         super.onResume()
         checkSpeed()
+        timerHandler?.start()
     }
 
     override fun subscribeUi() {
@@ -220,11 +233,27 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onDestroy() {
         super.onDestroy()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
+        iconAnimator?.pause()
     }
 
     private fun init() {
         //
         viewModel.initData()
+        iconAnimator = ObjectAnimator.ofFloat(binding.titleLy2.logoLy, "alpha", 1f, 0f)
+        iconAnimator?.duration = MessageConstant.MAIN_ANIMATION_TIME
+        iconAnimator?.repeatMode = ObjectAnimator.REVERSE
+        iconAnimator?.repeatCount = 1
+        iconAnimator?.start()
+
+        timerHandler = TimerHandler(MessageConstant.MAIN_ANIMATION_TIME_INTERVAL) {
+            iconAnimator?.start()
+        }
+        timerHandler?.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        timerHandler?.stop()
     }
 
     private fun checkPermissions(request: Boolean = false): Boolean {
@@ -261,6 +290,20 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         System.out.println("show tag $tag")
         binding.listSf.visibility = if (tag.contains(TAG_LIST)) View.VISIBLE else View.GONE
         binding.homeSf.visibility = if (tag.contains(TAG_HOME)) View.VISIBLE else View.GONE
+    }
+
+    fun homeDelay() {
+        this@MainActivity.runOnUiThread {
+            try {
+                home()
+            } catch (e: Exception) {
+                GlobalScope.launch {
+                    delay(100)
+                    homeDelay()
+                }
+            }
+        }
+
     }
 
     override fun home() {

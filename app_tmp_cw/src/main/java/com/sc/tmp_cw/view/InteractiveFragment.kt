@@ -68,7 +68,12 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
     }
 
     private fun hide() {
-        navController?.navigate(R.id.navigation_guide, null)
+        try {
+            navController?.navigate(R.id.navigation_guide, null)
+            MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {
@@ -86,6 +91,7 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
     }
 
     override fun navigate(resId: Int) {
+        MainActivity.iMain?.show(arrayListOf())
         navController?.navigate(resId, null)
     }
 

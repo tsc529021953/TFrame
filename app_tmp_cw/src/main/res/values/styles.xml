@@ -70,7 +70,7 @@
         <item name="android:layout_width">@dimen/bottom_btn_list_size</item>
         <item name="android:layout_height">@dimen/bottom_btn_list_size</item>
         <item name="android:elevation">4dp</item>
-        <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin2</item>
+        <item name="android:layout_marginEnd">@dimen/bottom_btn_list_margin</item>
         <item name="android:layout_marginBottom">@dimen/bottom_btn_list_margin</item>
     </style>
 
