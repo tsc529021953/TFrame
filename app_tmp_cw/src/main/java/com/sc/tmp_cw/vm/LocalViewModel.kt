@@ -70,7 +70,7 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         val local = spManager.getString(MessageConstant.SP_PLAYLIST, "")
         val list3 = ArrayList<FileBean>()
         if (local.isNullOrEmpty()) {
-
+            list?.let { list3.addAll(it) }
         } else {
             val record = gson.fromJson<ArrayList<FileBean>>(local, object : TypeToken<List<FileBean?>?>() {}.type)
             list!!.map { it ->

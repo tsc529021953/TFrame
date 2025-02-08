@@ -24,6 +24,7 @@
             <com.facebook.shimmer.ShimmerFrameLayout
                     style="@style/main_bottom_left_bottom_btn_ly"
                     android:id="@+id/shimmer_view_container1"
+                    android:visibility="gone"
                     app:shimmer_base_alpha="1"
                     app:shimmer_duration="3000"
                     app:shimmer_highlight_alpha="0.4"

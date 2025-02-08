@@ -100,6 +100,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.play()
 //        }
+        MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
         viewModel.checkVideo()
     }
 

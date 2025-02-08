@@ -197,10 +197,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     private fun layoutClick(view: View, hideDL: Boolean = false, callback: (() -> Unit)? = null) {
         if (currLayout == view) return
 
-        callback?.invoke()
         if (hideDL) {
             binding.rightLy.closeDrawer(Gravity.RIGHT)
         }
+        callback?.invoke()
 //        if (currLayout != null) {
 //            currLayout!!.isSelected = false
 //            currLayout!!.scaleX = 1f
