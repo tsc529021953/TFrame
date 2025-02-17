@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bg_ly"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+            android:layout_width="@dimen/float_icon_size"
+            android:layout_height="@dimen/float_icon_size"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:src="@drawable/ic_float_back"
+            android:tint="#7C7C7C"
+            android:id="@+id/icon_iv"
+            android:clickable="true"
+
+            />
+<!--    -->
+
+<!--    <ImageView-->
+<!--            android:layout_width="18dp"-->
+<!--            android:layout_height="36dp"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            android:src="@drawable/ic_ring_half"-->
+<!--            android:tint="#7C7C7C"-->
+<!--            android:alpha="0.5"-->
+<!--            android:id="@+id/icon_iv2"-->
+<!--            android:clickable="true"-->
+<!--            />-->
+
+<!--    <LinearLayout-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/ctrl_ly"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            android:visibility="gone"-->
+<!--            tools:visibility="visible"-->
+<!--            android:orientation="vertical"-->
+<!--            android:background="@drawable/setting_brightness_bg"-->
+<!--            >-->
+
+<!--        <ImageView style="@style/setting_iv_style"-->
+<!--                   android:src="@drawable/ic_close"-->
+<!--                   android:layout_gravity="end"-->
+<!--                   android:id="@+id/close_iv"-->
+<!--                />-->
+
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="60dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                >-->
+<!--            <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    tools:text="50"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:gravity="top"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    android:id="@+id/bright_tv"-->
+<!--                    />-->
+
+<!--            <ImageView style="@style/setting_iv_style"-->
+<!--                       android:src="@drawable/setting_ic_bright_low"-->
+<!--                       android:paddingEnd="5dp"-->
+<!--                       android:layout_width="40dp"-->
+<!--                       app:layout_constraintStart_toStartOf="parent"-->
+<!--                       app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                       android:id="@+id/down_btn"-->
+<!--                    />-->
+
+<!--            <androidx.appcompat.widget.AppCompatSeekBar-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:id="@+id/bright_sb"-->
+<!--                    android:progressDrawable="@drawable/setting_seekbar_progress"-->
+<!--                    android:splitTrack="false"-->
+<!--                    android:thumb="@drawable/setting_seekbar_thumb"-->
+<!--                    android:maxHeight="12dp"-->
+<!--                    android:minHeight="12dp"-->
+<!--                    android:paddingStart="10dp"-->
+<!--                    android:paddingEnd="10dp"-->
+<!--                    android:min="0"-->
+<!--                    android:max="100"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/down_btn"-->
+<!--                    app:layout_constraintEnd_toStartOf="@+id/up_btn"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    />-->
+
+<!--            <ImageView style="@style/setting_iv_style"-->
+<!--                       android:src="@drawable/setting_ic_bright_high"-->
+<!--                       android:paddingStart="5dp"-->
+<!--                       android:layout_width="40dp"-->
+<!--                       android:id="@+id/up_btn"-->
+<!--                       app:layout_constraintEnd_toEndOf="parent"-->
+<!--                       app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    />-->
+
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--    </LinearLayout>-->
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

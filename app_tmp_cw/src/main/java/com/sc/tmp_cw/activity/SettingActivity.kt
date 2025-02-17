@@ -16,6 +16,9 @@ import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivitySettingBinding
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.SettingViewModel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -52,6 +55,7 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
         }
         binding.localResTv.setOnClickListener {
             // 打开本地资源位置
+            TmpServiceDelegate.service()?.showFloat()
             AppUtils.openRockExplorer(this, Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_BASE_FILE)
         }
         binding.logTv.setOnClickListener {
@@ -61,6 +65,7 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
         }
         binding.exSaveTv.setOnClickListener {
             // 打开文件管理器
+            TmpServiceDelegate.service()?.showFloat()
             AppUtils.openRockExplorer(this)
         }
         binding.autoTv.setOnClickListener {
@@ -73,7 +78,13 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
             ARouter.getInstance().build(MessageConstant.ROUTH_PLAYLIST).navigation(this)
         }
         binding.systemTv.setOnClickListener {
-            AppUtils.openSetting(this)
+
+            AppUtils.openSetting(this@SettingActivity)
+            GlobalScope.launch {
+                delay(1000)
+
+                TmpServiceDelegate.service()?.showFloat()
+            }
         }
     }
 
@@ -88,6 +99,11 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
     override fun onDestroy() {
         super.onDestroy()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        TmpServiceDelegate.service()?.hideFloat(0)
     }
 
     @Inject

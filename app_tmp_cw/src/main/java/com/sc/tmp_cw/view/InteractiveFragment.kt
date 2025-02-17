@@ -67,6 +67,10 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     private fun hide() {
         try {
             navController?.navigate(R.id.navigation_guide, null)

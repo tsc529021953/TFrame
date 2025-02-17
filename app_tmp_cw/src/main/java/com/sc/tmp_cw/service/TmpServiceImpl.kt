@@ -9,7 +9,13 @@ import android.content.Intent
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.*
+import android.util.DisplayMetrics
 import android.view.View
+import android.widget.ImageView
+import android.widget.SeekBar
+import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
@@ -24,6 +30,10 @@ import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.*
 import com.nbhope.phfame.utils.VoiceUtil
+import com.petterp.floatingx.FloatingX
+import com.petterp.floatingx.assist.FxGravity
+import com.petterp.floatingx.assist.FxScopeType
+import com.petterp.floatingx.listener.control.IFxAppControl
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.activity.StationNotifyActivity
 import com.sc.tmp_cw.activity.UrgentNotifyActivity
@@ -37,6 +47,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.lang.ref.WeakReference
+import java.util.*
 
 
 /**
@@ -67,9 +78,6 @@ class TmpServiceImpl : ITmpService, Service() {
 
     lateinit var mScope: CoroutineScope
 
-    /*view*/
-    private var rootView: View? = null
-
     lateinit var mainHandler: MainHandler
 
     private var timerHandler: TimerHandler? = null
@@ -89,6 +97,12 @@ class TmpServiceImpl : ITmpService, Service() {
     var cwInfo = CWInfo()
     private var isFirstLink = true
 
+    /*悬浮窗版块*/
+    private lateinit var dm: DisplayMetrics
+    private lateinit var fxAppControl : IFxAppControl
+    private var rootView: View? = null
+    private var iconIV: ImageView? = null // 主图标
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -96,11 +110,11 @@ class TmpServiceImpl : ITmpService, Service() {
         mScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         mainHandler = MainHandler(Looper.getMainLooper())
         networkCallback = (application as HopeBaseApp).getAppComponent().networkCallback
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            initFloat()
-//        } else {
-//            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            initFloat()
+        } else {
+            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
+        }
         networkCallback.registNetworkCallback(networkCallbackModule)
         Timber.i("XTAG service Create " + HopeUtils.getIP())
         initAppData(this) {
@@ -285,15 +299,14 @@ class TmpServiceImpl : ITmpService, Service() {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 MSG_FLOAT_HIDE -> {
-                    if (rootView?.visibility != View.GONE)
-                        rootView?.visibility = View.GONE
+                    FloatingX.control().hide()
                     mainHandler.removeMessages(MSG_FLOAT_HIDE)
                 }
 
                 MSG_FLOAT_SHOW -> {
-                    if (rootView?.visibility != View.VISIBLE)
-                        rootView?.visibility = View.VISIBLE
+                    FloatingX.control().show()
                     mainHandler.removeMessages(MSG_FLOAT_SHOW)
+                    initView()
                 }
             }
         }
@@ -376,4 +389,68 @@ class TmpServiceImpl : ITmpService, Service() {
         }
     }
 
+    /*悬浮窗版块*/
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun initFloat() {
+        dm = application.resources.displayMetrics
+        var y = Random().nextInt(20)
+        System.out.println("y pos $y ${if (y == 0) 0f else (dm.heightPixels / y).toFloat()}")
+        fxAppControl = FloatingX.install {
+            setContext(application)
+            setLayout(R.layout.float_view)
+            // 系统浮窗记得声明权限
+//            setY(if (y == 0) 0f else (dm.heightPixels / y).toFloat())
+//            setX(dm.widthPixels.toFloat())
+//            if (y == 0) 0f else (dm.heightPixels / y).toFloat()
+//            - resources.getDimension(R.dimen.float_icon_size)
+            setXY(dm.widthPixels.toFloat() , dm.heightPixels- resources.getDimension(R.dimen.float_icon_size))
+            setScopeType(FxScopeType.SYSTEM)
+            setGravity(FxGravity.RIGHT_OR_BOTTOM)
+//            setViewLifecycle(object : IFxViewLifecycle {
+//                override fun initView(view: View) {
+//                    //这里初始化
+//                    initView()
+//                }
+//            })
+//            setEnableLog(true)
+//            setOnClickListener {
+//                Timber.i("FTAG click $it ${FloatingX.control().getView()}")
+//                // 如果显示，则隐藏
+//            }
+        }
+
+//        showFloat()
+//        hideFloat(0)
+    }
+
+    fun initView() {
+        Timber.i("iconIV initView")
+        if (rootView == null) {
+            rootView = FloatingX.control().getView()
+            iconIV = rootView!!.findViewById<ImageView>(R.id.icon_iv)
+//            rootView!!.setOnTouchListener { view, motionEvent ->
+////                hideTimer = 0
+//                return@setOnTouchListener false
+//            }
+
+            iconIV?.setOnClickListener {
+                // 触发返回事件
+                System.out.println("iconIV click")
+                mScope.launch {
+                    AppUtils.runBack(this@TmpServiceImpl)
+                }
+            }
+        }
+    }
+
+    override fun showFloat() {
+        System.out.println("iconIV showFloat")
+        mainHandler.removeMessages(MSG_FLOAT_HIDE)
+        mainHandler.sendEmptyMessage(MSG_FLOAT_SHOW)
+    }
+
+    override fun hideFloat(delayMillis: Long) {
+        mainHandler.sendEmptyMessage(MSG_FLOAT_HIDE)
+    }
 }

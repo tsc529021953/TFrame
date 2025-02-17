@@ -21,7 +21,7 @@
             >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="@dimen/main_title_logo_ly_width"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/main_title_logo_ly_height"
                 android:id="@+id/logo_ly"
                 android:layout_marginStart="@dimen/main_title_logo_ly_margin"
@@ -37,19 +37,57 @@
                     android:src="@drawable/logo"
                     />
 
-            <TextView
+            <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     app:layout_constraintStart_toEndOf="@+id/logo_iv"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:paddingStart="15dp"
-                    android:layout_margin="5dp"
-                    android:background="@drawable/icon_title_station_tv_bg"
-                    android:text="@{service.titleObs}"
-                    android:gravity="start |center_vertical"
-                    tools:text="天津地铁8号线欢迎你"
-                    style="@style/main_title_station"
-                    />
+                    android:orientation="horizontal"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:background="@mipmap/ic_title_bg"
+                    >
+
+                <TextView
+                        style="@style/main_title_station"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toEndOf="@+id/logo_iv"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_weight="1.6"
+                        android:layout_margin="5dp"
+                        android:text="@{service.titleObs}"
+                        android:gravity="start |center_vertical"
+                        tools:text="天津地铁8号线欢迎你"
+                        />
+
+<!--                <View style="@style/horizontal_space_style"/>-->
+
+                <com.nbhope.lib_frame.widget.MarqueeTextView
+                        style="@style/main_title_station"
+                        android:layout_weight="2.9"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="25dp"
+                        android:id="@+id/station_tv"
+                        android:text="@{service.stationObs}"
+                        />
+
+<!--                <View style="@style/horizontal_space_style"/>-->
+
+                <TextView
+                        style="@style/main_title_station"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        tools:text="2025年10月12日 99:88:88"
+                        android:text="@{service.timeObs}"
+                        />
+
+            </LinearLayout>
+
+<!--            android:background="@drawable/icon_title_station_tv_bg"-->
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -67,49 +105,39 @@
 <!--                app:shimmer_tilt="180"-->
 <!--                >-->
 
-            <LinearLayout
-                    style="@style/main_title_station_ly"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    >
+<!--            <LinearLayout-->
+<!--                    style="@style/main_title_station_ly"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    >-->
 
-                <com.nbhope.lib_frame.widget.MarqueeTextView
-                        style="@style/main_title_station"
-                        android:id="@+id/status_tv"
-                        android:layout_weight="1"
-                        android:text="@{service.stationStatusObs}"
-                        android:gravity="start |center_vertical"
-                        />
+<!--                <com.nbhope.lib_frame.widget.MarqueeTextView-->
+<!--                        style="@style/main_title_station"-->
+<!--                        android:id="@+id/status_tv"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="@{service.stationStatusObs}"-->
+<!--                        android:gravity="start |center_vertical"-->
+<!--                        />-->
 
-                <ImageView
-                        android:layout_width="@dimen/main_title_station_icon_height"
-                        android:layout_height="@dimen/main_title_station_icon_height"
-                        android:src="@drawable/icon_title_station"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/main_title_station_margin"
-                        android:layout_marginEnd="@dimen/main_title_station_margin"
-                        />
+<!--                <ImageView-->
+<!--                        android:layout_width="@dimen/main_title_station_icon_height"-->
+<!--                        android:layout_height="@dimen/main_title_station_icon_height"-->
+<!--                        android:src="@drawable/icon_title_station"-->
+<!--                        android:layout_gravity="center_vertical"-->
+<!--                        android:layout_marginStart="@dimen/main_title_station_margin"-->
+<!--                        android:layout_marginEnd="@dimen/main_title_station_margin"-->
+<!--                        />-->
 
-                <com.nbhope.lib_frame.widget.MarqueeTextView
-                        style="@style/main_title_station"
-                        android:id="@+id/station_tv"
-                        android:text="@{service.stationObs}"
-                        />
+<!--               -->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
 <!--        </com.facebook.shimmer.ShimmerFrameLayout>-->
 
 
-        <TextView
-                style="@style/main_title_clock"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:text="@{service.timeObs}"
-                />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

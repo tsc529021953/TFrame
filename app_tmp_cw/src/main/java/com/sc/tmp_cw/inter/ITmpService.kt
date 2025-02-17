@@ -25,4 +25,8 @@ interface  ITmpService: IProvider {
     fun write(msg: String)
     fun reBuild()
 
+    /*悬浮窗*/
+    fun showFloat()
+    fun hideFloat(delayMillis: Long)
+
 }

@@ -22,7 +22,7 @@ class TimerHandler(private val interval: Long, private var hour: Int = -1, var c
                 handler.postDelayed(this, interval)
             }
         }
-        Timber.i("KTAG timer bef $hour")
+//        Timber.i("KTAG timer bef $hour")
         if (hour == -1)
             handler.postDelayed(runnable!!, interval)
         else {

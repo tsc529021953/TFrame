@@ -68,13 +68,13 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //
         viewModel.player!!.addListener(object : Player.Listener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                Timber.d("onPlayerStateChanged $playWhenReady, $playbackState")
+//                Timber.d("onPlayerStateChanged $playWhenReady, $playbackState")
                 when (playbackState){
                     Player.STATE_BUFFERING-> {
-                        Timber.i("onPlayerStateChanged加载中")
+//                        Timber.i("onPlayerStateChanged加载中")
                     }
                     Player.STATE_READY-> {
-                        Timber.i("onPlayerStateChanged准备完成")
+//                        Timber.i("onPlayerStateChanged准备完成")
                     }
                     Player.STATE_ENDED-> {
                         Timber.i("onPlayerStateChanged播放完成")
@@ -100,7 +100,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.play()
 //        }
-        MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+        if (this.isVisible)
+            MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
         viewModel.checkVideo()
     }
 

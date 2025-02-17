@@ -38,13 +38,13 @@ object MessageHandler {
 //            System.out.println("message:$data")
 //        }
         service.mScope.launch {
-            handleMessage(testData2.replace(" ", ""), service)
-//            delay(5000)
 //            handleMessage(testData2.replace(" ", ""), service)
-            delay(5000)
-            handleMessage(testData3.replace(" ", ""), service)
-
-            delay(10000)
+////            delay(5000)
+////            handleMessage(testData2.replace(" ", ""), service)
+//            delay(5000)
+//            handleMessage(testData3.replace(" ", ""), service)
+//
+//            delay(10000)
             handleMessage(testData2.replace(" ", ""), service)
         }
 
@@ -78,19 +78,23 @@ object MessageHandler {
                 pisBean.currentCode = getInfoByIndex(msg, 24, 26)
                 pisBean.nextCode = getInfoByIndex(msg, 26, 28)
                 service.stationNotifyObs.set(pisBean.boardStatus)
+                var tip = ""
                 if (pisBean.boardStatus != -1) {
                     when (pisBean.boardStatus) {
                         0 -> {
-                            service.stationStatusObs.set(service.getString(R.string.nextStation))
-                            service.stationObs.set(service.getStationStr(pisBean.nextCode))
+                            tip = service.getString(R.string.nextStation)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.nextCode))
                         }
                         1 -> {
-                            service.stationStatusObs.set(service.getString(R.string.arrive))
-                            service.stationObs.set(service.getStationStr(pisBean.currentCode))
+                            tip = service.getString(R.string.arrive)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.currentCode))
                         }
                         2 -> {
-                            service.stationStatusObs.set(service.getString(R.string.arrived))
-                            service.stationObs.set(service.getStationStr(pisBean.currentCode))
+                            tip = service.getString(R.string.arrived)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.currentCode))
                         }
                         else -> {
                             // 如果界面还打开着，关闭界面

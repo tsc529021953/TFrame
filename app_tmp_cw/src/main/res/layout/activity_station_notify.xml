@@ -15,12 +15,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/bg_ly"
-            >
+            >a
 
+
+<!--        <ImageView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="200dp"-->
+<!--                android:src="@drawable/ic_station_car2"-->
+<!--                />-->
+
+<!--        service.stationStatusObs + "：" +-->
         <TextView
                 style="@style/main_notify_station"
                 tools:text="@string/arrive"
-                android:text='@{service.stationStatusObs + "：" + service.stationObs}'
+                android:text='@{service.stationObs}'
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 />
@@ -30,7 +38,7 @@
                 android:layout_height="200dp"
                 android:id="@+id/car_iv"
                 app:layout_constraintBottom_toTopOf="@+id/floor_iv"
-                android:src="@mipmap/ic_station_car"
+                android:src="@drawable/ic_station_car2"
                 android:scaleType="fitEnd"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
@@ -41,9 +49,10 @@
                 android:layout_height="200dp"
                 android:id="@+id/floor_iv"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:src="@mipmap/ic_station_floor"
+                android:src="@drawable/ic_station_floor2"
                 android:scaleType="fitXY"
                 />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

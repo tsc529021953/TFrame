@@ -1,7 +1,7 @@
 {
   "ip": "234.55.66.80",
   "port": 16680,
-  "title": "天津地铁8号线欢迎你",
+  "title": "天津地铁8号线欢迎您",
   "rtspUrl": "rtsp://stream.strba.sk:1935/strba/VYHLAD_JAZERO.stream",
   "stations": [
     {

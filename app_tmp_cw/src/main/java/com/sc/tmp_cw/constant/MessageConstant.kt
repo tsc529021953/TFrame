@@ -3,6 +3,7 @@ package com.sc.tmp_cw.constant
 object MessageConstant {
 
     const val FINISH_TIME = 30000L
+    const val MAIN_DRAW_LAYOUT_TIME = 10000L
     const val MAIN_ANIMATION_TIME = 5000L
     const val MAIN_ANIMATION_TIME_INTERVAL = MAIN_ANIMATION_TIME * 4
 

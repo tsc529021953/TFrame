@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 7
-        versionName "0.0.7"
+        versionCode 14
+        versionName "0.0.14"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -117,5 +117,6 @@ dependencies {
     implementation deps.exo_player_ui
 
     implementation deps.shimmer
-
+    /*悬浮窗*/
+    implementation deps.floatx
 }

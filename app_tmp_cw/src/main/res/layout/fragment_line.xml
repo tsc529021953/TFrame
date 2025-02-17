@@ -7,11 +7,19 @@
             style="@style/ly_no_title"
             >
 
-        <ImageView
+        <com.nbhope.lib_frame.view.ZoomView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_line_ly"
-                />
+                android:id="@+id/zoom"
+                >
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/line_iv"
+                    />
+
+        </com.nbhope.lib_frame.view.ZoomView>
 
         <com.facebook.shimmer.ShimmerFrameLayout
                 style="@style/main_bottom_right_bottom_btn_ly2"

@@ -107,6 +107,7 @@
         <LinearLayout
                 android:layout_width="@dimen/bottom_ly_right_width"
                 android:layout_height="match_parent"
+                android:id="@+id/right_dl"
                 android:orientation="vertical"
                 android:layout_gravity="end"
                 android:layout_marginTop="@dimen/title_ly_height"

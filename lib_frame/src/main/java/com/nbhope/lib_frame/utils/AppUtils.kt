@@ -1,6 +1,7 @@
 package com.nbhope.lib_frame.utils
 
 import android.app.Activity
+import android.app.Instrumentation
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -13,6 +14,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.Settings
+import android.view.KeyEvent
 import android.widget.Toast
 import androidx.core.app.ActivityCompat.startActivityForResult
 import com.nbhope.lib_frame.utils.toast.ToastUtil
@@ -109,5 +111,35 @@ object AppUtils {
         val intent = Intent(Settings.ACTION_SETTINGS)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         activity.startActivityForResult(intent, FILE_SELECT_CODE)
+    }
+
+//    fun runBackWithActivity(context: Context, activityName: String) {
+//        val cn = getTopActivity(context)
+//        if (activityName == "" || (cn != null && cn.className.endsWith(activityName))) {
+//            try {
+//                val inst = Instrumentation()
+//                inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+
+    fun runBack(context: Context) {
+        try {
+            val inst = Instrumentation()
+            inst.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            System.out.println("iconIV click back")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun runHome(context: Context) {
+        val mHomeIntent =
+            Intent(Intent.ACTION_MAIN)
+        mHomeIntent.addCategory(Intent.CATEGORY_HOME)
+        mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP) // FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+        context.startActivity(mHomeIntent)
     }
 }

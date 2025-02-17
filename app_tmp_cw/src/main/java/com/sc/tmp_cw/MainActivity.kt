@@ -99,7 +99,12 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     var iconAnimator: ObjectAnimator? = null
 
+    /**
+     * 左侧上方图标动画
+     */
     var timerHandler: TimerHandler? = null
+
+    var drawLayoutTimerHandler: TimerHandler? = null
 
     private var listener = androidx.lifecycle.Observer<Any> {
         it as RemoteMessageEvent
@@ -130,6 +135,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         super.onResume()
         checkSpeed()
         timerHandler?.start()
+        TmpServiceDelegate.service()?.hideFloat(0)
     }
 
     override fun subscribeUi() {
@@ -182,6 +188,37 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         }
 //        ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
 
+        /*自动收起侧边栏*/
+        binding.rightLy.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(p0: View, p1: Float) {
+
+            }
+
+            override fun onDrawerOpened(p0: View) {
+                if (drawLayoutTimerHandler == null) {
+                    drawLayoutTimerHandler = TimerHandler(MessageConstant.MAIN_DRAW_LAYOUT_TIME) {
+                        this@MainActivity.runOnUiThread {
+                            try {
+                                binding.rightLy.closeDrawer(Gravity.RIGHT)
+                            } catch (e: Exception) {}
+                        }
+                    }
+                }
+                drawLayoutTimerHandler?.start()
+            }
+
+            override fun onDrawerClosed(p0: View) {
+                drawLayoutTimerHandler?.stop()
+            }
+
+            override fun onDrawerStateChanged(p0: Int) {
+
+            }
+        })
+        binding.rightDl.setOnTouchListener { view, motionEvent ->
+            drawLayoutTimerHandler?.start()
+            return@setOnTouchListener false
+        }
     }
 
     private fun checkSpeed() {
@@ -190,7 +227,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         if (speed != viewModel.speedObs.get()) {
             Timber.i("当前速度 $speed")
             binding.titleLy2.stationTv.setMarqueeSpeed(speed)
-            binding.titleLy2.statusTv.setMarqueeSpeed(speed)
+//            binding.titleLy2.statusTv.setMarqueeSpeed(speed)
         }
     }
 
@@ -234,6 +271,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         super.onDestroy()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
         iconAnimator?.pause()
+        drawLayoutTimerHandler?.stop()
     }
 
     private fun init() {
@@ -288,8 +326,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     override fun show(tag: ArrayList<String>) {
         System.out.println("show tag $tag")
-        binding.listSf.visibility = if (tag.contains(TAG_LIST)) View.VISIBLE else View.GONE
-        binding.homeSf.visibility = if (tag.contains(TAG_HOME)) View.VISIBLE else View.GONE
+        try {
+            binding.listSf.visibility = if (tag.contains(TAG_LIST)) View.VISIBLE else View.GONE
+            binding.homeSf.visibility = if (tag.contains(TAG_HOME)) View.VISIBLE else View.GONE
+        } catch (e: Exception) {}
     }
 
     fun homeDelay() {
