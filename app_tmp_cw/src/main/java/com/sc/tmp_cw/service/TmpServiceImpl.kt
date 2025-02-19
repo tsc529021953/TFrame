@@ -139,7 +139,10 @@ class TmpServiceImpl : ITmpService, Service() {
                 val m = stationNotifyObs.get()
                 Timber.e("站点提示 $m")
                 LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
-                if (m in 0..9 && AppManager.appManager?.topActivity != null && AppManager.appManager!!.topActivity!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName) {
+                val top = AppManager.appManager?.topActivity
+                if (m in 0..9 && top != null
+                    && top!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
+                    && top!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName) {
                     ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
                 }
             }

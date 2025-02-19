@@ -91,7 +91,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         System.out.println("local onHiddenChanged $hidden")
         if (!hidden) {
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
-        }
+            viewModel.mute(false)
+        } else viewModel.mute(true)
     }
 
     override fun onResume() {
@@ -100,8 +101,10 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.play()
 //        }
-        if (this.isVisible)
+        if (this.isVisible) {
+            viewModel.mute(false)
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+        }
         viewModel.checkVideo()
     }
 
@@ -112,6 +115,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.pause()
 //        }
+        viewModel.mute(true)
     }
 
     override fun initData() {

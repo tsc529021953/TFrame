@@ -123,4 +123,10 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         }
     }
 
+    fun mute(isMute: Boolean) {
+        if (isMute)
+            player?.volume = 0f
+        else player?.volume = 1.0f
+    }
+
 }
