@@ -144,6 +144,39 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="si_item_point_style">
+        <item name="android:layout_width">@dimen/si_item_width</item>
+        <item name="android:layout_height">@dimen/si_item_height</item>
+        <item name="android:background">#9900FF00</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginTop">40dp</item>
+    </style>
+
+    <style name="si_station_ly">
+        <item name="android:layout_width">@dimen/si_item_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="si_station_iv">
+        <item name="android:layout_width">@dimen/si_item_width</item>
+        <item name="android:layout_height">@dimen/si_item_width</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:src">@drawable/ic_line_point</item>
+    </style>
+
+    <style name="si_station_tv">
+<!--        @dimen/si_item_height_half-->
+        <item name="android:layout_width">@dimen/si_item_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/si_item_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginBottom">@dimen/si_item_text_margin</item>
+        <item name="android:layout_marginTop">@dimen/si_item_text_margin</item>
+    </style>
+
     <!--设置-->
     <style name="setting_ly">
         <item name="android:layout_width">@dimen/setting_ly_width</item>

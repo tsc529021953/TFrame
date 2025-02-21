@@ -173,4 +173,17 @@ object FileUtil {
         }
     }
 
+    fun getPath(root: String): String? {
+        var path = "$root.png"
+        if (!File(path).exists()) {
+            path = "$root.jpg"
+            if (!File(path).exists()) {
+                path = "$root.bmp"
+                if (!File(path).exists()) return null
+            }
+        }
+
+        return path
+    }
+
 }

@@ -1,23 +1,23 @@
 package com.sc.tmp_cw.activity
 
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.dialog.TipDialog
-import com.nbhope.lib_frame.dialog.TipNFDialog
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.widget.WrapLinearLayoutManager
-import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.adapter.FileVideoAdapter
 import com.sc.tmp_cw.adapter.PlaylistAdapter
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityPlaylistBinding
 import com.sc.tmp_cw.vm.PlaylistViewModel
+import com.sc.tmp_cw.weight.SimpleItemTouchHelperCallback
 import timber.log.Timber
 import javax.inject.Inject
+
 
 /**
  * @author  tsc
@@ -51,6 +51,14 @@ class PlatylistActivity : BaseBindingActivity<ActivityPlaylistBinding, PlaylistV
 //        binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line, 0, line, line)))
         binding.rv.adapter = adapter
         binding.rv.layoutManager = ly
+
+        initDrag()
+    }
+
+    private fun initDrag() {
+        val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter)
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.rv)
     }
 
     override fun initData() {

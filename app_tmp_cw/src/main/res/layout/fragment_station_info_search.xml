@@ -3,15 +3,98 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+                name="vm"
+                type="com.sc.tmp_cw.vm.MainViewModel"/>
+
+        <variable
+                name="service"
+                type="com.sc.tmp_cw.inter.ITmpService"/>
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
             style="@style/ly_no_title"
+            android:id="@+id/bg_ly"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             >
 
+<!--        <ImageView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:src="@drawable/ic_si_ly"-->
+<!--                android:scaleType="centerCrop"-->
+<!--                android:foreground="#B3000000"-->
+<!--                />-->
+
         <ImageView
+                android:id="@+id/logo_iv"
+                android:layout_width="@dimen/si_logo_size"
+                android:layout_height="@dimen/si_logo_size"
+                android:src="@drawable/logo"
+                android:layout_marginTop="@dimen/si_logo_margin"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/title_tv"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                />
+<!--        android:text="@{service.titleObs}"-->
+        <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="天津地铁8号线"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/logo_iv"
+                app:layout_constraintTop_toTopOf="@id/logo_iv"
+                app:layout_constraintBottom_toBottomOf="@id/logo_iv"
+                android:textColor="@color/si_line_color"
+                android:textSize="@dimen/si_title_text_size"
+                android:layout_marginStart="@dimen/si_title_text_margin"
+                />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/si_line_height"
+                app:layout_constraintTop_toTopOf="@+id/station_rv"
+                app:layout_constraintBottom_toBottomOf="@+id/station_rv"
+                android:background="@color/si_line_color"
+                android:layout_margin="@dimen/si_ly_padding"
+                />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/station_rv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/si_item_height"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:padding="@dimen/si_rv_padding"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                />
+
+        <com.nbhope.lib_frame.view.ZoomView
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_si_ly"
-                />
+                android:id="@+id/zoom"
+                android:visibility="gone"
+                android:background="#000"
+                tools:visibility="visible"
+                >
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/line_iv"
+                    />
+
+        </com.nbhope.lib_frame.view.ZoomView>
 
         <com.facebook.shimmer.ShimmerFrameLayout
                 style="@style/main_bottom_right_bottom_btn_ly2"

@@ -17,4 +17,6 @@
     <color name="switch_open_color">#2196F3</color>
     <color name="switch_close_color">#7A7A7A</color>
 
+    <color name="si_line_color">#03A9F4</color>
+
 </resources>

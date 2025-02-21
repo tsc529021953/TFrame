@@ -47,12 +47,16 @@
     {
       "id": 9,
       "cn": "渌水道",
-      "en": "LUSHUIDAO"
+      "en": "LUSHUIDAO",
+      "hc": ["换乘6号线"],
+      "hcColor": ["#FF0000"]
     },
     {
       "id": 10,
       "cn": "长泰河东",
-      "en": "CHANGTAIHEDONG"
+      "en": "CHANGTAIHEDONG",
+      "hc": ["换乘12号线"],
+      "hcColor": ["#740c60"]
     },
     {
       "id": 11,
@@ -62,7 +66,9 @@
     {
       "id": 12,
       "cn": "南珠桥",
-      "en": "NANZHUQIAO"
+      "en": "NANZHUQIAO",
+      "hc": ["换乘10号线"],
+      "hcColor": ["#00FF00"]
     },
     {
       "id": 13,
@@ -72,12 +78,16 @@
     {
       "id": 14,
       "cn": "澧水道",
-      "en": "LISHUIDAO"
+      "en": "LISHUIDAO",
+      "hc": ["换乘11号线"],
+      "hcColor": ["#0000FF"]
     },
     {
       "id": 15,
       "cn": "土城",
-      "en": "TUCHENG"
+      "en": "TUCHENG",
+      "hc": ["换乘1号线"],
+      "hcColor": ["#facb05"]
     },
     {
       "id": 16,
@@ -87,7 +97,9 @@
     {
       "id": 17,
       "cn": "下瓦房",
-      "en": "XIAWAFANG"
+      "en": "XIAWAFANG",
+      "hc": ["换乘1号线、5号线"],
+      "hcColor": ["#FF0000"]
     },
     {
       "id": 18,
@@ -107,22 +119,30 @@
     {
       "id": 21,
       "cn": "西康路",
-      "en": "XIKANGLU"
+      "en": "XIKANGLU",
+      "hc": ["换乘3号线"],
+      "hcColor": ["#740c60"]
     },
     {
       "id": 22,
       "cn": "天津大学六里台",
-      "en": "TIANJINDAXUELIULITAI"
+      "en": "TIANJINDAXUELIULITAI",
+      "hc": ["换乘7号线"],
+      "hcColor": ["#00FF00"]
     },
     {
       "id": 23,
       "cn": "南丰路",
-      "en": "NANFENGLU"
+      "en": "NANFENGLU",
+      "hc": ["换乘13号线"],
+      "hcColor": ["#0000FF"]
     },
     {
       "id": 24,
       "cn": "鞍山西道",
-      "en": "ANSHANXIDAO"
+      "en": "ANSHANXIDAO",
+      "hc": ["换乘6号线"],
+      "hcColor": ["#facb05"]
     },
     {
       "id": 25,

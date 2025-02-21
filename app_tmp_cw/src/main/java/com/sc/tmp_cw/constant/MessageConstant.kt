@@ -19,7 +19,8 @@ object MessageConstant {
     const val PATH_CONFIG_FILE = "AppInfo.json"
     const val PATH_TRAVEL = "/TMP/Travel/"
     const val PATH_CATE = "/TMP/Cate/"
-    const val PATH_VIDEO = "/TMP/VIDEO/"
+    const val PATH_VIDEO = "/TMP/Video/"
+    const val PATH_STATION = "/TMP/Station/"
 
     const val SP_MARQUEE_SPEED = "SP_MARQUEE_SPEED" // 走马灯速度
     const val SP_PLAYLIST = "SP_PLAYLIST" // 播放列表记录

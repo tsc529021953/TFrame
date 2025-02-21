@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 15
-        versionName "0.0.15"
+        versionCode 17
+        versionName "0.0.17"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -35,7 +35,7 @@ android {
 //        if (isBuildModule.toBoolean())
         path = '../sign/';
         debug {
-            storeFile file(path + project.property('keyStoreAW'))
+            storeFile file(path + project.property('keyStoreRK'))
             storePassword project.property('keyStorePassword_HOPE')
             keyAlias project.property('keyAlias_HOPE')
             keyPassword project.property('keyAliasPassword_HOPE')

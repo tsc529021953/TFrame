@@ -359,12 +359,12 @@ class TmpServiceImpl : ITmpService, Service() {
             var path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_BASE_FILE
             var file = File(path)
             val analysis = { msg: String? ->
+//                System.out.println(msg?.replace(" ", "")?.replace("\n", "") ?: "")
                 if (msg != null) {
                     cwInfo = gson.fromJson(msg, CWInfo::class.java)
                     SERVER_PORT = cwInfo.port
                     SERVER_IP = cwInfo.ip
                     titleObs.set(cwInfo.title)
-                    Timber.i("站点数量 ${cwInfo?.stations?.size}")
                 }
                 callback.invoke()
             }
@@ -455,5 +455,9 @@ class TmpServiceImpl : ITmpService, Service() {
 
     override fun hideFloat(delayMillis: Long) {
         mainHandler.sendEmptyMessage(MSG_FLOAT_HIDE)
+    }
+
+    override fun getCWInfo(): CWInfo {
+        return cwInfo
     }
 }

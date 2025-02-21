@@ -92,6 +92,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         if (!hidden) {
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
             viewModel.mute(false)
+            viewModel.checkVideo()
         } else viewModel.mute(true)
     }
 

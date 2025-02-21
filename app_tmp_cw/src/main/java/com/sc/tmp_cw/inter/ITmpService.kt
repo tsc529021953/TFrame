@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import com.alibaba.android.arouter.facade.template.IProvider
+import com.sc.tmp_cw.bean.CWInfo
 
 /**
  * @author  tsc
@@ -28,5 +29,6 @@ interface  ITmpService: IProvider {
     /*悬浮窗*/
     fun showFloat()
     fun hideFloat(delayMillis: Long)
+    fun getCWInfo(): CWInfo
 
 }

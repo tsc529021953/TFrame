@@ -41,22 +41,29 @@ class PlaylistViewModel @Inject constructor(val spManager: SharedPreferencesMana
         var path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_VIDEO
         val list = FileUtil.getDicFileBeansByExs(FileUtil.VIDEO_EXTENSIONS, path) ?: return
         val list3 = ArrayList<FileBean>()
+        val recordList = ArrayList<FileBean>()
+        val unRecordList = ArrayList<FileBean>()
 
         val local = spManager.getString(MessageConstant.SP_PLAYLIST, "")
         if (local.isNullOrEmpty()) {
             list!!.map {
                 it.status = 1
             }
+            recordList.addAll(list)
         } else {
             val record = gson.fromJson<ArrayList<FileBean>>(local, object : TypeToken<List<FileBean?>?>() {}.type)
             list!!.map { it ->
                 val item = record.find { it2 -> it.path == it2.path }
                 if (item != null) {
                     it.status = 1
+                    recordList.add(it)
+                } else {
+                    unRecordList.add(it)
                 }
             }
         }
-        list3.addAll(list!!)
+        list3.addAll(recordList!!)
+        list3.addAll(unRecordList!!)
         videoListObs.postValue(list3)
     }
 
