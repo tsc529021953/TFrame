@@ -101,7 +101,7 @@ object MessageHandler {
                         }
                     }
                 }
-
+                System.out.println("站点信息 ${pisBean.boardStatus}")
 
                 pisBean.urgentNotifyCode = getInfoByIndex(msg, 30, 32)
                 // 判断当前界面或者判断上一个记录

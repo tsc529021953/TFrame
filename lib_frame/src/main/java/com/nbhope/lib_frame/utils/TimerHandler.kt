@@ -15,7 +15,7 @@ class TimerHandler(private val interval: Long, private var hour: Int = -1, var c
 
         runnable = object : Runnable {
             override fun run() {
-                System.out.println("onPlayerStateChanged时间到达 $this $runnable")
+//                System.out.println("onPlayerStateChanged时间到达 $this $runnable")
                 if (runnable == null) return
                 callback()
                 if (runnable == null) return
@@ -36,7 +36,7 @@ class TimerHandler(private val interval: Long, private var hour: Int = -1, var c
     }
 
     fun stop() {
-        System.out.println("onPlayerStateChanged时间到达停止")
+//        System.out.println("onPlayerStateChanged时间到达停止")
         runnable?.let {
             handler.removeCallbacks(it)
         }

@@ -43,7 +43,9 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
             MessageConstant.CMD_STATION_NOTICE -> {
                 val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
                 if (m == null || m!! < 0 || m!! > 10) {
-                    finish()
+                    // 动画完成之后再触发
+                    if (viewModel.isAnimationEnd)
+                        finish()
                 } else {
                     refreshAnimation(m)
                 }
@@ -66,6 +68,10 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
 //            finish()
 //        }
 //        timerHandler?.start()
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun initData() {
@@ -101,20 +107,34 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
         System.out.println("refreshAnimation $data")
         when (data) {
             0 -> {
+                viewModel.isAnimationEnd = false
                 // 移动到中间
                 AnimationUtil.setInitPoint(binding.carIv, 0f)
                 // 开始动画移动到最右边
                 AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
 //                    finish() // 离站动画结束后
+                    val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
+                    if (m != null && (m!! < 0 || m!! > 10)) {
+                        finish()
+                    } else
+                        viewModel.isAnimationEnd = true
                 }
             }
             1 -> {
+                viewModel.isAnimationEnd = false
                 // 移动到最左边
                 AnimationUtil.setInitPoint(binding.carIv, -1f, false)
 
                 // 开始动画移动到中间
-                AnimationUtil.showSlidingView(binding.carIv, false, ANIMATION_TIME, -1)
+                AnimationUtil.showSlidingView(binding.carIv, false, ANIMATION_TIME, -1) {
+                    val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
+                    if (m != null && (m!! < 0 || m!! > 10)) {
+                        finish()
+                    } else
+                        viewModel.isAnimationEnd = true
+                }
             }
+            else -> viewModel.isAnimationEnd = true
         }
     }
 }

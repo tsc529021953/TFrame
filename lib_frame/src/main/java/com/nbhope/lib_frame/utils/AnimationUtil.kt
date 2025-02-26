@@ -28,7 +28,7 @@ object AnimationUtil {
             slidingView: View,
             isRight: Boolean = true,
             aTime: Long = ANIMATION_TIMER,
-            hideTime: Long = HIDE_TIMER
+            hideTime: Long = HIDE_TIMER, runEndCB: (() -> Unit)? = null
     ) {
         // 启动从左侧滑出的动画
         var w = slidingView.width.toFloat()
@@ -43,6 +43,7 @@ object AnimationUtil {
                 .translationX(0f)
                 .setDuration(aTime)  // 1秒钟滑动到屏幕中
                 .withEndAction {
+                    runEndCB?.invoke()
                     // 在滑动完成后，延迟5秒钟，然后开始滑出
                     if (hideTime > 0) {
                         GlobalScope.launch {

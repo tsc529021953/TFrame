@@ -30,6 +30,8 @@ class StationNotifyViewModel @Inject constructor(val spManager: SharedPreference
 
     var gson = Gson()
 
+    var isAnimationEnd = true
+
     fun initData() {
 
     }
