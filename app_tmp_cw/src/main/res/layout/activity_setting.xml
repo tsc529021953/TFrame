@@ -44,7 +44,7 @@
                   app:layout_constraintStart_toStartOf="@+id/log_tv"
                   app:layout_constraintBottom_toTopOf="@+id/auto_tv"
                   android:background="@drawable/selector_ic_ex_save"
-                  android:text="@string/setting_ex_save"
+                  android:text="@string/setting_quick_send"
                 />
 
         <TextView style="@style/setting_ly"

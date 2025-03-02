@@ -25,6 +25,7 @@
     <string name="setting_local_res">本地素材</string>
     <string name="setting_log">工作日志和故障</string>
     <string name="setting_ex_save">外部存储</string>
+    <string name="setting_quick_send">快速传输</string>
     <string name="setting_auto">自动切换设置</string>
     <string name="setting_param">参数设置</string>
     <string name="setting_system">系统设置</string>

@@ -12,10 +12,13 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private final RecyclerView.Adapter adapter;
 //    private final List<String> dataList;
 
+    private IDrag iDrag;
+
     // dataList
-    public SimpleItemTouchHelperCallback(RecyclerView.Adapter adapter) {
+    public SimpleItemTouchHelperCallback(RecyclerView.Adapter adapter, IDrag iDrag) {
         this.adapter = adapter;
 //        this.dataList = dataList;
+        this.iDrag = iDrag;
     }
 
     @Override
@@ -38,7 +41,8 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
         int fromPosition = viewHolder.getAdapterPosition();
         int toPosition = target.getAdapterPosition();
-//        Collections.swap(dataList, fromPosition, toPosition);
+//        Collections.swap(dataList, fromPosition, toPosition)
+        iDrag.onMoved(fromPosition, toPosition);
         adapter.notifyItemMoved(fromPosition, toPosition);
         return true;
     }
@@ -46,5 +50,9 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
         // No swipe action
+    }
+
+    public interface IDrag {
+        void onMoved(int p1, int p2);
     }
 }

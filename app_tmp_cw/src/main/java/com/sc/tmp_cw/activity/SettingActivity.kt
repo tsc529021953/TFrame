@@ -66,7 +66,8 @@ class SettingActivity : BaseBindingActivity<ActivitySettingBinding, SettingViewM
         binding.exSaveTv.setOnClickListener {
             // 打开文件管理器
             TmpServiceDelegate.service()?.showFloat()
-            AppUtils.openRockExplorer(this)
+//            AppUtils.openRockExplorer(this)
+            AppUtils.startExtraApp(this, "com.cxinventor.file.explorer", "com.alphainventor.filemanager.activity.MainActivity")
         }
         binding.autoTv.setOnClickListener {
             ToastUtil.showS(R.string.no_make)
