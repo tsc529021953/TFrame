@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
+import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.dlong.dl10netassistant.OnNetThreadListener
 import com.dlong.dl10netassistant.UdpMultiThread
@@ -37,6 +38,7 @@ import com.petterp.floatingx.listener.control.IFxAppControl
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.activity.StationNotifyActivity
 import com.sc.tmp_cw.activity.UrgentNotifyActivity
+import com.sc.tmp_cw.app.AppHope
 import com.sc.tmp_cw.bean.CWInfo
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.inter.ITmpService
@@ -48,6 +50,7 @@ import timber.log.Timber
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.*
+import javax.inject.Inject
 
 
 /**
@@ -61,6 +64,7 @@ import java.util.*
  * 定时测试
  * 混淆
  */
+@Route(path = MessageConstant.ROUTH_TMP_SERVICE)
 class TmpServiceImpl : ITmpService, Service() {
 
     companion object {
@@ -72,6 +76,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
         var SERVER_PORT = 16680
         var SERVER_IP = "234.55.66.80"
+
+        var isFirstInitVoice = true
     }
 
     private val mBinder: IBinder = BaseBinder()
@@ -102,6 +108,9 @@ class TmpServiceImpl : ITmpService, Service() {
     private lateinit var fxAppControl : IFxAppControl
     private var rootView: View? = null
     private var iconIV: ImageView? = null // 主图标
+
+//    @Inject
+//    lateinit var spManager: SharedPreferencesManager
 
     override fun onCreate() {
         super.onCreate()
@@ -148,7 +157,8 @@ class TmpServiceImpl : ITmpService, Service() {
             }
         })
         // 静音设置
-        VoiceUtil.setScience(this)
+
+
 //        stationObs.set("收到卡里的克拉斯打开的大是大非撒啊发发发")
     }
 

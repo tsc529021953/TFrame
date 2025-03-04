@@ -88,6 +88,8 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
         viewModel.volumeObs.set(volume)
         binding.muteSc.isChecked = volume == 0
         viewModel.initData()
+
+        binding.defaultVoiceSc.isChecked = viewModel.spManager.getInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, 1) == 1
     }
 
     override fun linkViewModel() {
@@ -114,6 +116,8 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
                 val speed = binding.speedSb.progress / 10.0f
                 System.out.println("speed???:$speed")
                 viewModel.spManager.setFloat(MessageConstant.SP_MARQUEE_SPEED, speed)
+                viewModel.spManager.setInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, if (binding.defaultVoiceSc.isChecked) 1 else 0)
+                viewModel.spManager.setInt(MessageConstant.SP_PARAM_VOICE, VoiceUtil.getVolume(this))
 
                 super.finish()
                 return@showInfoTip true

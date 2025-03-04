@@ -52,11 +52,17 @@ class PlaylistViewModel @Inject constructor(val spManager: SharedPreferencesMana
             recordList.addAll(list)
         } else {
             val record = gson.fromJson<ArrayList<FileBean>>(local, object : TypeToken<List<FileBean?>?>() {}.type)
+            record.forEach { it2 ->
+                val item = list!!.find { it3 -> it3.path == it2.path }
+                if (item != null) {
+                    item.status = 1
+                    recordList.add(item)
+                }
+            }
             list!!.map { it ->
                 val item = record.find { it2 -> it.path == it2.path }
                 if (item != null) {
-                    it.status = 1
-                    recordList.add(it)
+//                    recordList.add(it)
                 } else {
                     unRecordList.add(it)
                 }

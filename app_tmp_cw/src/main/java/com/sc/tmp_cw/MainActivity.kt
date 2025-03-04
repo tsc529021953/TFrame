@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -21,10 +22,12 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
+import com.nbhope.phfame.utils.VoiceUtil
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityMainBinding
 import com.sc.tmp_cw.inter.IMainView
 import com.sc.tmp_cw.service.TmpServiceDelegate
+import com.sc.tmp_cw.service.TmpServiceImpl
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
 import kotlinx.coroutines.GlobalScope
@@ -129,6 +132,18 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
         binding.rightLy.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        binding.rightLy.setScrimColor(Color.TRANSPARENT)
+        if (TmpServiceImpl.isFirstInitVoice) {
+            TmpServiceImpl.isFirstInitVoice = false
+//            Timber.i("voice2 ${viewModel.spManager.getInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, 1)}")
+            if (viewModel.spManager.getInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, 1) == 1) {
+                val voice = viewModel.spManager.getInt(MessageConstant.SP_PARAM_VOICE, 0)
+                Timber.i("set default voice $voice")
+                if (voice != VoiceUtil.getVolume(this))
+                    VoiceUtil.setVolume(this, voice)
+            } else
+                VoiceUtil.setScience(this)
+        }
     }
 
     override fun onResume() {
@@ -347,7 +362,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     }
 
     override fun home() {
-        navController.navigate(R.id.navigation_local, null)
+        try {
+            navController.navigate(R.id.navigation_local, null)
+        } catch (e: Exception) {}
     }
 
 

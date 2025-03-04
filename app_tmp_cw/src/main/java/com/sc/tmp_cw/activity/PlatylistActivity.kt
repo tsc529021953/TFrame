@@ -16,6 +16,7 @@ import com.sc.tmp_cw.databinding.ActivityPlaylistBinding
 import com.sc.tmp_cw.vm.PlaylistViewModel
 import com.sc.tmp_cw.weight.SimpleItemTouchHelperCallback
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -56,7 +57,18 @@ class PlatylistActivity : BaseBindingActivity<ActivityPlaylistBinding, PlaylistV
     }
 
     private fun initDrag() {
-        val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter)
+        val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter) { p1, p2 ->
+            //        Collections.swap(dataList, fromPosition, toPosition);
+            if (p1 < p2) {
+                for (i in p1 until p2) {
+                    Collections.swap(adapter!!.data, i, i + 1)
+                }
+            } else {
+                for (i in p1 downTo p2 + 1) {
+                    Collections.swap(adapter!!.data, i, i - 1)
+                }
+            }
+        }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.rv)
     }
@@ -104,10 +116,12 @@ class PlatylistActivity : BaseBindingActivity<ActivityPlaylistBinding, PlaylistV
                 adapter!!.data!!.forEach {
                     if (it.status == 1) {
                         list.add(it)
+                        Timber.i("path ${it.path}")
                         sb.append(it.path)
                     }
                 }
                 val str = sb.toString()
+                Timber.i("path $str $last")
                 if (last != str) {
                     viewModel.spManager.setString(MessageConstant.SP_PLAYLIST_CHECK, str)
                     viewModel.spManager.setString(MessageConstant.SP_PLAYLIST, viewModel.gson.toJson(list))
