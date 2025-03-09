@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 26
-        versionName "0.0.26"
+        versionCode 28
+        versionName "0.0.28"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -120,10 +120,10 @@ dependencies {
 //    implementation deps.exo_player3_dash
 //    implementation deps.exo_player3_ui
 
-    implementation deps.ijk_player
-    implementation deps.ijk_player_armv7a
-    implementation deps.ijk_player_arm64
-    implementation deps.ijk_player_x86_64
+//    implementation deps.ijk_player
+//    implementation deps.ijk_player_armv7a
+//    implementation deps.ijk_player_arm64
+//    implementation deps.ijk_player_x86_64
 
     implementation deps.shimmer
     /*悬浮窗*/

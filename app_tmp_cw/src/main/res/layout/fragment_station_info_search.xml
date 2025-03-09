@@ -70,7 +70,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/si_item_height"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:padding="@dimen/si_rv_padding"
+                android:paddingStart="@dimen/si_rv_padding"
+                android:paddingEnd="@dimen/si_rv_padding"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 />
@@ -85,7 +86,7 @@
                 android:id="@+id/zoom"
                 android:visibility="gone"
                 android:background="#000"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 >
 
             <ImageView

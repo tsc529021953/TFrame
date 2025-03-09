@@ -8,11 +8,8 @@ import android.view.SurfaceHolder
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
-//import androidx.media3.common.MediaItem
-//import androidx.media3.exoplayer.ExoPlayer
-//import androidx.media3.exoplayer.SimpleExoPlayer
-//import com.google.android.exoplayer2.MediaItem
-//import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nbhope.lib_frame.base.BaseViewModel
@@ -27,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import tv.danmaku.ijk.media.player.IjkMediaPlayer
 import java.io.EOFException
 import java.io.File
 import javax.inject.Inject
@@ -50,8 +46,8 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
 
     var gson = Gson()
 
-    var player: IjkMediaPlayer? = null
-//    var player: ExoPlayer? = null
+//    var player: IjkMediaPlayer? = null
+    var player: ExoPlayer? = null
 //    var player: MediaPlayer? = null
     var surfaceHolder: SurfaceHolder? = null
     var surface: Surface? = null
@@ -79,8 +75,8 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                 System.out.println("相同数据，无需校验！ $checkPlay")
                 if (checkPlay) {
                     try {
-                        player?.start()
-//                        player?.play()
+//                        player?.start()
+                        player?.play()
 //                        setIndex(0)
                     } catch (e: Exception) {
                         Timber.i("checkVideo replay ${e.message}")
@@ -145,15 +141,15 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             return
         }
         val uri = Uri.fromFile(File(item.path))
-//        var mediaItem = MediaItem.fromUri(uri)
-//        player!!.setMediaItem(mediaItem)
-//        player!!.prepare()
-//        player!!.play()
+        var mediaItem = MediaItem.fromUri(uri)
+        player!!.setMediaItem(mediaItem)
+        player!!.prepare()
+        player!!.play()
 
 
-        player?.dataSource = item.path
-        player?.prepareAsync()
-        player?.start()
+//        player?.dataSource = item.path
+//        player?.prepareAsync()
+//        player?.start()
         Timber.i("播放 ${item.name}")
 //        player?.reset()
 //        player?.setDataSource(item.path)
@@ -176,12 +172,12 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
     }
 
     fun mute(isMute: Boolean) {
-//        if (isMute)
-//            player?.volume = 0f
-//        else player?.volume = 1.0f
         if (isMute)
-            player?.setVolume(0f, 0f)
-        else player?.setVolume(1f, 1f)
+            player?.volume = 0f
+        else player?.volume = 1.0f
+//        if (isMute)
+//            player?.setVolume(0f, 0f)
+//        else player?.setVolume(1f, 1f)
     }
 
 }
