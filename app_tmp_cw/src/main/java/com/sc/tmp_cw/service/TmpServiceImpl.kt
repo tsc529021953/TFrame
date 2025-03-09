@@ -24,6 +24,7 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.dlong.dl10netassistant.OnNetThreadListener
 import com.dlong.dl10netassistant.UdpMultiThread
 import com.google.gson.Gson
+import com.nbhope.lib_frame.activity.LogActivity
 import com.nbhope.lib_frame.app.AppManager
 import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.event.RemoteMessageEvent
@@ -36,8 +37,7 @@ import com.petterp.floatingx.assist.FxGravity
 import com.petterp.floatingx.assist.FxScopeType
 import com.petterp.floatingx.listener.control.IFxAppControl
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.activity.StationNotifyActivity
-import com.sc.tmp_cw.activity.UrgentNotifyActivity
+import com.sc.tmp_cw.activity.*
 import com.sc.tmp_cw.app.AppHope
 import com.sc.tmp_cw.bean.CWInfo
 import com.sc.tmp_cw.constant.MessageConstant
@@ -138,8 +138,16 @@ class TmpServiceImpl : ITmpService, Service() {
                 Timber.e("紧急通知 $m")
 //                if (!m.isNullOrEmpty())
                 LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_URGENT_NOTICE, m ?: ""))
-                if (!m.isNullOrEmpty() && AppManager.appManager?.topActivity != null && AppManager.appManager!!.topActivity!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName) {
-                    ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this@TmpServiceImpl)
+                if (!m.isNullOrEmpty()) {
+                    val top = AppManager.appManager?.topActivity ?: return
+                    if (top::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
+                        && top::class.java.simpleName != SettingActivity::class.java.simpleName
+                        && top::class.java.simpleName != ParamActivity::class.java.simpleName
+                        && top::class.java.simpleName != PlatylistActivity::class.java.simpleName
+                        && top::class.java.simpleName != LogActivity::class.java.simpleName
+                        ) {
+                        ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this@TmpServiceImpl)
+                    }
                 }
             }
         })

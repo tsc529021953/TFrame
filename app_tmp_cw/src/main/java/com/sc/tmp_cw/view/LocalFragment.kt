@@ -89,6 +89,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
             } catch (e: Exception) {}
 
             viewModel.next()
+            if (!this.isVisible) viewModel.mute(true)
         }
         viewModel.player?.setOnErrorListener(object : IMediaPlayer.OnErrorListener{
             override fun onError(p0: IMediaPlayer?, p1: Int, p2: Int): Boolean {
@@ -96,7 +97,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                 return true
             }
         })
-        viewModel.player?.setSpeed(2f)
+//        viewModel.player?.setSpeed(2f)
 
 //        viewModel.player = ExoPlayer.Builder(requireContext()).build()
 //        viewModel.player!!.playWhenReady = true
