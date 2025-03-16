@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.dialog.TipDialog
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.nbhope.lib_frame.utils.ValueHolder
 import com.nbhope.lib_frame.utils.volume.VolumeChangeObserver
 import com.nbhope.phfame.utils.VoiceUtil
 import com.sc.tmp_cw.R
@@ -56,7 +57,9 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
                 VoiceUtil.setVolume(this@ParamActivity, seekBar!!.progress)
             }
         })
-        binding.speedSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//        binding.finishTimeSb.min = 0
+//        binding.finishTimeSb.max = 100
+        binding.finishTimeSb.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
             }
@@ -66,6 +69,9 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (seekBar!!.isPressed)
+                    viewModel.finishTimeObs.set(
+                        ValueHolder.mapValueFromRangeToRange(binding.finishTimeSb.progress, 0, 100, 30, 180)) // binding.finishTimeSb.progress
             }
         })
         binding.muteSc.setOnCheckedChangeListener { p0, p1 ->
@@ -90,6 +96,7 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
         viewModel.initData()
 
         binding.defaultVoiceSc.isChecked = viewModel.spManager.getInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, 1) == 1
+        binding.finishTimeSb.progress = ValueHolder.mapValueFromRangeToRange(viewModel?.finishTimeObs?.get() ?: 30, 30, 180, 0, 100)
     }
 
     override fun linkViewModel() {
@@ -118,7 +125,11 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
                 viewModel.spManager.setFloat(MessageConstant.SP_MARQUEE_SPEED, speed)
                 viewModel.spManager.setInt(MessageConstant.SP_PARAM_DEFAULT_VOICE_OPEN, if (binding.defaultVoiceSc.isChecked) 1 else 0)
                 viewModel.spManager.setInt(MessageConstant.SP_PARAM_VOICE, VoiceUtil.getVolume(this))
-
+                val finishTime = viewModel.finishTimeObs.get() * 1000.toLong()
+                if (finishTime != MessageConstant.FINISH_TIME) {
+                    viewModel.spManager.setLong(MessageConstant.SP_FINISH_TIME,finishTime)
+                    MessageConstant.FINISH_TIME = finishTime
+                }
                 super.finish()
                 return@showInfoTip true
             },

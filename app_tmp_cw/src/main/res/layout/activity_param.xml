@@ -101,7 +101,29 @@
 
             </LinearLayout>
 
+            <LinearLayout style="@style/setting_item_style">
 
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="返回主页时间："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text='@{vm.finishTimeObs + "秒"}'
+                        />
+
+                <SeekBar
+                        style="@style/setting_item_slider_style"
+                        android:id="@+id/finish_time_sb"
+                        android:min="0"
+                        android:max="100"
+                        />
+<!--                android:progress="@{vm.finishTimeObs}"-->
+
+            </LinearLayout>
 
         </LinearLayout>
 

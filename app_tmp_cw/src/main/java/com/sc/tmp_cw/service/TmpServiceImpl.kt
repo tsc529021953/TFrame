@@ -141,10 +141,6 @@ class TmpServiceImpl : ITmpService, Service() {
                 if (!m.isNullOrEmpty()) {
                     val top = AppManager.appManager?.topActivity ?: return
                     if (top::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
-                        && top::class.java.simpleName != SettingActivity::class.java.simpleName
-                        && top::class.java.simpleName != ParamActivity::class.java.simpleName
-                        && top::class.java.simpleName != PlatylistActivity::class.java.simpleName
-                        && top::class.java.simpleName != LogActivity::class.java.simpleName
                         ) {
                         ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this@TmpServiceImpl)
                     }
@@ -154,12 +150,17 @@ class TmpServiceImpl : ITmpService, Service() {
         stationNotifyObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
                 val m = stationNotifyObs.get()
-                Timber.e("站点提示 $m")
-                LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
                 val top = AppManager.appManager?.topActivity
+                Timber.e("站点提示 $m top:${if (top == null) "null" else top!!::class.java.simpleName}")
+                LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
                 if (m in 0..9 && top != null
                     && top!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
-                    && top!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName) {
+                    && top!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName
+                    && top::class.java.simpleName != SettingActivity::class.java.simpleName
+                    && top::class.java.simpleName != ParamActivity::class.java.simpleName
+                    && top::class.java.simpleName != PlatylistActivity::class.java.simpleName
+                    && top::class.java.simpleName != LogActivity::class.java.simpleName
+                    ) {
                     ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
                 }
             }

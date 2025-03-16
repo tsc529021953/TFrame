@@ -2,7 +2,7 @@ package com.sc.tmp_cw.constant
 
 object MessageConstant {
 
-    const val FINISH_TIME = 30000L //30000L
+    var FINISH_TIME = 30000L //30000L
     const val MAIN_DRAW_LAYOUT_TIME = 10000L
     const val MAIN_ANIMATION_TIME = 5000L
     const val MAIN_ANIMATION_TIME_INTERVAL = MAIN_ANIMATION_TIME * 4
@@ -23,6 +23,7 @@ object MessageConstant {
     const val PATH_VIDEO = "/TMP/Video/"
     const val PATH_STATION = "/TMP/Station/"
 
+    const val SP_FINISH_TIME = "SP_FINISH_TIME" // 定时结束时间
     const val SP_MARQUEE_SPEED = "SP_MARQUEE_SPEED" // 走马灯速度
     const val SP_PLAYLIST = "SP_PLAYLIST" // 播放列表记录
     const val SP_PLAYLIST_CHECK = "SP_PLAYLIST_CHECK" // 校验列表是否变更
@@ -39,7 +40,7 @@ object MessageConstant {
     const val CMD_VOICE = "voice"
     const val CMD_POSITION = "position"
     const val CMD_URGENT_NOTICE = "CMD_URGENT_NOTICE"
-    const val CMD_STATION_NOTICE = "CMD_URGENT_NOTICE"
+    const val CMD_STATION_NOTICE = "CMD_STATION_NOTICE"
     const val CMD_RTSP_URL_LOADED = "CMD_RTSP_URL_LOADED"
     const val CMD_BACK_HOME = "CMD_BACK_HOME"
 

@@ -4,6 +4,7 @@ import android.view.View
 import androidx.databinding.ViewDataBinding
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.constants.HopeConstants
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.constant.MessageConstant
 
@@ -44,6 +45,9 @@ abstract class CWBaseBindingFragment<T : ViewDataBinding, VM : BaseViewModel> : 
     }
 
     fun reset() {
+        if (timerHandler != null && timerHandler!!.interval != MessageConstant.FINISH_TIME) {
+            timerHandler!!.interval = MessageConstant.FINISH_TIME
+        }
         timerHandler?.start()
     }
 

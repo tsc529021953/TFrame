@@ -4,7 +4,7 @@ import android.os.Handler
 import timber.log.Timber
 import java.util.*
 
-class TimerHandler(private val interval: Long, private var hour: Int = -1, var callback: () -> Unit) {
+class TimerHandler(var interval: Long, private var hour: Int = -1, var callback: () -> Unit) {
     private var handler = Handler()
     private var runnable: Runnable? = null
 

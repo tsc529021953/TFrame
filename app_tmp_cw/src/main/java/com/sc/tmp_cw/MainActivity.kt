@@ -157,6 +157,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         if (TmpServiceDelegate.service() != null)
             binding.service = TmpServiceDelegate.service()!!
         binding.vm = viewModel
+        initParam()
         if (checkPermissions(true)) {
             init()
         }
@@ -234,6 +235,12 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             drawLayoutTimerHandler?.start()
             return@setOnTouchListener false
         }
+    }
+
+    fun initParam() {
+        val finishTime = viewModel.spManager.getLong(MessageConstant.SP_FINISH_TIME, MessageConstant.FINISH_TIME)
+        if (finishTime != MessageConstant.FINISH_TIME)
+            MessageConstant.FINISH_TIME = finishTime
     }
 
     private fun checkSpeed() {
