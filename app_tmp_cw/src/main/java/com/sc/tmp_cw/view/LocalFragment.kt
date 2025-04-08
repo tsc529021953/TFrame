@@ -131,6 +131,12 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                 //
                 Timber.i("onPlayerError %s", error.message)
                 error.printStackTrace()
+                try {
+                    viewModel.stop()
+                    viewModel.next()
+                } catch (e: Exception) {
+                    Timber.i("错误播放失败${e.message}")
+                }
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {

@@ -22,7 +22,7 @@ import androidx.databinding.ObservableInt
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
 import com.dlong.dl10netassistant.OnNetThreadListener
-import com.dlong.dl10netassistant.UdpMultiThread
+//import com.dlong.dl10netassistant.UdpMultiThread
 import com.google.gson.Gson
 import com.nbhope.lib_frame.activity.LogActivity
 import com.nbhope.lib_frame.app.AppManager
@@ -42,6 +42,7 @@ import com.sc.tmp_cw.app.AppHope
 import com.sc.tmp_cw.bean.CWInfo
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.inter.ITmpService
+import com.sc.tmp_cw.weight.UdpMultiThread
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

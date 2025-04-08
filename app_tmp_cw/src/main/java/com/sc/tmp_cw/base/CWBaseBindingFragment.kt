@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.constants.HopeConstants
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.constant.MessageConstant
+import timber.log.Timber
 
 /**
  * @author  tsc
@@ -27,9 +28,15 @@ abstract class CWBaseBindingFragment<T : ViewDataBinding, VM : BaseViewModel> : 
             reset()
         }
         timerHandler = TimerHandler(MessageConstant.FINISH_TIME) {
-            System.out.println("定时到达！！")
-            stop()
-            finish?.invoke()
+            try {
+                Timber.i("Fragment定时到达 ${this.isVisible}")
+                if (this.isVisible) {
+                    stop()
+                    finish?.invoke()
+                }
+            } catch (e:Exception) {
+
+            }
         }
     }
 
