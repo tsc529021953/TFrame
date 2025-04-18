@@ -20,7 +20,9 @@ include ':app_td_float_setting'
 //include ':app_xs_by'
 //include ':app_tmp'
 include ':app_tmp_cw' /*视睿迪透明屏车窗交互系统    */
-//include ':app_tmp_launcher'
+//include ':app_tmp'
+include ':app_tmp_translate' /*视睿迪透明屏翻译软件*/
+project(':app_tmp_translate').projectDir = new File('./apps/thredim/app_tmp_translate')
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'

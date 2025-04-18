@@ -118,6 +118,10 @@ versions.exo_player3 = "1.5.1" // exo3 播放器
 versions.ijk_player = "0.8.8" // exo3 播放器
 versions.navigation = "2.3.2" // fragment 导航
 versions.shimmer = "0.4.0" // 闪光特效
+
+/*translate*/
+versions.hs_translate = "2.0.1-SNAPSHOT" // 火山翻译
+
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -342,10 +346,10 @@ deps.ijk_player = "tv.danmaku.ijk.media:ijkplayer-java:$versions.ijk_player"
 deps.ijk_player_armv7a = "tv.danmaku.ijk.media:ijkplayer-armv7a:$versions.ijk_player"
 deps.ijk_player_arm64 = "tv.danmaku.ijk.media:ijkplayer-arm64:$versions.ijk_player"
 deps.ijk_player_x86_64 = "tv.danmaku.ijk.media:ijkplayer-x86_64:$versions.ijk_player"
-
-
 /*特效*/
 deps.shimmer = "com.facebook.shimmer:shimmer:$versions.shimmer"
+/*translate*/
+deps.hs_translate = "com.volcengine:volc-sdk-java:$versions.hs_translate"
 
 ext.deps = deps
 

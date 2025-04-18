@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="main_sv_style">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:seekBarStyle">@null</item>
+    </style>
+
+    <style name="main_text_style">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">@dimen/main_margin</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">@dimen/main_text_size</item>
+        <item name="android:gravity">top |center_horizontal</item>
+    </style>
+
+    <style name="main_image_style">
+        <item name="android:layout_width">@dimen/main_img_size</item>
+        <item name="android:layout_height">@dimen/main_img_size</item>
+        <item name="android:layout_margin">@dimen/main_margin</item>
+    </style>
+
+</resources>
