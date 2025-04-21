@@ -47,12 +47,17 @@ class HSTranslateUtil {
     }
 
     private fun changeLanguage(lan: String) {
-        if (translateService == null) return
-        if (translateTextRequest == null) {
-            translateTextRequest = TranslateTextRequest()
-            // translateTextRequest.setSourceLanguage("en"); // 不设置表示自动检测
+        println("TTAG changeLanguage $translateService")
+        try {
+            if (translateService == null) return
+            if (translateTextRequest == null) {
+                translateTextRequest = TranslateTextRequest()
+                // translateTextRequest.setSourceLanguage("en"); // 不设置表示自动检测
+            }
+            translateTextRequest?.targetLanguage = lan
+        } catch (e: Exception) {
+            println("TTAG changeLanguage err ${e.message}")
         }
-        translateTextRequest?.targetLanguage = lan
     }
 
     fun translate2CH(textList: List<String>, cb: (resList: List<String>) -> Unit) {
@@ -74,6 +79,7 @@ class HSTranslateUtil {
                 cb.invoke(res.TranslationList.map { it.Translation })
             }
         } catch (e: Exception) {
+            println("TTAG err ${e.message}")
             e.printStackTrace()
             cb.invoke(arrayListOf(e.message ?: ""))
         }

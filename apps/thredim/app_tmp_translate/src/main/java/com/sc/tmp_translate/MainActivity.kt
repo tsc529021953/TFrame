@@ -15,9 +15,11 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.view.View
+import com.google.gson.Gson
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
+import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.databinding.ActivityMainBinding
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
@@ -50,6 +52,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         const val PLAY_IMAGE_TIME = 15000L
         const val CTRL_LAYOUT_VIEW_TIME = 10000L
 
+        var TRANSLATE_TO = "en"
     }
 
     override var layoutId: Int = R.layout.activity_main
@@ -64,6 +67,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 
     var sourceSB = StringBuilder()
     var targetSB = StringBuilder()
+    var tempSB = StringBuilder()
+
+    var gson = Gson()
 
     var textList = arrayListOf<String>(
         "今天天气怎么样",
@@ -124,7 +130,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 //                    "https://file.upfile.live/uploads/20250413/a21d54bff8710ebafcd4f25a0256a5db.mp4"
 //                    "https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209104902N3v5Vpxuvb.mp4"
 //                    "http://121.43.187.15:9005/default/audio.wav"
-                 Environment.getExternalStorageDirectory().absolutePath + File.separator + "THREDIM_MEDIA" + File.separator  + "audio2.mp3"
+                 Environment.getExternalStorageDirectory().absolutePath + File.separator + "THREDIM_MEDIA" + File.separator  + "audio.wav"
 //                + "audio.wav"
 
 //            Environment.getExternalStorageDirectory().absolutePath
@@ -142,7 +148,24 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 //                    }
                     hsTranslateUtil?.translate(path) { resList ->
                         isTranslating = false
-                        notifyInfo(resList, false)
+                        var isTemp = false
+                        var isSource = true
+                        val list = resList.map { res ->
+                            try {
+                                val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                                if (data.Subtitle?.Definite == true) {
+                                    if (data.Subtitle?.Language == TRANSLATE_TO) {
+                                        isSource = false
+                                    }
+                                } else {
+                                    isTemp = true
+                                }
+                                data?.Subtitle?.Text ?: "解析失败"
+                            } catch (e:Exception) {
+                                res
+                            }
+                        }
+                        notifyInfo(list, isSource, isTemp)
                     }
             }
         }
@@ -195,13 +218,15 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 //        }
     }
 
-    private fun notifyInfo(list: List<String>, isSource: Boolean = true) {
+    private fun notifyInfo(list: List<String>, isSource: Boolean = true, isTemp: Boolean = false) {
         this.runOnUiThread {
             if (isSource) {
+                tempSB.clear()
                 list.forEach { res ->
-                    sourceSB.append(res + "\n")
+                    if (isTemp) tempSB.append(res + "\n")
+                    else sourceSB.append(res + "\n")
                 }
-                binding.srcTv.text = sourceSB.toString()
+                binding.srcTv.text = sourceSB.toString() + tempSB.toString()
                 binding.srcSv.post {
                     binding.srcSv.fullScroll(View.FOCUS_DOWN)
                 }
@@ -222,11 +247,14 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (i in 0 until PERMISSIONS.size) {
                 val permission = PERMISSIONS[i]
+                logT("per ${checkSelfPermission(permission)} $permission")
                 if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+
                     hasPermission = false
                 }
             }
             if (!hasPermission && request) {
+//                requestPermissions(PERMISSIONS.toMutableList().toTypedArray(), 10086)
                 //
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // android 11  且 不是已经被拒绝
                     // 先判断有没有权限
@@ -235,8 +263,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
                         intent.setData(Uri.parse("package:$packageName"))
                         startActivityForResult(intent, 1024)
                     }
-                } else
-                    this.requestPermissions(PERMISSIONS.toTypedArray(), REQUEST_CODE)
+                }
+                this.requestPermissions(PERMISSIONS.toTypedArray(), REQUEST_CODE)
             }
         }
         logT("hasPermission $hasPermission")
