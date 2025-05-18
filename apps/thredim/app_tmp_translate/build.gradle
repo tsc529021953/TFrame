@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_translate"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 3
-        versionName "0.0.3"
+        versionCode 4
+        versionName "0.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {

@@ -51,7 +51,10 @@ class StationInfoSearchFragment: BaseBindingFragment<FragmentStationInfoSearchBi
         if (handleClick == null)
             handleClick = HandleClick(500, 2)
         binding.backBtn.setOnClickListener {
-            InteractiveFragment.iFragment?.back()
+            if (binding.zoom.visibility == View.VISIBLE)
+                close()
+            else
+                InteractiveFragment.iFragment?.back()
         }
 
         val data = if (TmpServiceDelegate.service() != null) ArrayList(TmpServiceDelegate.service()!!.getCWInfo().stations) else arrayListOf()

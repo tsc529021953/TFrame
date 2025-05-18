@@ -85,6 +85,7 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
     override fun onDestroy() {
         super.onDestroy()
         timerHandler?.stop()
+        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTIFY_END, ""))
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
     }
 
@@ -114,6 +115,7 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
 //                    finish() // 离站动画结束后
                     val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
+                    System.out.println("stationNotifyObs $m")
                     if (m != null && (m!! < 0 || m!! > 10)) {
                         finish()
                     } else

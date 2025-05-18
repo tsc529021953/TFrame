@@ -31,6 +31,7 @@ import com.sc.tmp_cw.service.TmpServiceImpl
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -120,6 +121,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             MessageConstant.CMD_BACK_HOME -> {
                 homeDelay()
             }
+            MessageConstant.CMD_STATION_NOTIFY_END -> {
+                showHideTitle(true)
+            }
         }
     }
 
@@ -144,6 +148,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             } else
                 VoiceUtil.setScience(this)
         }
+        showHideTitle(false)
     }
 
     override fun onResume() {
@@ -374,5 +379,23 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         } catch (e: Exception) {}
     }
 
+    private fun showHideTitle(isShow: Boolean = true) {
+        if (isShow) {
+            // 显示
+            if (binding.titleLy2.logoLy.visibility == View.VISIBLE) {
+                viewModel.mScope?.cancel()
+            } else
+                binding.titleLy2.logoLy.visibility = View.VISIBLE
+            viewModel.mScope.launch {
+                delay(MessageConstant.MAIN_TITLE_SHOW_TIME)
+                this@MainActivity.runOnUiThread {
+                    showHideTitle(false)
+                }
+            }
+        } else {
+            if (binding.titleLy2.logoLy.visibility != View.GONE)
+                binding.titleLy2.logoLy.visibility = View.GONE
+        }
+    }
 
 }

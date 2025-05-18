@@ -17,7 +17,7 @@ object MessageHandler {
 
     val testData1 = "50 41 00 00 00 00 01 00 ff 00 00 1D 00 01 00 6f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 32"
     val testData2 = "50 41 00 00 00 00 01 00 01 00 00 1D 03 04 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 09 34 32"
-    val testData3 = "50 41 00 00 00 00 01 ff 00 00 00 1D 00 01 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 34"
+    val testData3 = "50 41 00 00 00 00 01 ff ff 00 00 1D 00 01 00 FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 19 01 0D 08 34 34"
 
     val IS_JUDGE_LENGTH = false
 
@@ -38,14 +38,14 @@ object MessageHandler {
 //            System.out.println("message:$data")
 //        }
         service.mScope.launch {
-//            handleMessage(testData2.replace(" ", ""), service)
-////            delay(5000)
-////            handleMessage(testData2.replace(" ", ""), service)
-//            delay(5000)
-//            handleMessage(testData3.replace(" ", ""), service)
-//
-//            delay(10000)
             handleMessage(testData2.replace(" ", ""), service)
+//            delay(5000)
+//            handleMessage(testData2.replace(" ", ""), service)
+            delay(5000)
+            handleMessage(testData3.replace(" ", ""), service)
+//
+//            delay(1000)
+//            handleMessage(testData1.replace(" ", ""), service)
         }
 
     }

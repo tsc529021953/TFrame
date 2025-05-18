@@ -30,8 +30,9 @@
 
         <ScrollView style="@style/main_sv_style"
                     android:id="@+id/src_sv"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/line_v"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/line_v"
+                    android:rotationY="180"
                 >
             <TextView style="@style/main_text_style"
                       android:id="@+id/src_tv"
@@ -40,8 +41,8 @@
 
         <ScrollView style="@style/main_sv_style"
                     android:id="@+id/target_sv"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/line_v"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/line_v"
                 >
             <TextView style="@style/main_text_style"
                       android:id="@+id/target_tv"
