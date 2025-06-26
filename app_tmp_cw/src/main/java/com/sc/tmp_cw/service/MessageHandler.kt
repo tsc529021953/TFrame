@@ -73,10 +73,10 @@ object MessageHandler {
                 pisBean.boardStatus = getInfoByIndex(msg, 16, 18)
 
 
-                pisBean.startCode = getInfoByIndex(msg, 20, 22)
-                pisBean.endCode = getInfoByIndex(msg, 22, 24)
-                pisBean.currentCode = getInfoByIndex(msg, 24, 26)
-                pisBean.nextCode = getInfoByIndex(msg, 26, 28)
+                pisBean.startCode = getInfoByIndex(msg, 20, 22) + 1
+                pisBean.endCode = getInfoByIndex(msg, 22, 24) + 1
+                pisBean.currentCode = getInfoByIndex(msg, 24, 26) + 1
+                pisBean.nextCode = getInfoByIndex(msg, 26, 28) + 1
                 service.stationNotifyObs.set(pisBean.boardStatus)
                 var tip = ""
                 if (pisBean.boardStatus != -1) {
@@ -101,7 +101,7 @@ object MessageHandler {
                         }
                     }
                 }
-                System.out.println("站点信息 ${pisBean.boardStatus}")
+
 
                 pisBean.urgentNotifyCode = getInfoByIndex(msg, 30, 32)
                 // 判断当前界面或者判断上一个记录
@@ -110,6 +110,7 @@ object MessageHandler {
 //                if (str.isNullOrEmpty())
 //                    LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_URGENT_NOTICE, ""))
                 service.urgentNotifyMsgObs.set(str)
+                Timber.i("站点信息 ${pisBean.boardStatus} ${service.stationStatusObs.get()} ${service.stationObs.get()} 提示 ${str ?: ""}")
 
                 pisBean.runDirection = getInfoByIndex(msg, 34, 36)
                 pisBean.carNumber = getInfoByIndex(msg, 36, 40)
@@ -128,7 +129,7 @@ object MessageHandler {
                 pisBean.second = getInfoByIndex(msg, 98, 100)
                 service.timeObs.set("20${pisBean.year}年${getTime(pisBean.month)}月${getTime(pisBean.day)}日 ${getTime(pisBean.hour)}:${getTime(pisBean.minute)}:${getTime(pisBean.second)}")
 
-                System.out.println(pisBean)
+                Timber.i("${service.timeObs.get()} ${pisBean.toString()}")
             }
         }
     }

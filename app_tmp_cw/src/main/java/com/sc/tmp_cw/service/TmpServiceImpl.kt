@@ -31,6 +31,7 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.*
+import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.nbhope.phfame.utils.VoiceUtil
 import com.petterp.floatingx.FloatingX
 import com.petterp.floatingx.assist.FxGravity
@@ -300,6 +301,8 @@ class TmpServiceImpl : ITmpService, Service() {
             val item = cwInfo.urgentNotify!!.find { it.id == id }
             if (item != null) {
                 return item.msg
+            } else if (id != 255) {
+                return "序号${id}暂未定义！"
             }
         }
         return ""
@@ -381,10 +384,21 @@ class TmpServiceImpl : ITmpService, Service() {
             val analysis = { msg: String? ->
 //                System.out.println(msg?.replace(" ", "")?.replace("\n", "") ?: "")
                 if (msg != null) {
-                    cwInfo = gson.fromJson(msg, CWInfo::class.java)
-                    SERVER_PORT = cwInfo.port
-                    SERVER_IP = cwInfo.ip
-                    titleObs.set(cwInfo.title)
+                    Timber.i(msg)
+                    try {
+                        if (gson == null) gson = Gson()
+                        cwInfo = gson.fromJson(msg, CWInfo::class.java)
+                        SERVER_PORT = cwInfo.port
+                        SERVER_IP = cwInfo.ip
+                        titleObs.set(cwInfo.title)
+                        Timber.e("配置文件解析成功")
+                    } catch (e: Exception) {
+                        Timber.e("配置文件存在问题 ${e.message}")
+                        e.printStackTrace()
+                        try {
+                            ToastUtil.showS("配置文件解析存在问题，请确认")
+                        } catch (e: Exception) {}
+                    }
                 }
                 callback.invoke()
             }

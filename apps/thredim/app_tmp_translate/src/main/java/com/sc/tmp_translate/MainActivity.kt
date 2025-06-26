@@ -21,6 +21,7 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.databinding.ActivityMainBinding
+import com.sc.tmp_translate.utils.AudioRecorder
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
 import com.sc.tmp_translate.vm.MainViewModel
@@ -36,9 +37,10 @@ import kotlin.random.Random
  * @date  2024/4/25 17:47
  * @version 0.0.0-1
  * @description
-
+   1.开启两个麦克风的录音，并做降噪处理
+   2.录音上传给火山进行翻译
  */
-class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
+class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), AudioRecorder.Callback {
 
     companion object {
 
@@ -47,6 +49,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         var PERMISSIONS = arrayListOf<String>(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.RECORD_AUDIO,
         )
 
         const val PLAY_IMAGE_TIME = 15000L
@@ -93,6 +96,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         }
     }
 
+    private var audioRecorder: AudioRecorder? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.out.println("onCreate ??? $requestedOrientation ${requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}")
@@ -109,65 +114,13 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         }
         random = Random(System.currentTimeMillis())
         binding.textIv.setOnClickListener {
-            if (isTranslating) return@setOnClickListener
-            isTranslating = true
-            val index = random!!.nextInt(textList.size)
-            viewModel.mScope.launch {
-                val list = arrayListOf(textList[index])
-                notifyInfo(list)
-                hsTranslateUtil?.translate2EN(list) { resList ->
-                    isTranslating = false
-                    notifyInfo(resList, false)
-                }
-            }
+            dealText()
         }
         binding.audioIv.setOnClickListener {
-            if (isTranslating) return@setOnClickListener
-            isTranslating = true
-            viewModel.mScope.launch {
-
-                val path =
-//                    "https://file.upfile.live/uploads/20250413/a21d54bff8710ebafcd4f25a0256a5db.mp4"
-//                    "https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209104902N3v5Vpxuvb.mp4"
-//                    "http://121.43.187.15:9005/default/audio.wav"
-                 Environment.getExternalStorageDirectory().absolutePath + File.separator + "THREDIM_MEDIA" + File.separator  + "audio.wav"
-//                + "audio.wav"
-
-//            Environment.getExternalStorageDirectory().absolutePath
-//                    + File.separator + "THREDIM_MEDIA" + File.separator + "audio.wav"
-                notifyInfo(arrayListOf("开始翻译音频 $path"))
-                val file = File(path)
-                logT("file ${file.exists()} ${file.absolutePath}")
-                if (!file.exists()) {
-                    isTranslating = false
-                    notifyInfo(arrayListOf("未找到相关路径"), false)
-                } else
-//                    hsTranslateUtil?.translate(path, 10000) { resList ->
-//                        isTranslating = false
-//                        notifyInfo(resList, false)
-//                    }
-                    hsTranslateUtil?.translate(path) { resList ->
-                        isTranslating = false
-                        var isTemp = false
-                        var isSource = true
-                        val list = resList.map { res ->
-                            try {
-                                val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
-                                if (data.Subtitle?.Definite == true) {
-                                    if (data.Subtitle?.Language == TRANSLATE_TO) {
-                                        isSource = false
-                                    }
-                                } else {
-                                    isTemp = true
-                                }
-                                data?.Subtitle?.Text ?: "解析失败"
-                            } catch (e:Exception) {
-                                res
-                            }
-                        }
-                        notifyInfo(list, isSource, isTemp)
-                    }
-            }
+            dealAudio()
+        }
+        binding.recordIv.setOnClickListener {
+            recordAndTrans()
         }
     }
 
@@ -202,6 +155,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
 //            val list = arrayListOf("开心") // textList[index]
 //            notifyInfo(list)
 //        }
+//        audioRecorder = AudioRecorder(this, )
     }
 
     private fun initTranslate() {
@@ -271,7 +225,90 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>() {
         return hasPermission
     }
 
+    fun recordAndTrans() {
+        if (audioRecorder?.isRecording != true) {
+            audioRecorder?.startRecording()
+        } else {
+            audioRecorder?.stopRecording()
+        }
+    }
+
+    private fun dealText() {
+        if (isTranslating) return
+        isTranslating = true
+        val index = random!!.nextInt(textList.size)
+        viewModel.mScope.launch {
+            val list = arrayListOf(textList[index])
+            notifyInfo(list)
+            hsTranslateUtil?.translate2EN(list) { resList ->
+                isTranslating = false
+                notifyInfo(resList, false)
+            }
+        }
+    }
+
+    private fun dealAudio() {
+        if (isTranslating) return
+        isTranslating = true
+        viewModel.mScope.launch {
+
+            val path =
+//                    "https://file.upfile.live/uploads/20250413/a21d54bff8710ebafcd4f25a0256a5db.mp4"
+//                    "https://stream7.iqilu.com/10339/upload_transcode/202002/09/20200209104902N3v5Vpxuvb.mp4"
+//                    "http://121.43.187.15:9005/default/audio.wav"
+                Environment.getExternalStorageDirectory().absolutePath + File.separator + "THREDIM_MEDIA" + File.separator  + "audio.wav"
+//                + "audio.wav"
+
+//            Environment.getExternalStorageDirectory().absolutePath
+//                    + File.separator + "THREDIM_MEDIA" + File.separator + "audio.wav"
+            notifyInfo(arrayListOf("开始翻译音频 $path"))
+            val file = File(path)
+            logT("file ${file.exists()} ${file.absolutePath}")
+            if (!file.exists()) {
+                isTranslating = false
+                notifyInfo(arrayListOf("未找到相关路径"), false)
+            } else
+//                    hsTranslateUtil?.translate(path, 10000) { resList ->
+//                        isTranslating = false
+//                        notifyInfo(resList, false)
+//                    }
+                hsTranslateUtil?.translate(path) { resList ->
+                    isTranslating = false
+                    var isTemp = false
+                    var isSource = true
+                    val list = resList.map { res ->
+                        try {
+                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                            if (data.Subtitle?.Definite == true) {
+                                if (data.Subtitle?.Language == TRANSLATE_TO) {
+                                    isSource = false
+                                }
+                            } else {
+                                isTemp = true
+                            }
+                            data?.Subtitle?.Text ?: "解析失败"
+                        } catch (e:Exception) {
+                            res
+                        }
+                    }
+                    notifyInfo(list, isSource, isTemp)
+                }
+        }
+    }
+
     private fun logT(msg: Any?) {
         Timber.i("TransTAG ${msg ?: ""}")
+    }
+
+    override fun onRecordingStarted() {
+        isTranslating = true
+    }
+
+    override fun onRecordingStopped() {
+        isTranslating = false
+    }
+
+    override fun onAudioData(data: ByteArray, size: Int) {
+
     }
 }

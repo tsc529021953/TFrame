@@ -17,7 +17,9 @@ import com.sc.tmp_cw.databinding.ActivityUrgentNotifyBinding
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.StationNotifyViewModel
 import com.sc.tmp_cw.vm.UrgentNotifyViewModel
+import kotlinx.coroutines.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -42,7 +44,8 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
         when (it.cmd) {
             MessageConstant.CMD_STATION_NOTICE -> {
                 val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
-                if (m == null || m!! < 0 || m!! > 10) {
+                Timber.i("CMD_STATION_NOTICE $m ${viewModel.isAnimationEnd}")
+                if (m == null || m!! < 0 || m!! > 10 || m!! == 1) {
                     // 动画完成之后再触发
                     if (viewModel.isAnimationEnd)
                         finish()
@@ -96,7 +99,7 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
         if (TmpServiceDelegate.service() != null) {
             binding.service = TmpServiceDelegate.service()!!
             val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
-            if (m != null && m!! >= 0 && m!! < 10) {
+            if (m != null && m!! >= 0 && m!! < 10 && m!! != 1) {
                 binding.carIv.post {
                     refreshAnimation(m)
                 }
@@ -115,14 +118,15 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
 //                    finish() // 离站动画结束后
                     val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
-                    System.out.println("stationNotifyObs $m")
-                    if (m != null && (m!! < 0 || m!! > 10)) {
+                    Timber.i("stationNotifyObs $m")
+                    if (m != null && (m!! < 0 || m!! > 10 || m!! == 1)) {
                         finish()
-                    } else
+                    } else {
                         viewModel.isAnimationEnd = true
+                    }
                 }
             }
-            1 -> {
+            2 -> {
                 viewModel.isAnimationEnd = false
                 // 移动到最左边
                 AnimationUtil.setInitPoint(binding.carIv, -1f, false)
@@ -130,10 +134,20 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 // 开始动画移动到中间
                 AnimationUtil.showSlidingView(binding.carIv, false, ANIMATION_TIME, -1) {
                     val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
-                    if (m != null && (m!! < 0 || m!! > 10)) {
+                    if (m != null && (m!! < 0 || m!! > 10 || m!! == 1)) {
                         finish()
-                    } else
+                    } else {
                         viewModel.isAnimationEnd = true
+//                        viewModel?.mScope.launch {
+//                            delay(1000)
+//                            if (viewModel.isAnimationEnd && !this@StationNotifyActivity.isFinishing && !this@StationNotifyActivity.isDestroyed) {
+//                                this@StationNotifyActivity.runOnUiThread {
+//                                    Timber.i("延时关闭动画界面！")
+//                                    this@StationNotifyActivity.finish()
+//                                }
+//                            }
+//                        }
+                    }
                 }
             }
             else -> viewModel.isAnimationEnd = true

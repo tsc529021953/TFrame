@@ -42,4 +42,8 @@ class PISBean {
         return "PISBean(start='$start', frameworkVersion=$frameworkVersion, modifyVersion=$modifyVersion, lifeSignal=$lifeSignal, checkSignal=$checkSignal, boardStatus=$boardStatus, startCode=$startCode, endCode=$endCode, currentCode=$currentCode, nextCode=$nextCode, urgentNotifyCode=$urgentNotifyCode, runDirection=$runDirection, carNumber=$carNumber, jiaoLuNumber=$jiaoLuNumber, carCiNumber=$carCiNumber, lineNumber=$lineNumber, ignoreStation=$ignoreStation, year=$year, month=$month, day=$day, hour=$hour, minute=$minute, second=$second)"
     }
 
+//    override fun toString(): String {
+//        return "PISBean(start='$start', frameworkVersion=$frameworkVersion, modifyVersion=$modifyVersion, lifeSignal=$lifeSignal, checkSignal=$checkSignal, boardStatus=$boardStatus, startCode=$startCode, endCode=$endCode, currentCode=$currentCode, nextCode=$nextCode, urgentNotifyCode=$urgentNotifyCode, runDirection=$runDirection, carNumber=$carNumber, jiaoLuNumber=$jiaoLuNumber, carCiNumber=$carCiNumber, lineNumber=$lineNumber, ignoreStation=$ignoreStation, year=$year, month=$month, day=$day, hour=$hour, minute=$minute, second=$second)"
+//    }
+
 }
