@@ -6,19 +6,82 @@
         android:id="@+id/bg_ly"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black"
+        android:background="#555555"
 >
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="点击发送开启测试程序广播"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:id="@+id/text2"
-        />
+
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+
+                <View style="@style/vertical_space_style"/>
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="转码"
+                        android:gravity="center"
+                        android:id="@+id/zm_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Play"
+                        android:gravity="center"
+                        android:id="@+id/play_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Play/Pause"
+                        android:gravity="center"
+                        android:id="@+id/pause_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Stop"
+                        android:gravity="center"
+                        android:id="@+id/stop_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Next"
+                        android:gravity="center"
+                        android:id="@+id/next_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <SeekBar
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:id="@+id/position_sb"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginEnd="50dp"
+                        />
+                <View style="@style/vertical_space_style"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="00:00/00:00"
+                        android:gravity="center"
+                        android:id="@+id/time_tv"
+                        android:textColor="@color/white"
+                        />
+                <View style="@style/vertical_space_style"/>
+        </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

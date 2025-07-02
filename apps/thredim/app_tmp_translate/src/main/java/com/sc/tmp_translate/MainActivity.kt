@@ -24,6 +24,7 @@ import com.sc.tmp_translate.databinding.ActivityMainBinding
 import com.sc.tmp_translate.utils.AudioRecorder
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
+import com.sc.tmp_translate.utils.record.MultipleAudioRecord
 import com.sc.tmp_translate.vm.MainViewModel
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -98,6 +99,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     private var audioRecorder: AudioRecorder? = null
 
+    private var mar: MultipleAudioRecord? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         System.out.println("onCreate ??? $requestedOrientation ${requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE}")
@@ -113,6 +116,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             init()
         }
         random = Random(System.currentTimeMillis())
+        binding.micIv.setOnClickListener {
+            mar?.startOrStop()
+        }
         binding.textIv.setOnClickListener {
             dealText()
         }
@@ -143,13 +149,16 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onDestroy() {
         super.onDestroy()
         hsTranslateUtil?.release()
+        mar?.release()
     }
 
     private fun init() {
-        //
         viewModel.initData()
         viewModel?.mScope?.launch {
             initTranslate()
+
+            if (mar == null) mar = MultipleAudioRecord(this@MainActivity)
+            mar?.init()
         }
 //        for (i in 0 until 100) {
 //            val list = arrayListOf("开心") // textList[index]
@@ -165,11 +174,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             TranslateConfig.accessKey,
             TranslateConfig.secretKey
         )
-//        hsTranslateUtil?.translate2EN(arrayListOf("今天天气怎么样")) { resList ->
-//            resList.forEach { res ->
-//                logT("翻译结果 $res")
-//            }
-//        }
     }
 
     private fun notifyInfo(list: List<String>, isSource: Boolean = true, isTemp: Boolean = false) {
