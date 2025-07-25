@@ -11,7 +11,10 @@ import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.view.DrawLayoutUtils
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.ActivityTranslateBinding
+import com.sc.tmp_translate.dialog.DisplayDialog
+import com.sc.tmp_translate.dialog.TextPlayDialog
 import com.sc.tmp_translate.dialog.TextSizeDialog
+import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.vm.TranslateViewModel
 import com.sc.tmp_translate.weight.KeepStateNavigator
 import javax.inject.Inject
@@ -20,9 +23,15 @@ import javax.inject.Inject
 /**
  * 1.侧边设置界面
  * 1）同显/异显 主机侧一个界面 异显一个界面   异显一套界面
- * 2）字体设置 动态改变
- * 3）文本播放设置
+ * 2）字体设置 动态改变 *
+ * 3）文本播放设置 *
  * 4）翻译记录
+ * 对话组件实现
+ * 同显
+ * 左侧 上外文 下中文   右侧  上中文  下外文   最上面显示时间
+ * 异显
+ * 主屏都显示中文   副屏都显示外文    上面显示时间
+ * TODO 对话组件实现  异显实现  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
  */
 class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, TranslateViewModel>() {
 
@@ -41,17 +50,21 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
         it as RemoteMessageEvent
         when (it.cmd) {
             MessageConstant.CMD_BACK -> {
-                this.runOnUiThread {
-                    showDLBtn()
-                    navController.navigate(R.id.navigation_trans_main)
-//                    val res = navController.popBackStack()
-                    log("执行返回3")
-                }
-//                navController.navigateUp()
+               back()
             }
             MessageConstant.CMD_TRANSLATING -> {
                 log("翻译 ${it.data}")
-                viewModel.translatingObs.set(it.data.toBoolean())
+                val translating = it.data.toBoolean()
+                if (translating) {
+                    this.runOnUiThread {
+                        navController.navigate(R.id.navigation_translating)
+                    }
+                } else back()
+                TmpServiceDelegate.getInstance().setTranslating(translating)
+            }
+            MessageConstant.CMD_BIND_SUCCESS -> {
+                if (TmpServiceDelegate.getInstance() != null)
+                    binding.tmp = TmpServiceDelegate.getInstance()
             }
         }
     }
@@ -64,9 +77,24 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
     override fun initData() {
         LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
     }
-    
+
     override fun linkViewModel() {
         binding.vm = viewModel
+        if (TmpServiceDelegate.getInstance() != null)
+            binding.tmp = TmpServiceDelegate.getInstance()
+    }
+
+    override fun onBackPressed() {
+//        super.onBackPressed()
+        System.out.println("onBackPressed ${navController.currentDestination?.id} ${R.id.navigation_trans_main}")
+        when (navController.currentDestination?.id) {
+            R.id.navigation_trans_record -> back()
+            R.id.navigation_translating -> {
+                back()
+                TmpServiceDelegate.getInstance().setTranslating(false)
+            }
+            else -> finish()
+        }
     }
 
     override fun onDestroy() {
@@ -87,13 +115,16 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
             DrawLayoutUtils.openDL(binding.dlLy)
         }
         binding.displayBtn.setOnClickListener {
-
+            DisplayDialog.newInstance().show(supportFragmentManager, "DisplayDialog")
+            DrawLayoutUtils.closeDL(binding.dlLy)
         }
         binding.fontSizeBtn.setOnClickListener {
             TextSizeDialog.newInstance().show(supportFragmentManager, "TextSizeDialog")
+            DrawLayoutUtils.closeDL(binding.dlLy)
         }
         binding.textBtn.setOnClickListener {
-
+            TextPlayDialog.newInstance().show(supportFragmentManager, "TextPlayDialog")
+            DrawLayoutUtils.closeDL(binding.dlLy)
         }
         binding.recordBtn.setOnClickListener {
             layoutClick(binding.recordBtn, true) {
@@ -127,6 +158,15 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
             DrawLayoutUtils.closeDL(binding.dlLy)
         }
         callback?.invoke()
+    }
+
+    private fun back() {
+        this.runOnUiThread {
+            showDLBtn()
+            navController.navigate(R.id.navigation_trans_main)
+//                    val res = navController.popBackStack()
+            log("执行返回3")
+        }
     }
 
     private fun log(msg: Any?) {

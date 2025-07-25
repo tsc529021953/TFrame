@@ -33,8 +33,6 @@ class TranslateViewModel @Inject constructor(val spManager: SharedPreferencesMan
 
     lateinit var timerHandler: TimerHandler
 
-    var translatingObs: ObservableBoolean = ObservableBoolean(false)
-
     fun initData() {
 
     }

@@ -4,10 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.databinding.BindingAdapter
-import androidx.databinding.ObservableBoolean
-import androidx.databinding.ObservableField
-import androidx.databinding.ObservableInt
+import androidx.databinding.*
 import com.nbhope.lib_frame.R
 import timber.log.Timber
 
@@ -127,4 +124,16 @@ object SetBindAdapter {
 //            imageView.context.resources.getDrawable(if (selected.get()) R.drawable.setting_checkbox_selected else R.drawable.setting_checkbox_unselected)
 //        imageView.setImageDrawable(drawable)
 //    }
+
+    @JvmStatic
+    @BindingAdapter(value = ["floatDef", "floatData"], requireAll = true)
+    fun floatViewSel(view: View, value: Float, data: ObservableFloat?) {
+        view.isEnabled = value != data?.get()
+    }
+
+    @JvmStatic
+    @BindingAdapter(value = ["boolDef", "boolData"], requireAll = true)
+    fun boolViewSel(view: View, value: Boolean, data: ObservableBoolean?) {
+        view.isEnabled = value != data?.get()
+    }
 }

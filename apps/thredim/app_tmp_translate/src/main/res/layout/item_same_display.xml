@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            >
+
+        <TextView
+                style="@style/trans_time_style"
+                android:id="@+id/time_tv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        <LinearLayout
+                style="@style/trans_ly_style"
+                android:id="@+id/text_ly"
+                app:layout_constraintTop_toBottomOf="@+id/time_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                    style="@style/trans_text_same_style"
+                    android:id="@+id/text_tv"
+                    />
+
+            <View style="@style/trans_line_style"
+                    />
+
+            <TextView
+                    style="@style/trans_text_same_style"
+                    android:id="@+id/trans_text_tv"
+                    />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

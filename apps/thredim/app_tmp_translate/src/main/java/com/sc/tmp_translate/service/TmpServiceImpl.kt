@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import android.os.*
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
@@ -74,10 +75,14 @@ class TmpServiceImpl : ITmpService, Service() {
 
     lateinit var spManager: SharedPreferencesManager
 
-    private val fontSizeObf: ObservableFloat? = ObservableFloat(1.0f)
+    private val fontSizeObf: ObservableFloat = ObservableFloat(1.0f)
 
-    private val languageObs: ObservableField<String>? = ObservableField<String>("")
-    private val languageKHObs: ObservableField<String>? = ObservableField<String>("")
+    private val languageObs: ObservableField<String> = ObservableField<String>("")
+    private val languageKHObs: ObservableField<String> = ObservableField<String>("")
+
+    private var moreDisplayObb: ObservableBoolean = ObservableBoolean(false)
+    private var translatingObb: ObservableBoolean = ObservableBoolean(false)
+    private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
 
     override fun onCreate() {
         super.onCreate()
@@ -94,9 +99,11 @@ class TmpServiceImpl : ITmpService, Service() {
 //        }
         networkCallback.registNetworkCallback(networkCallbackModule)
 
-        fontSizeObf?.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+        fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
         val languages = getStringArray(R.array.lang_an_array)
-        languageObs?.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
+        languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
+        moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))
+        textPlayObb.set(spManager.getBoolean(MessageConstant.SP_TEXT_PLAY, true))
         reBuild()
 
 
@@ -180,6 +187,32 @@ class TmpServiceImpl : ITmpService, Service() {
     override fun setTransLang(lang: String) {
         languageObs?.set(lang)
         spManager.setString(MessageConstant.SP_RECORD_LANGUAGE, lang)
+    }
+
+    override fun getMoreDisplayObs(): ObservableBoolean? {
+        return moreDisplayObb
+    }
+
+    override fun setMoreDisplay(more: Boolean) {
+        moreDisplayObb.set(more)
+        spManager.setBoolean(MessageConstant.SP_MORE_DISPLAY, more)
+    }
+
+    override fun getTextPlayObs(): ObservableBoolean? {
+        return textPlayObb
+    }
+
+    override fun setTextPlay(play: Boolean) {
+        textPlayObb.set(play)
+        spManager.setBoolean(MessageConstant.SP_TEXT_PLAY, play)
+    }
+
+    override fun getTranslatingObs(): ObservableBoolean? {
+        return translatingObb
+    }
+
+    override fun setTranslating(play: Boolean) {
+        translatingObb.set(play)
     }
 
     private val MSG_FLOAT_SHOW = 100

@@ -1,6 +1,7 @@
 package com.sc.tmp_translate.inter
 
 import android.content.Context
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import java.util.*
@@ -26,4 +27,13 @@ interface ITmpService {
     fun getTransLangObs(): ObservableField<String>?
     fun getTransLangKHObs(): ObservableField<String>?
     fun setTransLang(lang: String)
+
+    fun getMoreDisplayObs(): ObservableBoolean?
+    fun setMoreDisplay(more: Boolean)
+
+    fun getTextPlayObs(): ObservableBoolean?
+    fun setTextPlay(play: Boolean)
+
+    fun getTranslatingObs(): ObservableBoolean?
+    fun setTranslating(play: Boolean)
 }

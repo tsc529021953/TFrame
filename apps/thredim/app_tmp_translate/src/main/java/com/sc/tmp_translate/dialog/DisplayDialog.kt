@@ -8,28 +8,27 @@ import com.nbhope.lib_frame.widget.BaseDialogFragment
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.base.BaseTransDialogFragment
 import com.sc.tmp_translate.constant.MessageConstant
+import com.sc.tmp_translate.databinding.DialogDisplayBinding
 import com.sc.tmp_translate.databinding.DialogTextSizeBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
 
 /**
  *
  */
-class TextSizeDialog : BaseTransDialogFragment<DialogTextSizeBinding, BaseViewModel>() {
+class DisplayDialog : BaseTransDialogFragment<DialogDisplayBinding, BaseViewModel>() {
 
     companion object{
 
-        fun newInstance(): TextSizeDialog {
-            val fragment = TextSizeDialog()
+        fun newInstance(): DisplayDialog {
+            val fragment = DisplayDialog()
             val args = Bundle()
-//            args.putInt(TIP_TYPE, type)
-//            args.putString(TIP_CONTENT, content)
             fragment.arguments = args
             return fragment
         }
 
     }
 
-    override val layoutId: Int = R.layout.dialog_text_size
+    override val layoutId: Int = R.layout.dialog_display
 
     override fun linkViewModel() {
 
@@ -43,7 +42,6 @@ class TextSizeDialog : BaseTransDialogFragment<DialogTextSizeBinding, BaseViewMo
         setFontSize(binding.titleTv, R.dimen.main_title_size)
         setFontSize(binding.minTv, R.dimen.main_text_size)
         setFontSize(binding.norTv, R.dimen.main_text_size)
-        setFontSize(binding.maxTv, R.dimen.main_text_size)
     }
 
     override fun onLiveEB(cmd: String, data: String) {

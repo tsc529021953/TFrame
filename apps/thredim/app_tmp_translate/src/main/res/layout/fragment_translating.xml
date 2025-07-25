@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.sc.tmp_translate.vm.TranslatingViewModel"/>
+
+        <variable
+                name="tmp"
+                type="com.sc.tmp_translate.inter.ITmpService"/>
+
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:id="@+id/select_ly"
+            >
+
+        <ImageView
+                style="@style/back_btn_style"
+                android:id="@+id/back_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{vm.quitTrans}"
+                />
+
+        <ImageView style="@style/bottom_trans_img_style"
+                   android:id="@+id/trans_iv"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
+                   android:layout_marginTop="0dp"
+                />
+
+        <TextView style="@style/lang_lr_top_text_style"
+                  android:id="@+id/left_lang_tv"
+                  app:layout_constraintEnd_toStartOf="@+id/trans_iv"
+                  app:layout_constraintTop_toTopOf="@+id/trans_iv"
+                  app:layout_constraintBottom_toBottomOf="@+id/trans_iv"
+                  android:text="@string/language_zn"
+                />
+
+        <TextView style="@style/lang_lr_top_text_style"
+                  android:id="@+id/right_lang_tv"
+                  app:layout_constraintTop_toTopOf="parent"
+                  app:layout_constraintEnd_toEndOf="parent"
+                  android:text="@{tmp.transLangObs}"
+                />
+
+        <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:id="@+id/data_rv"
+                app:layout_constraintTop_toBottomOf="@+id/back_btn"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:padding="20dp"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

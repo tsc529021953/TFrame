@@ -1,11 +1,8 @@
 package com.sc.tmp_translate.di
 
 import androidx.lifecycle.ViewModel
-import com.sc.tmp_translate.vm.MainViewModel
 import com.nbhope.lib_frame.di.ViewModelKey
-import com.sc.tmp_translate.vm.TransMainViewModel
-import com.sc.tmp_translate.vm.TransRecordViewModel
-import com.sc.tmp_translate.vm.TranslateViewModel
+import com.sc.tmp_translate.vm.*
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -28,6 +25,11 @@ abstract class ActivityViewModelModule {
     @IntoMap
     @ViewModelKey(TransMainViewModel::class)
     abstract fun bindTransMainViewModel(viewModel: TransMainViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(TranslatingViewModel::class)
+    abstract fun bindTranslatingViewModel(viewModel: TranslatingViewModel): ViewModel
 
     @Binds
     @IntoMap

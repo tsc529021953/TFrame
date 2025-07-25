@@ -36,4 +36,6 @@ class SharedPreferencesManager constructor(private val app: Application) {
     fun setFloat(key: String, value: Float) = tary!!.putFloat(key, value)
     fun getLong(key: String, def: Long): Long = tary!!.getLong(key, def)
     fun setLong(key: String, value: Long) = tary!!.putLong(key, value)
+    fun getBoolean(key: String, def: Boolean): Boolean = tary!!.getBoolean(key, def)
+    fun setBoolean(key: String, value: Boolean) = tary!!.putBoolean(key, value)
 }

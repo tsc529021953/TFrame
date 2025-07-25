@@ -26,7 +26,7 @@ class TraySpManager constructor(app:Context){
     fun putBoolean(key: String,value:Boolean){
         tary.put(key,value)
     }
-    fun isBoolean(key: String,default:Boolean):Boolean{
+    fun getBoolean(key: String,default:Boolean):Boolean{
         return tary.getBoolean(key,default)
     }
 

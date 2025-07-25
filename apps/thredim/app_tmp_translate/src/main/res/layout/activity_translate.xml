@@ -8,6 +8,9 @@
         <variable
                 name="vm"
                 type="com.sc.tmp_translate.vm.TranslateViewModel"/>
+        <variable
+                name="tmp"
+                type="com.sc.tmp_translate.inter.ITmpService"/>
         <import type="android.view.View"/>
     </data>
 
@@ -100,14 +103,14 @@
                     />
 
             <View style="@style/vertical_space_style"
-                  android:visibility="@{vm.translatingObs ? View.GONE : View.VISIBLE}"
+                  android:visibility="@{tmp.translatingObs ? View.GONE : View.VISIBLE}"
                     />
 
             <ImageView
                     style="@style/main_bottom_right_image"
                     android:src="@drawable/ic_sound_record"
                     android:id="@+id/record_btn"
-                    android:visibility="@{vm.translatingObs ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{tmp.translatingObs ? View.GONE : View.VISIBLE}"
                     />
 
             <View style="@style/vertical_space_style"/>

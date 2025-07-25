@@ -16,4 +16,8 @@ abstract class HomeBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeTransRecordFragment(): TransRecordFragment
 
+    @FragmentScope
+    @ContributesAndroidInjector
+    abstract fun contributeTranslatingFragment(): TranslatingFragment
+
 }

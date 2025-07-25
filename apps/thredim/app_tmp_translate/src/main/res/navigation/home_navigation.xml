@@ -18,4 +18,10 @@
         android:label="@string/trans_record"
         tools:layout="@layout/fragment_trans_record" />
 
+    <keep_state_fragment
+        android:id="@+id/navigation_translating"
+        android:name="com.sc.tmp_translate.view.TranslatingFragment"
+        android:label="@string/translating"
+        tools:layout="@layout/fragment_translating" />
+
 </navigation>

@@ -18,7 +18,7 @@
         <TextView
                 style="@style/title_style"
                 android:id="@+id/title_tv"
-                android:text="@string/setting_text_size"
+                android:text="@string/setting_display"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -36,32 +36,21 @@
 
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/min_tv"
-                      android:text="@string/setting_text_size_min"
-                      android:onClick="@{()->tmp.setFontSize(0.7f)}"
-                      app:floatData="@{tmp.fontSizeObs}"
-                      app:floatDef="@{0.7f}"
+                      android:text="@string/setting_display_same"
+                      android:onClick="@{()->tmp.setMoreDisplay(false)}"
+                      app:boolData="@{tmp.moreDisplayObs}"
+                      app:boolDef="@{false}"
                     />
 
-            <View android:layout_width="30dp"
+            <View android:layout_width="20dp"
                     android:layout_height="match_parent"/>
 
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/nor_tv"
-                      android:text="@string/setting_text_size_nor"
-                      android:onClick="@{()->tmp.setFontSize(1.0f)}"
-                      app:floatData="@{tmp.fontSizeObs}"
-                      app:floatDef="@{1.0f}"
-                    />
-
-            <View android:layout_width="30dp"
-                  android:layout_height="match_parent"/>
-
-            <TextView style="@style/setting_select_one_text_style"
-                      android:id="@+id/max_tv"
-                      android:text="@string/setting_text_size_max"
-                      android:onClick="@{()->tmp.setFontSize(1.3f)}"
-                      app:floatData="@{tmp.fontSizeObs}"
-                      app:floatDef="@{1.3f}"
+                      android:text="@string/setting_display_more"
+                      android:onClick="@{()->tmp.setMoreDisplay(true)}"
+                      app:boolData="@{tmp.moreDisplayObs}"
+                      app:boolDef="@{true}"
                     />
 
         </LinearLayout>

@@ -115,7 +115,6 @@ class MultipleAudioRecord constructor(var context: Context) {
 //                    .setAudioDevice(selectedDevice)
 //                    .build()
 //        } else {
-////            TODO("VERSION.SDK_INT < M")
 //        }
         return true
     }

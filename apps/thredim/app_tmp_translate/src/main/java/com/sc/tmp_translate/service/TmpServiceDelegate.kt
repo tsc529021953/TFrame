@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import com.nbhope.lib_frame.event.RemoteMessageEvent
@@ -73,6 +74,30 @@ class TmpServiceDelegate: ITmpService {
 
     override fun setTransLang(lang: String) {
         mService?.setTransLang(lang)
+    }
+
+    override fun getMoreDisplayObs(): ObservableBoolean? {
+        return mService?.getMoreDisplayObs()
+    }
+
+    override fun setMoreDisplay(more: Boolean) {
+        mService?.setMoreDisplay(more)
+    }
+
+    override fun getTextPlayObs(): ObservableBoolean? {
+        return mService?.getTextPlayObs()
+    }
+
+    override fun setTextPlay(play: Boolean) {
+        mService?.setTextPlay(play)
+    }
+
+    override fun getTranslatingObs(): ObservableBoolean? {
+        return mService?.getTranslatingObs()
+    }
+
+    override fun setTranslating(play: Boolean) {
+        mService?.setTranslating(play)
     }
 
     private fun bindService(context: Context) {

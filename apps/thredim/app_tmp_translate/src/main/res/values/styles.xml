@@ -18,8 +18,52 @@
         <item name="android:layout_marginEnd">20dp</item>
         <item name="android:layout_marginStart">20dp</item>
     </style>
+    <style name="lang_lr_top_text_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+    <style name="lang_lr_sp_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
     <style name="bottom_start_text_style" parent="main_base_text_style">
         <item name="android:textSize">@dimen/main_text_size1</item>
+    </style>
+    <style name="trans_time_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size0</item>
+    </style>
+    <style name="trans_text_same_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size1</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:gravity">start</item>
+    </style>
+    <style name="trans_text_more_style" parent="main_base_text_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textSize">@dimen/main_text_size1</item>
+        <item name="android:backgroundTint">@color/trans_bean_bg_color</item>
+        <item name="android:background">@drawable/shape_common_corner_8dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:gravity">start</item>
+    </style>
+
+    <style name="trans_line_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/text_color</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+    <style name="trans_ly_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:backgroundTint">@color/trans_bean_bg_color</item>
+        <item name="android:background">@drawable/shape_common_corner_8dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
     </style>
 
     <style name="bottom_tip_img_style">
