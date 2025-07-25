@@ -32,7 +32,6 @@ class HSTranslateUtil {
     fun init(ak: String, sk: String) {
         translateService = TranslateServiceImpl.getInstance()
         // call below method if you dont set ak and sk in ～/.volc/config
-        // TODO 加密处理
         translateService?.accessKey = ak
         translateService?.secretKey = sk
         // lang detect

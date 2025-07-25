@@ -1,6 +1,9 @@
 package com.sc.tmp_translate.inter
 
 import android.content.Context
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableFloat
+import java.util.*
 
 /**
  * @author  tsc
@@ -16,4 +19,11 @@ interface ITmpService {
     fun write(msg: String)
     fun reBuild()
 
+    fun getFontSizeObs(): ObservableFloat?
+    fun setFontSize(size: Float)
+
+    /*语言相关*/
+    fun getTransLangObs(): ObservableField<String>?
+    fun getTransLangKHObs(): ObservableField<String>?
+    fun setTransLang(lang: String)
 }

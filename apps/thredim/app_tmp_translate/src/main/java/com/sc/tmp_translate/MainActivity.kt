@@ -155,7 +155,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 //            val list = arrayListOf("开心") // textList[index]
 //            notifyInfo(list)
 //        }
-//        audioRecorder = AudioRecorder(this, )
+        audioRecorder = AudioRecorder(this, this)
     }
 
     private fun initTranslate() {

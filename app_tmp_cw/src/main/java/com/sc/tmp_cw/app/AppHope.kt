@@ -4,6 +4,7 @@ import com.sc.tmp_cw.di.DaggerAppComponent
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.di.DaggerBaseAppComponent
+import com.nbhope.lib_frame.utils.DeviceUtil
 import timber.log.Timber
 
 /**
@@ -18,7 +19,7 @@ class AppHope : HopeBaseApp() {
             super.onCreate()
 //            initTimber()
             println("on app onCreate")
-            Timber.i("初始化 准备开启服务！")
+            Timber.i("初始化 准备开启服务！${DeviceUtil.getPlayerVersionCode(this)}")
             TmpServiceDelegate.getInstance()?.init(this)
 //        }
     }

@@ -1,8 +1,10 @@
 package com.nbhope.lib_frame.utils
 
 import android.app.Activity
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
+import android.util.TypedValue
 import android.view.View
 import android.view.Window
 import androidx.appcompat.widget.SearchView
@@ -97,6 +99,12 @@ class ViewUtil {
         fun hideSearchViewUnderLine(view: SearchView) {
             view?.findViewById<View>(androidx.appcompat.R.id.search_plate)?.setBackgroundColor(Color.TRANSPARENT)
             view?.findViewById<View>(androidx.appcompat.R.id.submit_area)?.setBackgroundColor(Color.TRANSPARENT)
+        }
+
+        fun getOrigin(resources: Resources, id: Int): Float {
+            val outValue = TypedValue()
+            resources.getValue(id, outValue, true)
+            return TypedValue.complexToFloat(outValue.data)
         }
     }
 }

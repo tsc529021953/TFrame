@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
           package="com.sc.tmp_translate">
     <!--    android:sharedUserId="android.uid.system"-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
@@ -29,7 +30,7 @@
             >
 
         <activity
-                android:name="com.sc.tmp_translate.MainActivity"
+                android:name="com.sc.tmp_translate.TranslateActivity"
                 android:screenOrientation="landscape" android:exported="true">
                         <intent-filter>
                             <action android:name="android.intent.action.MAIN" />

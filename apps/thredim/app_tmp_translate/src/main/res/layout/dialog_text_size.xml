@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    
+    <data>
+        <variable
+                name="tmp"
+                type="com.sc.tmp_translate.inter.ITmpService"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/dialog_text_size_width"
+            android:layout_height="@dimen/dialog_text_size_height"
+            android:background="@drawable/person_login_bg"
+            >
+
+        <TextView
+                style="@style/title_style"
+                android:id="@+id/title_tv"
+                android:text="@string/setting_text_size"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/title_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                >
+
+            <TextView style="@style/setting_select_one_text_style"
+                      android:id="@+id/min_tv"
+                      android:text="@string/setting_text_size_min"
+                      android:onClick="@{()->tmp.setFontSize(0.7f)}"
+                    />
+
+            <View android:layout_width="30dp"
+                    android:layout_height="match_parent"/>
+
+            <TextView style="@style/setting_select_one_text_style"
+                      android:id="@+id/nor_tv"
+                      android:text="@string/setting_text_size_nor"
+                      android:onClick="@{()->tmp.setFontSize(1.0f)}"
+                    />
+
+            <View android:layout_width="30dp"
+                  android:layout_height="match_parent"/>
+
+            <TextView style="@style/setting_select_one_text_style"
+                      android:id="@+id/max_tv"
+                      android:text="@string/setting_text_size_max"
+                      android:onClick="@{()->tmp.setFontSize(1.3f)}"
+                    />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

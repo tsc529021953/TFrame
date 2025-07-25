@@ -4,11 +4,14 @@ import android.app.Service
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Point
+import android.hardware.display.DisplayManager
 import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
+import android.view.Display
 import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 
 object DisplayUtil {
     /**
@@ -187,6 +190,25 @@ object DisplayUtil {
         if (displayHeight + getNavigationBarHeight(context) > realHeight) return false
 
         return realWidth - displayWidth > 0 || realHeight - displayHeight > 0
+    }
+
+
+    fun hasMoreDisplay(context: Context): Boolean {
+        return getDisplays(context).isNotEmpty()
+    }
+
+    fun getDisplays(context: Context): Array<Display> {
+        val displayManager = context.getSystemService(AppCompatActivity.DISPLAY_SERVICE) as DisplayManager
+        val displays = displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+        return displays
+    }
+
+    fun showDisplay() {
+        
+    }
+
+    fun hideDisplay() {
+        
     }
 
 }

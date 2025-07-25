@@ -302,7 +302,8 @@ class TmpServiceImpl : ITmpService, Service() {
             if (item != null) {
                 return item.msg
             } else if (id != 255) {
-                return "序号${id}暂未定义！"
+//                return "序号${id}暂未定义！"
+                return "本紧急通知未定义，请更新配置!"
             }
         }
         return ""

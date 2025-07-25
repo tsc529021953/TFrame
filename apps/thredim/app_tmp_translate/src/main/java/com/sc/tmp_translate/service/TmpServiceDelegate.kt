@@ -5,6 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableFloat
+import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
 import timber.log.Timber
 
@@ -50,6 +55,26 @@ class TmpServiceDelegate: ITmpService {
         mService?.reBuild()
     }
 
+    override fun getFontSizeObs(): ObservableFloat? {
+        return mService?.getFontSizeObs()
+    }
+
+    override fun setFontSize(size: Float) {
+        mService?.setFontSize(size)
+    }
+
+    override fun getTransLangObs(): ObservableField<String>? {
+        return mService?.getTransLangObs()
+    }
+
+    override fun getTransLangKHObs(): ObservableField<String>? {
+        return mService?.getTransLangKHObs()
+    }
+
+    override fun setTransLang(lang: String) {
+        mService?.setTransLang(lang)
+    }
+
     private fun bindService(context: Context) {
         isBind = context.bindService(Intent(context, TmpServiceImpl::class.java), mConnection, Context.BIND_AUTO_CREATE)
         Timber.i("TTAG bindService $isBind")
@@ -62,7 +87,8 @@ class TmpServiceDelegate: ITmpService {
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             mService = (service as TmpServiceImpl.BaseBinder).getPaintService()
-            Timber.d("onServiceConnected")
+            Timber.d("onServiceConnected trans $mService")
+            LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_BIND_SUCCESS, ""))
         }
     }
 }

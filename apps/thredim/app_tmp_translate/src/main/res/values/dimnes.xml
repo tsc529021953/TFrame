@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="main_text_size">20sp</dimen>
+    <dimen name="main_title_size">25sp</dimen>
+    <dimen name="main_text_size">25sp</dimen>
+    <dimen name="main_text_size2">30sp</dimen>
+    <dimen name="main_text_size1">20sp</dimen>
     <dimen name="main_margin">20dp</dimen>
     <dimen name="main_img_size">30dp</dimen>
 
+    <dimen name="main_title_ly_height">60dp</dimen>
+    <dimen name="right_dl_width">120dp</dimen>
+    <dimen name="right_dl_show_btn_size">30dp</dimen>
+    <dimen name="bottom_btn_list_btn_size">50dp</dimen>
+
+    <dimen name="dialog_text_size_width">400dp</dimen>
+    <dimen name="dialog_text_size_height">200dp</dimen>
+<!--    <dimen name=""-->
 </resources>

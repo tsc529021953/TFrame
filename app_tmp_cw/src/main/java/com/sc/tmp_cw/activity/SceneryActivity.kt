@@ -30,7 +30,8 @@ class SceneryActivity : CWBaseBindingActivity<ActivitySceneryBinding, SceneryVie
         it as RemoteMessageEvent
         when (it.cmd) {
             MessageConstant.CMD_URGENT_NOTICE -> {
-                finish()
+                if (!TmpServiceDelegate.service()?.urgentNotifyMsgObs?.get().isNullOrEmpty())
+                    finish()
             }
         }
     }

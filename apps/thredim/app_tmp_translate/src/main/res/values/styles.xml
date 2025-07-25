@@ -1,6 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <style name="main_base_text_style">
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="lang_select_text_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size2</item>
+        <item name="android:layout_marginTop">120dp</item>
+    </style>
+    <style name="lang_lr_text_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+    </style>
+    <style name="bottom_start_text_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size1</item>
+    </style>
+
+    <style name="bottom_tip_img_style">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_height">60dp</item>
+<!--        <item name="android:layout_marginBottom">20dp</item>-->
+        <item name="android:padding">15dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:src">@drawable/ic_mic</item>
+    </style>
+    <style name="bottom_trans_img_style" parent="bottom_tip_img_style">
+        <item name="android:src">@drawable/ic_trans</item>
+        <item name="android:layout_marginTop">10dp</item>
+    </style>
+
+    <style name="setting_select_one_text_style">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">@dimen/main_text_size</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:drawableLeft">@drawable/setting_selector_tunnel</item>
+        <item name="android:drawablePadding">10dp</item>
+    </style>
+
+
+
     <style name="main_sv_style">
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">0dp</item>
@@ -22,4 +70,10 @@
         <item name="android:layout_margin">@dimen/main_margin</item>
     </style>
 
+    <style name="main_bottom_right_image">
+        <item name="android:layout_width">@dimen/bottom_btn_list_btn_size</item>
+        <item name="android:layout_height">@dimen/bottom_btn_list_btn_size</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
 </resources>

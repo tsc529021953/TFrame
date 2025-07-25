@@ -3,9 +3,7 @@ package com.sc.tmp_translate.utils
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
+import android.media.*
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
@@ -26,6 +24,14 @@ class AudioRecorder(var content: Context, private val callback: Callback) {
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO // 单声道
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
     private val bufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+
+    fun init() {
+        val am = content.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val devices = am.getDevices(AudioManager.GET_DEVICES_INPUTS)
+        devices.forEach {
+            System.out.println("device ${it.id} ${it.productName} ${it.address} ${it.type} ${it.type == AudioDeviceInfo.TYPE_USB_DEVICE}")
+        }
+    }
 
     fun startRecording() {
         if (isRecording) return

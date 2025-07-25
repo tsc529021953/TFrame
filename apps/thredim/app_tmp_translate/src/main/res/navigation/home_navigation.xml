@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_trans_main"
+    tools:ignore="UnusedNavigation">
+
+    <keep_state_fragment
+        android:id="@+id/navigation_trans_main"
+        android:name="com.sc.tmp_translate.view.TransMainFragment"
+        android:label="@string/trans_main"
+        tools:layout="@layout/fragment_trans_main" />
+
+    <keep_state_fragment
+        android:id="@+id/navigation_trans_record"
+        android:name="com.sc.tmp_translate.view.TransRecordFragment"
+        android:label="@string/trans_record"
+        tools:layout="@layout/fragment_trans_record" />
+
+</navigation>

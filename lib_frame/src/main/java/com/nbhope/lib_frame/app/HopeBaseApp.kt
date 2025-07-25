@@ -15,10 +15,7 @@ import com.nbhope.lib_frame.constants.HopeConstants
 import com.nbhope.lib_frame.di.BaseAppComponent
 import com.nbhope.lib_frame.di.DaggerBaseAppComponent
 import com.nbhope.lib_frame.integration.AppLifecycles
-import com.nbhope.lib_frame.utils.FileLoggingTree
-import com.nbhope.lib_frame.utils.HopeUtils
-import com.nbhope.lib_frame.utils.Preconditions
-import com.nbhope.lib_frame.utils.ThreadAwareDebugTree
+import com.nbhope.lib_frame.utils.*
 import dagger.android.DispatchingAndroidInjector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -38,6 +35,9 @@ open class HopeBaseApp : Application(), App {
     lateinit var activityLifecycleImpl: ActivityLifecycleImpl
 
     private var mAppDelegate: AppLifecycles? = null
+
+    @Inject
+    lateinit var spManager: SharedPreferencesManager
 
     companion object {
         private var appContext: Application? = null

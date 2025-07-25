@@ -11,19 +11,25 @@ import android.net.NetworkCapabilities
 import android.os.*
 import android.view.View
 import androidx.annotation.RequiresApi
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableFloat
+import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.google.gson.Gson
 import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.HopeUtils
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_translate.R
+import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import timber.log.Timber
 import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 
 /**
@@ -67,6 +73,13 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var gson = Gson()
 
+    lateinit var spManager: SharedPreferencesManager
+
+    private val fontSizeObf: ObservableFloat? = ObservableFloat(1.0f)
+
+    private val languageObs: ObservableField<String>? = ObservableField<String>("")
+    private val languageKHObs: ObservableField<String>? = ObservableField<String>("")
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -74,22 +87,21 @@ class TmpServiceImpl : ITmpService, Service() {
         mScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
         mainHandler = MainHandler(Looper.getMainLooper())
         networkCallback = (application as HopeBaseApp).getAppComponent().networkCallback
+        spManager = (application as HopeBaseApp).spManager
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            initFloat()
 //        } else {
 //            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
 //        }
         networkCallback.registNetworkCallback(networkCallbackModule)
-        Timber.i("XTAG service Create " + HopeUtils.getIP())
-//        initAppData(this) {
-//            Timber.i("XTAG service initAppData $ip:$port")
-//
-//        }
-//        BYConstants.ip = SPUtils.getValue(this, BYConstants.SP_IP, BYConstants.ip).toString()
-//        BYConstants.port = SPUtils.getValue(this, BYConstants.SP_PORT, BYConstants.port) as Int
-//        BYConstants.ip2 = SPUtils.getValue(this, BYConstants.SP_IP2, BYConstants.ip2).toString()
-//        BYConstants.port2 = SPUtils.getValue(this, BYConstants.SP_PORT2, BYConstants.port2) as Int
+
+        fontSizeObf?.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+        val languages = getStringArray(R.array.lang_an_array)
+        languageObs?.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
         reBuild()
+
+
+        Timber.i("XTAG service Create ${HopeUtils.getIP()} ${languageObs?.get()}")
     }
 
     override fun onDestroy() {
@@ -129,45 +141,6 @@ class TmpServiceImpl : ITmpService, Service() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun initFloat() {
-//        var windowManager: WindowManager? =
-//            getSystemService(Context.WINDOW_SERVICE) as WindowManager
-//        var layoutParams: WindowManager.LayoutParams? = WindowManager.LayoutParams()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-//        } else {
-//            layoutParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-//        }
-//        layoutParams.format = PixelFormat.RGBA_8888
-//        layoutParams.gravity = Gravity.LEFT or Gravity.TOP
-//        layoutParams.flags =
-//            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT
-//        layoutParams.x = 0
-//        var point: Point? = Point()
-//        (windowManager!!.defaultDisplay.getSize(point))
-//        layoutParams.y = point!!.y - layoutParams.height + 50
-//
-//        Timber.i("$TAG canDrawOverlays ${Settings.canDrawOverlays(this)}")
-//        if (Settings.canDrawOverlays(this)) {
-//            rootView = View.inflate(baseContext, R.layout.float_tmp_view, null)
-////            tvMarqueeContent = rootView!!.findViewById(R.id.marquee_content)
-////            ivVoice = rootView!!.findViewById(R.id.iv_voice)
-//            rootView!!.setOnClickListener {
-//                hideFloat(100)
-//            }
-//            windowManager.addView(rootView, layoutParams)
-////            showDraw()
-////            showFloat()
-//            hideFloat(0)
-//        }
-////
-//////        hideFloat(0)
-////        Timber.d("dialog, hideFloat1")
-////        point = null
-////        windowManager = null
-////        layoutParams = null
-
     }
 
     override fun init(context: Context) {
@@ -185,6 +158,29 @@ class TmpServiceImpl : ITmpService, Service() {
 
     override fun write(msg: String) {
 
+    }
+
+
+    override fun getFontSizeObs(): ObservableFloat? {
+        return fontSizeObf
+    }
+
+    override fun setFontSize(size: Float) {
+        fontSizeObf?.set(size)
+        spManager.setFloat(MessageConstant.SP_RECORD_TEXT_SIZE, size)
+    }
+
+    override fun getTransLangObs(): ObservableField<String>? {
+        return languageObs
+    }
+
+    override fun getTransLangKHObs(): ObservableField<String>? {
+        return languageKHObs
+    }
+
+    override fun setTransLang(lang: String) {
+        languageObs?.set(lang)
+        spManager.setString(MessageConstant.SP_RECORD_LANGUAGE, lang)
     }
 
     private val MSG_FLOAT_SHOW = 100
@@ -220,22 +216,7 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun reBuild() {
-//        try {
-//            tcpBroadThread?.close()
-//        } catch (e: Exception) {
-//            Timber.e("tcpBroadThread close fail ${e.message}")
-//        }
-//        try {
-//            tcpBroadThread = UdpBroadThread(SERVER_PORT, onNetThreadListener)
-//            tcpBroadThread?.start()
-//        }catch (e: Exception) {
-//            Timber.e("tcpBroadThread craeat fail ${e.message}")
-//        }
 
-//
-//        udpBroadThread2?.close()
-//        udpBroadThread2 = UdpBroadThread(BYConstants.port2, onNetThreadListener)
-//        udpBroadThread2?.start()
     }
 
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {

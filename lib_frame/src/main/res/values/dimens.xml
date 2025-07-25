@@ -78,4 +78,9 @@
     <dimen name="main_switch_height">20dp</dimen>
     <dimen name="main_switch_padding">2dp</dimen>
 
+    <dimen name="main_text_size">20sp</dimen>
+    <dimen name="main_title_size">22sp</dimen>
+
+    <dimen name="main_title_ly_height">60dp</dimen>
+
 </resources>

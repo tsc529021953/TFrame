@@ -85,4 +85,20 @@
         <item name="android:background">#3b3a3a</item>
     </style>
 
+    <style name="back_btn_style">
+        <item name="android:layout_width">@dimen/main_title_ly_height</item>
+        <item name="android:layout_height">@dimen/main_title_ly_height</item>
+        <item name="android:src">@drawable/ic_back</item>
+        <item name="android:padding">17dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+    </style>
+
+    <style name="title_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/main_title_ly_height</item>
+        <item name="android:gravity">start |center_vertical</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/main_title_size</item>
+    </style>
+
 </resources>

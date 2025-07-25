@@ -1,15 +1,13 @@
 package com.sc.tmp_translate.constant
 
+import androidx.databinding.ObservableBoolean
+
 object MessageConstant {
 
-    const val CMD_PLAY = "play"
-    const val CMD_PAUSE = "pause"
-    const val CMD_STOP = "stop"
-    const val CMD_PRE = "pre"
-    const val CMD_UPPER = "upper"
-    const val CMD_NEXT = "next"
-    const val CMD_LOWER = "lower"
-    const val CMD_VOICE = "voice"
-    const val CMD_POSITION = "position"
+    const val CMD_BACK = "CMD_BACK"
+    const val CMD_TRANSLATING = "CMD_TRANSLATING" // 开启翻译
+    const val CMD_BIND_SUCCESS = "CMD_BIND_SUCCESS" // 绑定成功
 
+    const val SP_RECORD_TEXT_SIZE = "SP_RECORD_TEXT_SIZE"
+    const val SP_RECORD_LANGUAGE = "SP_RECORD_LANGUAGE" // 语种
 }

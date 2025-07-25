@@ -1,9 +1,18 @@
 package com.sc.tmp_translate.app
 
+import android.app.Activity
+import android.app.Application
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Bundle
+import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.utils.HopeUtils
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.sc.tmp_translate.di.DaggerAppComponent
 import com.sc.tmp_translate.service.TmpServiceDelegate
-import com.nbhope.lib_frame.app.HopeBaseApp
 import timber.log.Timber
+import javax.inject.Inject
+
 
 /**
  * @author  tsc
@@ -12,14 +21,25 @@ import timber.log.Timber
  * @description
  */
 class AppHope : HopeBaseApp() {
+
+    private var activityList: ArrayList<Activity>? = null
+
+    private var fontScale = 1f
+
     override fun onCreate() {
 //        if (DeviceUtil.isMainProcess(this)) {
             super.onCreate()
 //            initTimber()
             println("on app onCreate")
-            Timber.i("初始化 准备开启服务！")
+            Timber.i("初始化 准备开启服务！${HopeUtils.getVerName(this)}")
             TmpServiceDelegate.getInstance().init(this)
 //        }
+//        registerActivityLifecycleCallbacks(activityListener)
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+//        unregisterActivityLifecycleCallbacks(activityListener)
     }
 
     private fun initTimber() {
