@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.sc.lib_system.util.CommandUtil;
+import com.sc.tframe.module.dts.DTSTest;
 import timber.log.Timber;
 
 import static com.nbhope.lib_frame.utils.ViewUtil.immersionTitle;
@@ -27,31 +28,25 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isBlack = false;
 
+    DTSTest dtsTest = new DTSTest();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         immersionTitle(this);
 
-        tTest();
+//        tTest();
+        dtsTest.init(this);
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dtsTest.release();
+    }
 
     void tTest() {
-//        findViewById(R.id.text2).setVisibility(View.GONE);
-//        layout = findViewById(R.id.bg_ly);
-//        layout.setBackgroundColor(Color.BLACK);
-//        runnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                Timber.i("TTAG SWITCH_TIME ");
-//                layout.setBackgroundColor(isBlack ? Color.WHITE : Color.BLACK);
-//                isBlack = !isBlack;
-//                handler.postDelayed(runnable, SWITCH_TIME);
-//            }
-//        };
-//        handler.postDelayed(runnable, SWITCH_TIME);
         try {
             CommandUtil.CommandResult res = CommandUtil.runCommand("setprop service.adb.tcp.port 5555");
             System.out.println("CommandResult1 " + res.toString());
