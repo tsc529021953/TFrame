@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
+import androidx.lifecycle.MutableLiveData
+import com.sc.tmp_translate.bean.TransTextBean
 import java.util.*
 
 /**
@@ -25,7 +27,6 @@ interface ITmpService {
 
     /*语言相关*/
     fun getTransLangObs(): ObservableField<String>?
-    fun getTransLangKHObs(): ObservableField<String>?
     fun setTransLang(lang: String)
 
     fun getMoreDisplayObs(): ObservableBoolean?
@@ -36,4 +37,7 @@ interface ITmpService {
 
     fun getTranslatingObs(): ObservableBoolean?
     fun setTranslating(play: Boolean)
+    fun notifyTransPage(trans: Boolean)
+
+    fun getTranslatingList() : MutableLiveData<ArrayList<TransTextBean>>?
 }

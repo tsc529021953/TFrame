@@ -99,6 +99,7 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
         binding.rightLangSp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val lang = p0?.getItemAtPosition(p2).toString()
+                System.out.println("异显：2 setTransLang $lang")
                 TmpServiceDelegate.getInstance().setTransLang(lang)
             }
 
@@ -110,6 +111,7 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
 
     fun refreshLanguage() {
         val language = TmpServiceDelegate.getInstance().getTransLangObs()?.get() ?: return
+        System.out.println("异显：2 $language")
         val index = activity!!.getStringArray(R.array.lang_an_array).indexOf(language)
         if (index >= 0)
             binding.rightLangSp.setSelection(index)

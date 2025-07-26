@@ -28,7 +28,7 @@
                 android:id="@+id/back_btn"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:onClick="@{vm.quitTrans}"
+                android:onClick="@{() -> tmp.notifyTransPage(false)}"
                 />
 
         <ImageView style="@style/bottom_trans_img_style"

@@ -19,15 +19,4 @@ class TransMainViewModel @Inject constructor(val spManager: SharedPreferencesMan
 
     var gson = Gson()
 
-    var translatingObs: ObservableBoolean = ObservableBoolean(false)
-
-    fun startTrans(view: View) {
-        translatingObs.set(true)
-        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, true.toString()))
-    }
-
-    fun quitTrans(view: View) {
-        translatingObs.set(false)
-        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, false.toString()))
-    }
 }

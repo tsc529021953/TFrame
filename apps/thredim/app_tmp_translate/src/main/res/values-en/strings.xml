@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Translation System</string>
+    <string name="trans_record">Translation Record</string>
+    <string name="trans_main">Translation Home</string>
+    <string name="translating">Translating</string>
+    <string name="touch_start_trans">Tap to Start Translation</string>
+    <string name="touch_select_trans">Please Select a Language</string>
+    <string name="setting_text_size">Font Settings</string>
+    <string name="setting_text_size_min">Small</string>
+    <string name="setting_text_size_nor">Normal</string>
+    <string name="setting_text_size_max">Large</string>
+    <string name="setting_display">Screen Settings</string>
+    <string name="setting_display_same">Dual Screen Mirror</string>
+    <string name="setting_display_more">Dual Screen Extended</string>
+    <string name="setting_text_play">Text-to-Speech Settings</string>
+    <string name="setting_text_play_open">Enabled</string>
+    <string name="setting_text_play_close">Disabled</string>
+    <string name="setting_trans_record">Translation Record</string>
+    <string name="language_zn">Chinese</string>
+
+</resources>

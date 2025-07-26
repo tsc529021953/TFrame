@@ -8,11 +8,14 @@ import android.os.IBinder
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
+import androidx.lifecycle.MutableLiveData
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
 import timber.log.Timber
+import java.util.ArrayList
 
 /**
  * @author  tsc
@@ -68,10 +71,6 @@ class TmpServiceDelegate: ITmpService {
         return mService?.getTransLangObs()
     }
 
-    override fun getTransLangKHObs(): ObservableField<String>? {
-        return mService?.getTransLangKHObs()
-    }
-
     override fun setTransLang(lang: String) {
         mService?.setTransLang(lang)
     }
@@ -98,6 +97,14 @@ class TmpServiceDelegate: ITmpService {
 
     override fun setTranslating(play: Boolean) {
         mService?.setTranslating(play)
+    }
+
+    override fun notifyTransPage(trans: Boolean) {
+        mService?.notifyTransPage(trans)
+    }
+
+    override fun getTranslatingList(): MutableLiveData<ArrayList<TransTextBean>>? {
+        return mService?.getTranslatingList()
     }
 
     private fun bindService(context: Context) {

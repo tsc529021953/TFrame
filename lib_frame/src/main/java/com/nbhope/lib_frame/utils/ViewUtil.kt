@@ -1,15 +1,19 @@
 package com.nbhope.lib_frame.utils
 
 import android.app.Activity
+import android.content.Context
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.view.Window
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.ObservableBoolean
+import java.util.*
 
 /**
  * @author  tsc
@@ -106,5 +110,15 @@ class ViewUtil {
             resources.getValue(id, outValue, true)
             return TypedValue.complexToFloat(outValue.data)
         }
+
+        fun getLocalizedString(context: Context, @StringRes resId: Int, locale: Locale): String {
+            val config = Configuration(context.resources.configuration)
+            config.setLocale(locale)
+
+            // 创建特定语言的 Resources 对象
+            val localizedContext = context.createConfigurationContext(config)
+            return localizedContext.resources.getString(resId)
+        }
+
     }
 }

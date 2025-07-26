@@ -1,20 +1,25 @@
 package com.sc.tmp_translate
 
+import android.app.Dialog
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.Observable
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.view.DrawLayoutUtils
+import com.sc.tmp_translate.base.BaseTransActivity
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.ActivityTranslateBinding
 import com.sc.tmp_translate.dialog.DisplayDialog
 import com.sc.tmp_translate.dialog.TextPlayDialog
 import com.sc.tmp_translate.dialog.TextSizeDialog
 import com.sc.tmp_translate.service.TmpServiceDelegate
+import com.sc.tmp_translate.view.TransMoreDisplay
 import com.sc.tmp_translate.vm.TranslateViewModel
 import com.sc.tmp_translate.weight.KeepStateNavigator
 import javax.inject.Inject
@@ -31,9 +36,11 @@ import javax.inject.Inject
  * 左侧 上外文 下中文   右侧  上中文  下外文   最上面显示时间
  * 异显
  * 主屏都显示中文   副屏都显示外文    上面显示时间
- * TODO 对话组件实现  异显实现  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
+ * 对话组件实现
+ * 异显实现 两侧语种同步,文字大小同步
+ * TODO 异显实现 异显语种翻译 异显检测（按钮那边禁用并提示） 开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
  */
-class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, TranslateViewModel>() {
+class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 
 
     @Inject
@@ -46,42 +53,37 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
     private lateinit var navController: NavController
     private var currLayout: View? = null
 
-    private var listener = androidx.lifecycle.Observer<Any> {
-        it as RemoteMessageEvent
-        when (it.cmd) {
-            MessageConstant.CMD_BACK -> {
-               back()
+    private var dialog: TransMoreDisplay? = null
+
+    private var displayObsListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(p0: Observable?, p1: Int) {
+            runOnUiThread {
+                refreshDisplay()
             }
-            MessageConstant.CMD_TRANSLATING -> {
-                log("翻译 ${it.data}")
-                val translating = it.data.toBoolean()
-                if (translating) {
-                    this.runOnUiThread {
-                        navController.navigate(R.id.navigation_translating)
-                    }
-                } else back()
-                TmpServiceDelegate.getInstance().setTranslating(translating)
-            }
-            MessageConstant.CMD_BIND_SUCCESS -> {
-                if (TmpServiceDelegate.getInstance() != null)
-                    binding.tmp = TmpServiceDelegate.getInstance()
+        }
+    }
+
+    private var languageObsListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(p0: Observable?, p1: Int) {
+            runOnUiThread {
+                refreshLanguage()
             }
         }
     }
 
     override fun subscribeUi() {
+        firstView = true
         initView()
         initNav()
     }
 
     override fun initData() {
-        LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
+
     }
 
     override fun linkViewModel() {
         binding.vm = viewModel
-        if (TmpServiceDelegate.getInstance() != null)
-            binding.tmp = TmpServiceDelegate.getInstance()
+        initListener()
     }
 
     override fun onBackPressed() {
@@ -100,7 +102,17 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
     override fun onDestroy() {
         super.onDestroy()
         log("释放")
-        LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
+        TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
+        TmpServiceDelegate.getInstance().getTransLangObs()?.removeOnPropertyChangedCallback(languageObsListener)
+    }
+
+    private fun initListener() {
+        if (TmpServiceDelegate.getInstance().getMoreDisplayObs() != null) {
+            binding.tmp = TmpServiceDelegate.getInstance()
+            TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
+            TmpServiceDelegate.getInstance().getTransLangObs()?.addOnPropertyChangedCallback(languageObsListener)
+            refreshLanguage()
+        }
     }
 
     private fun initView() {
@@ -160,6 +172,25 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
         callback?.invoke()
     }
 
+    fun refreshDisplay() {
+        val res = TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false
+        if (dialog == null) {
+            dialog = TransMoreDisplay(this) { v, id ->
+                setFontSize(v, id)
+            }
+            dialog?.refreshTmp()
+        }
+        if (res) {
+            dialog?.showFun()
+        } else if (!res) {
+            dialog?.hideFun()
+        }
+    }
+
+    fun refreshLanguage() {
+        dialog?.refreshLanguage()
+    }
+
     private fun back() {
         this.runOnUiThread {
             showDLBtn()
@@ -171,5 +202,30 @@ class TranslateActivity: BaseBindingActivity<ActivityTranslateBinding, Translate
 
     private fun log(msg: Any?) {
         System.out.println("Trans：${msg ?: "null"}")
+    }
+
+    override fun onFontSizeChanged(fontSize: Float) {
+        dialog?.onFontSizeChanged()
+    }
+
+    override fun onLiveEB(cmd: String, data: String) {
+        when (cmd) {
+            MessageConstant.CMD_BACK -> {
+                back()
+            }
+            MessageConstant.CMD_TRANSLATING -> {
+                log("翻译 $data")
+                val translating = data.toBoolean()
+                if (translating) {
+                    this.runOnUiThread {
+                        navController.navigate(R.id.navigation_translating)
+                    }
+                } else back()
+                TmpServiceDelegate.getInstance().setTranslating(translating)
+            }
+            MessageConstant.CMD_BIND_SUCCESS -> {
+                initListener()
+            }
+        }
     }
 }

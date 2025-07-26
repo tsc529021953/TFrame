@@ -14,21 +14,24 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
+import androidx.lifecycle.MutableLiveData
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.google.gson.Gson
 import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
 import com.nbhope.lib_frame.utils.HopeUtils
+import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_translate.R
+import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import timber.log.Timber
+import java.io.File
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -78,11 +81,12 @@ class TmpServiceImpl : ITmpService, Service() {
     private val fontSizeObf: ObservableFloat = ObservableFloat(1.0f)
 
     private val languageObs: ObservableField<String> = ObservableField<String>("")
-    private val languageKHObs: ObservableField<String> = ObservableField<String>("")
 
     private var moreDisplayObb: ObservableBoolean = ObservableBoolean(false)
     private var translatingObb: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
+
+    private var translatingData: MutableLiveData<ArrayList<TransTextBean>> = MutableLiveData<ArrayList<TransTextBean>>(arrayListOf())
 
     override fun onCreate() {
         super.onCreate()
@@ -108,6 +112,25 @@ class TmpServiceImpl : ITmpService, Service() {
 
 
         Timber.i("XTAG service Create ${HopeUtils.getIP()} ${languageObs?.get()}")
+
+        mScope.launch {
+            delay(5000)
+//            val arr: ArrayList<TransTextBean> = arrayListOf()
+            val b1 = TransTextBean()
+            b1.text = "你好"
+            b1.transText = "Hello"
+            val b2 = TransTextBean()
+            b2.text = "give me some money"
+            b2.transText = "给我点钱花花"
+            b1.isMaster = false
+
+            translatingData.value?.add(b1)
+            delay(2000)
+            translatingData.value?.add(b2)
+//            arr.add(b1)
+//            arr.add(b2)
+            System.out.println("添加完成 ${translatingData.value?.size}")
+        }
     }
 
     override fun onDestroy() {
@@ -180,10 +203,6 @@ class TmpServiceImpl : ITmpService, Service() {
         return languageObs
     }
 
-    override fun getTransLangKHObs(): ObservableField<String>? {
-        return languageKHObs
-    }
-
     override fun setTransLang(lang: String) {
         languageObs?.set(lang)
         spManager.setString(MessageConstant.SP_RECORD_LANGUAGE, lang)
@@ -213,6 +232,14 @@ class TmpServiceImpl : ITmpService, Service() {
 
     override fun setTranslating(play: Boolean) {
         translatingObb.set(play)
+    }
+
+    override fun notifyTransPage(trans: Boolean) {
+        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, trans.toString()))
+    }
+
+    override fun getTranslatingList(): MutableLiveData<java.util.ArrayList<TransTextBean>>? {
+        return translatingData
     }
 
     private val MSG_FLOAT_SHOW = 100

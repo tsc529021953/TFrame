@@ -18,8 +18,4 @@ class TranslatingViewModel @Inject constructor(val spManager: SharedPreferencesM
     var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     var gson = Gson()
-
-    fun quitTrans(view: View) {
-        LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, false.toString()))
-    }
 }

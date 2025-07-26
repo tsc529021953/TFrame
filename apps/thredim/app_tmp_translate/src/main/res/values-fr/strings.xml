@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Système de Traduction</string>
+    <string name="trans_record">Historique des Traductions</string>
+    <string name="trans_main">Page d\'Accueil de Traduction</string>
+    <string name="translating">Traduction en cours</string>
+    <string name="touch_start_trans">Appuyez pour commencer la traduction</string>
+    <string name="touch_select_trans">Veuillez sélectionner une langue</string>
+    <string name="setting_text_size">Paramètres de la Police</string>
+    <string name="setting_text_size_min">Petit</string>
+    <string name="setting_text_size_nor">Normal</string>
+    <string name="setting_text_size_max">Grand</string>
+    <string name="setting_display">Paramètres d’Affichage</string>
+    <string name="setting_display_same">Affichage Miroir Double Écran</string>
+    <string name="setting_display_more">Affichage Étendu Double Écran</string>
+    <string name="setting_text_play">Paramètres de Lecture du Texte</string>
+    <string name="setting_text_play_open">Activé</string>
+    <string name="setting_text_play_close">Désactivé</string>
+    <string name="setting_trans_record">Historique des Traductions</string>
+    <string name="language_zn">Chinois</string>
+
+</resources>

@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">互译系统</string>
-    <string name="format_12_hour">yyyy/MM/ddEEEE</string>
-
     <string name="trans_record">翻译记录</string>
     <string name="trans_main">翻译主页</string>
     <string name="translating">翻译中</string>
@@ -18,10 +16,21 @@
     <string name="setting_text_play_open">启用</string>
     <string name="setting_text_play_close">禁用</string>
     <string name="setting_trans_record">翻译记录</string>
-
     <string name="language_zn">中文</string>
+
     <string-array name="lang_an_array">
         <item>英文</item>
         <item>法语</item>
     </string-array>
+    <string-array name="lang_more_array">
+        <item>English</item>
+        <item>Francais</item>
+    </string-array>
+    <string-array name="lang_ex_array">
+        <item>en</item>
+        <item>fr</item>
+    </string-array>
+
+
+    <string name="format_12_hour">yyyy/MM/ddEEEE</string>
 </resources>
