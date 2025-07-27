@@ -9,5 +9,6 @@
     <color name="bg_color">#000000</color>
     <color name="trans_bean_bg_color">#2196F3</color>
     <color name="text_color">#FFFFFFFF</color>
+    <color name="text2_color">#FFFFFFFF</color>
 
 </resources>

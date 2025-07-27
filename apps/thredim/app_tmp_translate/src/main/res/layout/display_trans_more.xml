@@ -55,7 +55,7 @@
                     android:text="@string/language_zn"
                     />
 
-            <Spinner
+            <androidx.appcompat.widget.AppCompatSpinner
                     style="@style/lang_lr_sp_style"
                     android:id="@+id/right_lang_sp"
                     app:layout_constraintStart_toEndOf="@+id/trans_iv"
@@ -117,6 +117,7 @@
                       android:id="@+id/right_lang_tv"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"
+                      android:layout_marginEnd="20dp"
                     />
 
             <androidx.recyclerview.widget.RecyclerView

@@ -11,6 +11,7 @@ import java.util.*
  */
 class TransTextBean {
 
+    var timer = 0L
     var time = ""
     var text = ""
     var transText = ""
@@ -22,13 +23,23 @@ class TransTextBean {
         this.text = text
         this.transText = transText
         this.isMaster = isMaster
-        time = getCurTimeStr()
+        timer = System.currentTimeMillis()
+        time = getTimeStr(timer)
     }
 
+    fun updateTime() {
+        timer = System.currentTimeMillis()
+        time = getTimeStr(timer)
+    }
 
     companion object {
 
         var format: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
+        fun getTimeStr(time: Long): String {
+            val d1 = Date(time)
+            return format.format(d1)
+        }
 
         fun getCurTimeStr(): String {
             val time = System.currentTimeMillis()

@@ -103,10 +103,6 @@ class TmpServiceDelegate: ITmpService {
         mService?.notifyTransPage(trans)
     }
 
-    override fun getTranslatingList(): MutableLiveData<ArrayList<TransTextBean>>? {
-        return mService?.getTranslatingList()
-    }
-
     private fun bindService(context: Context) {
         isBind = context.bindService(Intent(context, TmpServiceImpl::class.java), mConnection, Context.BIND_AUTO_CREATE)
         Timber.i("TTAG bindService $isBind")

@@ -1,5 +1,6 @@
 package com.sc.tmp_translate.view
 
+import android.graphics.Color
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.base.BaseTransFragment
+import com.sc.tmp_translate.bean.DataRepository
+import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.FragmentTransMainBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
@@ -54,7 +57,7 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
     }
 
     override fun onFontSizeChanged(fontSize: Float) {
-        setFontSize(binding.tranTv, R.dimen.main_text_size)
+        setFontSize(binding.tranTv, R.dimen.main_text_size1)
         setFontSize(binding.selectTv, R.dimen.main_text_size2)
         setFontSize(binding.leftLangTv, R.dimen.main_text_size)
 //        setFontSize(binding.rightLangTv, R.dimen.main_text_size)
@@ -77,7 +80,6 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
     }
 
     override fun initData() {
-
     }
 
     private fun initSpinner() {
@@ -90,6 +92,7 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(resources.getColor(R.color.text_color))
                 setFontSize(view, R.dimen.main_text_size)
                 return view
             }
@@ -110,6 +113,7 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
     }
 
     fun refreshLanguage() {
+        System.out.println("refreshLanguage ${TmpServiceDelegate.getInstance().getTransLangObs()?.get()}")
         val language = TmpServiceDelegate.getInstance().getTransLangObs()?.get() ?: return
         System.out.println("异显：2 $language")
         val index = activity!!.getStringArray(R.array.lang_an_array).indexOf(language)

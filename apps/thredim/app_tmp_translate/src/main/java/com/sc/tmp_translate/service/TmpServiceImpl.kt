@@ -26,6 +26,7 @@ import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_translate.R
+import com.sc.tmp_translate.bean.DataRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
@@ -86,8 +87,6 @@ class TmpServiceImpl : ITmpService, Service() {
     private var translatingObb: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
 
-    private var translatingData: MutableLiveData<ArrayList<TransTextBean>> = MutableLiveData<ArrayList<TransTextBean>>(arrayListOf())
-
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -122,14 +121,23 @@ class TmpServiceImpl : ITmpService, Service() {
             val b2 = TransTextBean()
             b2.text = "give me some money"
             b2.transText = "给我点钱花花"
-            b1.isMaster = false
+            b2.isMaster = false
 
-            translatingData.value?.add(b1)
+            DataRepository.addItem(b1)
+//            translatingData.value?.add(b1)
             delay(2000)
-            translatingData.value?.add(b2)
+            DataRepository.addItem(b2)
+            for (i in 0 until 10) {
+                delay(2000)
+                val b3 = TransTextBean()
+                b3.text = "正文 $i"
+                b3.transText = "译文 $i"
+                b3.isMaster = i % 2 == 0
+                DataRepository.addItem(b3)
+            }
+//            translatingData.value?.add(b2)
 //            arr.add(b1)
 //            arr.add(b2)
-            System.out.println("添加完成 ${translatingData.value?.size}")
         }
     }
 
@@ -236,10 +244,6 @@ class TmpServiceImpl : ITmpService, Service() {
 
     override fun notifyTransPage(trans: Boolean) {
         LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, trans.toString()))
-    }
-
-    override fun getTranslatingList(): MutableLiveData<java.util.ArrayList<TransTextBean>>? {
-        return translatingData
     }
 
     private val MSG_FLOAT_SHOW = 100

@@ -37,9 +37,9 @@
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/min_tv"
                       android:text="@string/setting_text_size_min"
-                      android:onClick="@{()->tmp.setFontSize(0.7f)}"
+                      android:onClick="@{()->tmp.setFontSize(0.8f)}"
                       app:floatData="@{tmp.fontSizeObs}"
-                      app:floatDef="@{0.7f}"
+                      app:floatDef="@{0.8f}"
                     />
 
             <View android:layout_width="30dp"
@@ -59,9 +59,9 @@
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/max_tv"
                       android:text="@string/setting_text_size_max"
-                      android:onClick="@{()->tmp.setFontSize(1.3f)}"
+                      android:onClick="@{()->tmp.setFontSize(1.2f)}"
                       app:floatData="@{tmp.fontSizeObs}"
-                      app:floatDef="@{1.3f}"
+                      app:floatDef="@{1.2f}"
                     />
 
         </LinearLayout>

@@ -17,6 +17,7 @@ import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.nbhope.lib_frame.utils.ViewUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
+import com.sc.tmp_translate.bean.DataRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.databinding.DisplayOtherBinding
 import com.sc.tmp_translate.databinding.DisplayTransMoreBinding
@@ -24,14 +25,22 @@ import com.sc.tmp_translate.service.TmpServiceDelegate
 import java.util.*
 import kotlin.collections.ArrayList
 
-// , display: Display , display
-class TransMoreDisplay(context: Context, var fontSizeCB: ((view: View, id: Int) -> Unit)) : Dialog(context) {
+//, display
+class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((view: View, id: Int) -> Unit)) : Presentation(context, display) {
 
     private var binding: DisplayTransMoreBinding? = null
 
     private lateinit var adapter: ArrayAdapter<String>
 
     lateinit var adapter2: TransTextAdapter
+
+    private val observer: (List<TransTextBean>) -> Unit = { items ->
+        adapter2.submitList(items)
+        // 滚动到底部（需要 post 保证更新后执行）
+        binding?.dataRv?.post {
+            binding?.dataRv?.scrollToPosition(items.size - 1)
+        }
+    }
 
     var isUserInitiated = false
 
@@ -44,24 +53,30 @@ class TransMoreDisplay(context: Context, var fontSizeCB: ((view: View, id: Int) 
             false
         )
         binding?.root?.let { setContentView(it) }
-        window?.setLayout(
-                1100, // 宽度
-                600  // 高度
-        )
+//        window?.setLayout(
+//                1800, // 宽度
+//                960  // 高度
+//        )
         refreshTmp()
         initSpinner()
         initTranslating()
+        DataRepository.addObserver(observer)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        DataRepository.removeObserver(observer)
     }
 
     fun onFontSizeChanged() {
         if (binding == null) return
-        fontSizeCB(binding!!.tranTv, R.dimen.main_text_size)
+        fontSizeCB(binding!!.tranTv, R.dimen.main_text_size1)
         fontSizeCB(binding!!.selectTv, R.dimen.main_text_size2)
         fontSizeCB(binding!!.leftLangTv, R.dimen.main_text_size)
         adapter.notifyDataSetChanged()
 
-        fontSizeCB(binding!!.rightLangTv, R.dimen.main_text_size)
-        fontSizeCB(binding!!.leftLang2Tv, R.dimen.main_text_size)
+        fontSizeCB(binding!!.rightLangTv, R.dimen.main_text_size1)
+        fontSizeCB(binding!!.leftLang2Tv, R.dimen.main_text_size1)
         adapter2.notifyDataSetChanged()
     }
 
@@ -91,6 +106,7 @@ class TransMoreDisplay(context: Context, var fontSizeCB: ((view: View, id: Int) 
 
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(context.resources.getColor(R.color.text_color))
                 fontSizeCB(view, R.dimen.main_text_size)
                 return view
             }
@@ -120,19 +136,7 @@ class TransMoreDisplay(context: Context, var fontSizeCB: ((view: View, id: Int) 
     }
 
     private fun initTranslating() {
-        val arr: ArrayList<TransTextBean> = arrayListOf()
-        val b1 = TransTextBean()
-        b1.text = "77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"
-        b1.transText = "？？？？？？？？？？？？？？？555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"
-        val b2 = TransTextBean()
-        b2.text = "？？？？？？？？？？？？？？？555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"
-        b2.transText = "77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"
-        b1.isMaster = false
-
-        arr.add(b1)
-        arr.add(b2)
-
-        adapter2 = TransTextAdapter(arr, TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
+        adapter2 = TransTextAdapter(DataRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
             fontSizeCB(v, id)
         }
         binding?.dataRv?.adapter = adapter2
@@ -141,6 +145,7 @@ class TransMoreDisplay(context: Context, var fontSizeCB: ((view: View, id: Int) 
     }
 
     fun refreshLanguage() {
+        if (binding == null) return
         val language = TmpServiceDelegate.getInstance().getTransLangObs()?.get() ?: return
         log("refreshLanguage $language")
         val index = context!!.getStringArray(R.array.lang_an_array).indexOf(language)

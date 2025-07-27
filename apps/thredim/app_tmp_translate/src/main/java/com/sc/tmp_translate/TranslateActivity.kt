@@ -3,6 +3,7 @@ package com.sc.tmp_translate
 import android.app.Dialog
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.view.Display
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.Observable
@@ -10,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.DisplayUtil
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.view.DrawLayoutUtils
 import com.sc.tmp_translate.base.BaseTransActivity
@@ -38,7 +40,10 @@ import javax.inject.Inject
  * 主屏都显示中文   副屏都显示外文    上面显示时间
  * 对话组件实现
  * 异显实现 两侧语种同步,文字大小同步
- * TODO 异显实现 异显语种翻译 异显检测（按钮那边禁用并提示） 开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
+ * 下拉的颜色 转换的图标换下 方向下或者改颜色
+ *  数据的位置问题
+ *  异显实现  数据更新 自动翻到最新 异显语种翻译 异显检测（按钮那边禁用并提示）
+ * TODO  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
  */
 class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 
@@ -54,6 +59,7 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
     private var currLayout: View? = null
 
     private var dialog: TransMoreDisplay? = null
+    private var display: Display? = null
 
     private var displayObsListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(p0: Observable?, p1: Int) {
@@ -104,6 +110,11 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
         log("释放")
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().getTransLangObs()?.removeOnPropertyChangedCallback(languageObsListener)
+        if (dialog != null) {
+            try {
+                dialog?.dismiss()
+            } catch (e: Exception) {}
+        }
     }
 
     private fun initListener() {
@@ -112,6 +123,7 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
             TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
             TmpServiceDelegate.getInstance().getTransLangObs()?.addOnPropertyChangedCallback(languageObsListener)
             refreshLanguage()
+            refreshDisplay()
         }
     }
 
@@ -160,6 +172,10 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
         }
     }
 
+    fun refreshMoreDisplay() {
+        
+    }
+    
     private fun showDLBtn(show: Boolean = true) {
         binding.showDlBtn.visibility = if (show) View.VISIBLE else View.GONE
     }
@@ -174,8 +190,15 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
 
     fun refreshDisplay() {
         val res = TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false
-        if (dialog == null) {
-            dialog = TransMoreDisplay(this) { v, id ->
+        val displays = DisplayUtil.getDisplays(this)
+        if (displays.isNullOrEmpty()) return
+        val eq = display == displays[0]
+        if (dialog == null || !eq) {
+            if (!eq) {
+                dialog?.hide()
+                dialog?.dismiss()
+            }
+            dialog = TransMoreDisplay(this, displays[0]) { v, id ->
                 setFontSize(v, id)
             }
             dialog?.refreshTmp()

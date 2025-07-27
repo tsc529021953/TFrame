@@ -38,6 +38,4 @@ interface ITmpService {
     fun getTranslatingObs(): ObservableBoolean?
     fun setTranslating(play: Boolean)
     fun notifyTransPage(trans: Boolean)
-
-    fun getTranslatingList() : MutableLiveData<ArrayList<TransTextBean>>?
 }

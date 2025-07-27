@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
 import com.sc.tmp_translate.base.BaseTransFragment
+import com.sc.tmp_translate.bean.DataRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.FragmentTransMainBinding
@@ -34,17 +35,20 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
 
     lateinit var adapter: TransTextAdapter
 
+    private val observer: (List<TransTextBean>) -> Unit = { items ->
+        adapter.submitList(items)
+        // 滚动到底部（需要 post 保证更新后执行）
+        binding.dataRv.post {
+            binding.dataRv.scrollToPosition(items.size - 1)
+        }
+    }
+
     private var displayObsListener = object : Observable.OnPropertyChangedCallback() {
         override fun onPropertyChanged(p0: Observable?, p1: Int) {
             activity?.runOnUiThread {
                 refreshDisplay()
             }
         }
-    }
-
-    private var translatingListObserver = Observer<ArrayList<TransTextBean>> {
-        System.out.println("添加完成2 ${it.size}")
-        adapter.setNewInstance(it)
     }
 
     override fun linkViewModel() {
@@ -54,19 +58,7 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
     }
 
     override fun subscribeUi() {
-//        val arr: ArrayList<TransTextBean> = arrayListOf()
-//        val b1 = TransTextBean()
-//        b1.text = "77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"
-//        b1.transText = "？？？？？？？？？？？？？？？555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"
-//        val b2 = TransTextBean()
-//        b2.text = "？？？？？？？？？？？？？？？555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555"
-//        b2.transText = "77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"
-//        b1.isMaster = false
-//
-//        arr.add(b1)
-//        arr.add(b2)
-        System.out.println("添加完成1 ${TmpServiceDelegate.getInstance().getTranslatingList()?.value?.size}")
-        adapter = TransTextAdapter(TmpServiceDelegate.getInstance().getTranslatingList()?.value ?: arrayListOf(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
+        adapter = TransTextAdapter(DataRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
             setFontSize(v, id)
         }
         binding.dataRv.adapter = adapter
@@ -74,13 +66,12 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         binding.dataRv.layoutManager = layoutManager
 //        binding.dataRv.addItemDecoration(NormaltemDecoration(KGItemAdapter.getD2P(6, this)))
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
-        TmpServiceDelegate.getInstance().getTranslatingList()?.observe(this, translatingListObserver)
     }
 
     override fun onFontSizeChanged(fontSize: Float) {
 //        setFontSize(binding.tranTv, R.dimen.main_text_size)
-        setFontSize(binding.leftLangTv, R.dimen.main_text_size)
-        setFontSize(binding.rightLangTv, R.dimen.main_text_size)
+        setFontSize(binding.leftLangTv, R.dimen.main_text_size1)
+        setFontSize(binding.rightLangTv, R.dimen.main_text_size1)
         adapter.notifyDataSetChanged()
     }
 
@@ -94,12 +85,13 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
 
     override fun onDestroy() {
         super.onDestroy()
+        DataRepository.removeObserver(observer)
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().setTranslating(false)
     }
 
     override fun initData() {
-
+        DataRepository.addObserver(observer)
     }
 
     fun refreshDisplay() {
