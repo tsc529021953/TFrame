@@ -39,7 +39,7 @@
     </style>
     <style name="trans_text_same_style" parent="main_base_text_style">
         <item name="android:textSize">@dimen/main_text_size1</item>
-        <item name="android:layout_marginTop">10dp</item>
+<!--        <item name="android:layout_marginTop">10dp</item>-->
         <item name="android:gravity">start</item>
     </style>
     <style name="trans_text_more_style" parent="main_base_text_style">
@@ -66,6 +66,12 @@
         <item name="android:background">@drawable/shape_common_corner_8dp</item>
         <item name="android:padding">10dp</item>
         <item name="android:layout_marginTop">10dp</item>
+    </style>
+    <style name="trans_bottom_ly_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">#2b2a2a</item>
     </style>
 
     <style name="bottom_tip_img_style">

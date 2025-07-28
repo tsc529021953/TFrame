@@ -103,6 +103,18 @@ class TmpServiceDelegate: ITmpService {
         mService?.notifyTransPage(trans)
     }
 
+    override fun getTransStateObs(): ObservableBoolean? {
+        return mService?.getTransStateObs()
+    }
+
+    override fun setTransState(play: Boolean) {
+        mService?.setTransState(play)
+    }
+
+    override fun setTransState() {
+        mService?.setTransState()
+    }
+
     private fun bindService(context: Context) {
         isBind = context.bindService(Intent(context, TmpServiceImpl::class.java), mConnection, Context.BIND_AUTO_CREATE)
         Timber.i("TTAG bindService $isBind")

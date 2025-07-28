@@ -112,6 +112,10 @@ class HSTranslateUtil {
     }
 
     suspend fun translate(uri: String, cb: (resList: List<String>) -> Unit) {
+        translate(uri, "zh", "en", cb)
+    }
+
+    suspend fun translate(uri: String, source: String, target: String, cb: (resList: List<String>) -> Unit) {
 //        val input: File = File("audio.wav")
         val input = File(
             uri
@@ -131,7 +135,7 @@ class HSTranslateUtil {
             }
         })
         client.connectBlocking()
-        client.send(Client.getConfig())
+        client.send(Client.getConfig(source, target))
         val buffer = ByteArray(200 * 32)
         var bytesLeft = 100 * 1024 * 1024
         try {

@@ -6,7 +6,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/bg_ct"
-            android:padding="10dp">
+            android:padding="5dp">
 
         <TextView
                 style="@style/trans_time_style"

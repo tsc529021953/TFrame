@@ -51,11 +51,15 @@ public class Client extends WebSocketClient {
     }
 
     static String getConfig() {
+        return getConfig("zh", "en");
+    }
+
+    static String getConfig(String source, String target) {
         return "{\n" +
                 "    \"Configuration\": {\n" +
-                "        \"SourceLanguage\": \"zh\",\n" +
+                "        \"SourceLanguage\": \"" + source + "\",\n" +
                 "        \"TargetLanguages\": [\n" +
-                "            \"en\"\n" +
+                "            \"" + target + "\"\n" +
                 "        ],\n" +
                 "        \"HotWordList\": [\n" +
                 "            {\n" +

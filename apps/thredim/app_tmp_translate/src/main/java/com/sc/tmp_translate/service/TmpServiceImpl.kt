@@ -25,11 +25,17 @@ import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
+import com.sc.tmp_translate.MainActivity.Companion.TRANSLATE_TO
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.bean.DataRepository
 import com.sc.tmp_translate.bean.TransTextBean
+import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
+import com.sc.tmp_translate.inter.ITransRecord
+import com.sc.tmp_translate.utils.hs.HSTranslateUtil
+import com.sc.tmp_translate.utils.hs.TranslateConfig
+import com.sc.tmp_translate.utils.record.TransAudioRecord
 import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.File
@@ -85,7 +91,19 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var moreDisplayObb: ObservableBoolean = ObservableBoolean(false)
     private var translatingObb: ObservableBoolean = ObservableBoolean(false)
+    private var transStateObb: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
+
+    /*record*/
+    private var transAudioRecord: TransAudioRecord? = null
+
+    /*trans*/
+    private var hsTranslateUtil: HSTranslateUtil? = null
+    var sourceSB = StringBuilder()
+    var targetSB = StringBuilder()
+    var tempSB = StringBuilder()
+    var curTransTextBean1 = TransTextBean()
+    var curTransTextBean2 = TransTextBean()
 
     override fun onCreate() {
         super.onCreate()
@@ -95,11 +113,6 @@ class TmpServiceImpl : ITmpService, Service() {
         mainHandler = MainHandler(Looper.getMainLooper())
         networkCallback = (application as HopeBaseApp).getAppComponent().networkCallback
         spManager = (application as HopeBaseApp).spManager
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            initFloat()
-//        } else {
-//            Timber.i("$TAG 版本太低，请重新适配 ${Build.VERSION.SDK_INT}")
-//        }
         networkCallback.registNetworkCallback(networkCallbackModule)
 
         fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
@@ -111,39 +124,22 @@ class TmpServiceImpl : ITmpService, Service() {
 
 
         Timber.i("XTAG service Create ${HopeUtils.getIP()} ${languageObs?.get()}")
+//        testData()
+        initTrans()
 
-        mScope.launch {
-            delay(5000)
-//            val arr: ArrayList<TransTextBean> = arrayListOf()
-            val b1 = TransTextBean()
-            b1.text = "你好"
-            b1.transText = "Hello"
-            val b2 = TransTextBean()
-            b2.text = "give me some money"
-            b2.transText = "给我点钱花花"
-            b2.isMaster = false
-
-            DataRepository.addItem(b1)
-//            translatingData.value?.add(b1)
-            delay(2000)
-            DataRepository.addItem(b2)
-            for (i in 0 until 10) {
-                delay(2000)
-                val b3 = TransTextBean()
-                b3.text = "正文 $i"
-                b3.transText = "译文 $i"
-                b3.isMaster = i % 2 == 0
-                DataRepository.addItem(b3)
-            }
-//            translatingData.value?.add(b2)
-//            arr.add(b1)
-//            arr.add(b2)
-        }
+        // 初始化翻译组件
+        hsTranslateUtil = HSTranslateUtil()
+        hsTranslateUtil?.init(
+            TranslateConfig.accessKey,
+            TranslateConfig.secretKey
+        )
     }
 
     override fun onDestroy() {
         super.onDestroy()
         timerHandler?.stop()
+        transAudioRecord?.release()
+        hsTranslateUtil?.release()
     }
 
     private fun initNotice() {
@@ -246,6 +242,20 @@ class TmpServiceImpl : ITmpService, Service() {
         LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, trans.toString()))
     }
 
+    override fun getTransStateObs(): ObservableBoolean? {
+        return transStateObb
+    }
+
+    override fun setTransState(play: Boolean) {
+        transStateObb.set(play)
+        if (play) transAudioRecord?.start()
+        else transAudioRecord?.stop()
+    }
+
+    override fun setTransState() {
+        setTransState(!transStateObb.get())
+    }
+
     private val MSG_FLOAT_SHOW = 100
     private val MSG_FLOAT_UPDATE = 101
     private val MSG_FLOAT_HIDE = 102
@@ -282,6 +292,80 @@ class TmpServiceImpl : ITmpService, Service() {
 
     }
 
+    private fun initTrans() {
+        transAudioRecord = TransAudioRecord(this, object : ITransRecord{
+            override fun onRecordEnd(isMaster: Boolean, path: String) {
+                // 执行翻译
+                mScope.launch {
+                    sourceSB.clear()
+                    targetSB.clear()
+                    tempSB.clear()
+                    if (isMaster) {
+                        curTransTextBean1 = TransTextBean()
+                        curTransTextBean1.isMaster = true
+                    }
+
+                    System.out.println("onRecordEnd2 $isMaster $path")
+                    val ex = getExStr()
+                    val source = if (isMaster) "zh" else ex
+                    val target = if (!isMaster) "zh" else ex
+                    hsTranslateUtil?.translate(path, source, target) { resList ->
+//                        isTranslating = false
+                        var isTemp = false
+                        var isSource = true
+                        val list = resList.map { res ->
+                            try {
+                                val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                                if (data.Subtitle?.Definite == true) {
+                                    if (data.Subtitle?.Language == target) {
+                                        isSource = false
+                                    }
+                                } else {
+                                    isTemp = true
+                                }
+                                data?.Subtitle?.Text ?: "解析失败"
+                            } catch (e: Exception) {
+                                res
+                            }
+                        }
+                        System.out.println("Trans ${gson.toJson(list)}")
+                        notifyInfo(isMaster, path, list, isSource, isTemp)
+                    }
+                }
+            }
+        })
+        transAudioRecord?.init()
+    }
+
+    private fun notifyInfo(isMaster: Boolean, path: String, list: List<String>, isSource: Boolean = true, isTemp: Boolean = false) {
+        if (isSource) {
+            tempSB.clear()
+            list.forEach { res ->
+                if (isTemp) tempSB.append(res)
+                else sourceSB.append(res)
+            }
+            if (isMaster) {
+                curTransTextBean1.text = sourceSB.toString() + tempSB.toString()
+            }
+        } else {
+            list.forEach { res ->
+                targetSB.append(res)
+            }
+            if (isMaster) {
+                curTransTextBean1.transText = targetSB.toString()
+                DataRepository.addItem(curTransTextBean1.copy())
+            }
+        }
+    }
+
+
+    fun getExStr(): String {
+        val index = getStringArray(R.array.lang_an_array).indexOf(languageObs.get())
+        if (index < 0) return "en"
+        val exLanguages = getStringArray(R.array.lang_ex_array)
+        return exLanguages[index]
+    }
+
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
         override fun onAvailable(network: Network?) {
             reBuild()
@@ -310,45 +394,34 @@ class TmpServiceImpl : ITmpService, Service() {
         }
     }
 
+    private fun testData() {
+        mScope.launch {
+//            delay(5000)
+//            val arr: ArrayList<TransTextBean> = arrayListOf()
+            val b1 = TransTextBean()
+            b1.text = "你好"
+            b1.transText = "Hello"
+            val b2 = TransTextBean()
+            b2.text = "give me some money"
+            b2.transText = "给我点钱花花"
+            b2.isMaster = false
 
-//    fun initAppData(context: Context, callback: () -> Unit) {
-//        mScope.launch {
-//            var path = Environment.getExternalStorageDirectory().absolutePath + BASE_FILE
-//            var file = File(path)
-//            val copyFun = {
-//                val res = FileUtil.copyAssetFile(context, CONFIG_FILE, path)
-//                Timber.i("KTAG copyFun $res")
-//            }
-//            path += CONFIG_FILE
-//            if (!file.exists()) {
-//                file.mkdirs()
-//                Timber.i("KTAG 路径不存在 $path")
-//                // copy
-//                copyFun.invoke()
-//            } else {
-//                file = File(path)
-//                if (file.exists()) {
-//                    val json = FileUtil.readFile(path)
-//                    val netBean = gson.fromJson(json, NetBean::class.java)
-//                    port = netBean.port
-//                    ip = netBean.ip ?: ip
-////                    val applist = gson.fromJson<ArrayList<NetBean>>(json, object : TypeToken<List<AppInfo?>?>() {}.type)
-////                    Timber.i("KTAG json $json ${applist.size}")
-////                    for (i in 0 until applist.size) {
-////                        val app = applist[i]
-////                        if (i < AppList.size) {
-////                            AppList[i].name = app.name
-////                        }
-////                        Timber.i("KTAG app $app")
-////                    }
-//                    callback.invoke()
-//                } else {
-//                    copyFun.invoke()
-//                }
-//            }
-//        }
-//    }
-
-
+            DataRepository.addItem(b1)
+//            translatingData.value?.add(b1)
+            delay(2000)
+            DataRepository.addItem(b2)
+            for (i in 0 until 10) {
+                delay(2000)
+                val b3 = TransTextBean()
+                b3.text = "正文 $i"
+                b3.transText = "译文 $i"
+                b3.isMaster = i % 2 == 0
+                DataRepository.addItem(b3)
+            }
+//            translatingData.value?.add(b2)
+//            arr.add(b1)
+//            arr.add(b2)
+        }
+    }
 
 }

@@ -94,7 +94,7 @@ class MultipleAudioRecord constructor(var context: Context) {
                 AUDIO_FORMAT,
                 minSize
         )
-        mBuffer = ByteArray(minSize)
+            mBuffer = ByteArray(minSize)
         if (audioRecord?.state == AudioRecord.STATE_INITIALIZED) {
             log("初始化成功 $minSize")
         } else {

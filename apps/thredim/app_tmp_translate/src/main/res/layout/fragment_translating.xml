@@ -31,27 +31,30 @@
                 android:onClick="@{() -> tmp.notifyTransPage(false)}"
                 />
 
-        <ImageView style="@style/bottom_trans_img_style"
-                   android:id="@+id/trans_iv"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
-                   android:layout_marginTop="0dp"
+        <ImageView
+                style="@style/bottom_trans_img_style"
+                android:id="@+id/trans_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
+                android:layout_marginTop="0dp"
                 />
 
-        <TextView style="@style/lang_lr_top_text_style"
-                  android:id="@+id/left_lang_tv"
-                  app:layout_constraintEnd_toStartOf="@+id/trans_iv"
-                  app:layout_constraintTop_toTopOf="@+id/trans_iv"
-                  app:layout_constraintBottom_toBottomOf="@+id/trans_iv"
-                  android:text="@string/language_zn"
+        <TextView
+                style="@style/lang_lr_top_text_style"
+                android:id="@+id/left_lang_tv"
+                app:layout_constraintEnd_toStartOf="@+id/trans_iv"
+                app:layout_constraintTop_toTopOf="@+id/trans_iv"
+                app:layout_constraintBottom_toBottomOf="@+id/trans_iv"
+                android:text="@string/language_zn"
                 />
 
-        <TextView style="@style/lang_lr_top_text_style"
-                  android:id="@+id/right_lang_tv"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintEnd_toEndOf="parent"
-                  android:text="@{tmp.transLangObs}"
-                  android:layout_marginEnd="20dp"
+        <TextView
+                style="@style/lang_lr_top_text_style"
+                android:id="@+id/right_lang_tv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@{tmp.transLangObs}"
+                android:layout_marginEnd="20dp"
                 />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -59,9 +62,32 @@
                 android:layout_height="0dp"
                 android:id="@+id/data_rv"
                 app:layout_constraintTop_toBottomOf="@+id/back_btn"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/bottom_ly"
                 android:padding="20dp"
                 />
+
+        <LinearLayout
+                style="@style/trans_bottom_ly_style"
+                android:id="@+id/bottom_ly"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+            <View style="@style/horizontal_space_style"/>
+
+            <ImageView
+                    style="@style/bottom_trans_img_style"
+                    android:id="@+id/translating_iv"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
+                    android:src="@{tmp.transStateObs ? @drawable/player_pause : @drawable/player_play}"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="0dp"
+                    android:onClick="@{() -> tmp.setTransState()}"
+                    />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

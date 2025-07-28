@@ -38,4 +38,8 @@ interface ITmpService {
     fun getTranslatingObs(): ObservableBoolean?
     fun setTranslating(play: Boolean)
     fun notifyTransPage(trans: Boolean)
+
+    fun getTransStateObs(): ObservableBoolean?
+    fun setTransState(play: Boolean)
+    fun setTransState()
 }

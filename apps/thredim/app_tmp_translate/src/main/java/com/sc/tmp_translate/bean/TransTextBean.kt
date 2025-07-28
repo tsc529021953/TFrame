@@ -32,6 +32,15 @@ class TransTextBean {
         time = getTimeStr(timer)
     }
 
+    fun copy(): TransTextBean {
+        val bean = TransTextBean()
+        bean.updateTime()
+        bean.text = this.text
+        bean.transText = this.transText
+        bean.isMaster = this.isMaster
+        return bean
+    }
+
     companion object {
 
         var format: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

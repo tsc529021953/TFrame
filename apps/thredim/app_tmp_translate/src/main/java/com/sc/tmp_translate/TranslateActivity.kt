@@ -1,8 +1,12 @@
 package com.sc.tmp_translate
 
+import android.Manifest
 import android.app.Dialog
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.media.AudioManager
 import android.view.Display
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +28,7 @@ import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.view.TransMoreDisplay
 import com.sc.tmp_translate.vm.TranslateViewModel
 import com.sc.tmp_translate.weight.KeepStateNavigator
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -47,6 +52,15 @@ import javax.inject.Inject
  */
 class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 
+    companion object {
+
+        private var PERMISSIONS: Array<String> = arrayOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+        )
+
+    }
 
     @Inject
     override lateinit var viewModel: TranslateViewModel
@@ -78,13 +92,15 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
     }
 
     override fun subscribeUi() {
+        checkPermissions()
         firstView = true
         initView()
         initNav()
     }
 
     override fun initData() {
-
+        val devices =(getSystemService(Context.AUDIO_SERVICE) as AudioManager).getDevices(AudioManager.GET_DEVICES_INPUTS)
+        log("initData devices size ${devices.size}")
     }
 
     override fun linkViewModel() {
@@ -221,6 +237,23 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
 //                    val res = navController.popBackStack()
             log("执行返回3")
         }
+    }
+
+    private fun checkPermissions() {
+        if (!hasPermission()) {
+            requestPermissions(PERMISSIONS, 10086)
+        }
+    }
+
+    private fun hasPermission(): Boolean {
+        var has = true
+        PERMISSIONS.forEach {
+            if (checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED) {
+                has = false
+            }
+        }
+        Timber.i("hasPermission $has")
+        return has
     }
 
     private fun log(msg: Any?) {
