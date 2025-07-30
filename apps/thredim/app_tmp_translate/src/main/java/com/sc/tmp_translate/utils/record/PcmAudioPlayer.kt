@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
 import io.reactivex.internal.operators.observable.ObservableFilter
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -20,25 +21,37 @@ class PcmAudioPlayer {
 
     private var audioTrack: AudioTrack? = null
     private var playThread = Executors.newSingleThreadExecutor()
-    private var state: State = State.STOPPED
+    var stateObs = ObservableField<State>(State.STOPPED)
     var currentPathObs: ObservableField<String> = ObservableField<String>("")
     private var currentName: String? = null
     private var stopFlag = false
 
-    private val sampleRate = 44100
-    private val channelConfig = AudioFormat.CHANNEL_OUT_STEREO  // 双通道
+    private val sampleRate = 16000
+    private val channelConfig = AudioFormat.CHANNEL_OUT_MONO // 双通道
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
 
-    fun getState(): State = state
+//    fun getState(): State = state
 
     fun getCurrentFileName(): String? = currentName
 
+    fun playPause(path: String) {
+        if (path != currentPathObs.get()) {
+            play(path)
+        } else {
+            when (stateObs.get()) {
+                State.PLAYING -> { pause() }
+                State.PAUSED -> { resume() }
+                else -> play(path)
+            }
+        }
+    }
+
     fun play(path: String) {
-        if (state == State.PLAYING) stop()
+        if (stateObs.get() == State.PLAYING) stop()
 
         val file = File(path)
         if (!file.exists()) {
-            Log.e("PcmAudioPlayer", "File not found: $path")
+            Timber.i("PcmAudioPlayer File not found: $path")
             return
         }
 
@@ -58,9 +71,10 @@ class PcmAudioPlayer {
         )
 
         audioTrack?.play()
-        state = State.PLAYING
+        stateObs.set(State.PLAYING)
 
         playThread.execute {
+            Timber.i("PcmAudioPlayer start")
             try {
                 val input = FileInputStream(file)
                 val buffer = ByteArray(bufferSize)
@@ -73,38 +87,40 @@ class PcmAudioPlayer {
                 }
                 input.close()
             } catch (e: IOException) {
-                Log.e("PcmAudioPlayer", "Playback error: ${e.message}")
+                Timber.e("PcmAudioPlayer Playback error: ${e.message}")
             } finally {
                 stopInternal()
             }
+            Timber.i("PcmAudioPlayer end")
         }
     }
 
     fun pause() {
-        if (state == State.PLAYING) {
+        if (stateObs.get() == State.PLAYING) {
             audioTrack?.pause()
-            state = State.PAUSED
+            stateObs.set(State.PAUSED)
         }
     }
 
     fun resume() {
-        if (state == State.PAUSED) {
+        if (stateObs.get() == State.PAUSED) {
             audioTrack?.play()
-            state = State.PLAYING
+            stateObs.set(State.PLAYING)
         }
     }
 
     fun stop() {
-        if (state == State.PLAYING || state == State.PAUSED) {
+        if (stateObs.get() == State.PLAYING || stateObs.get() == State.PAUSED) {
             stopFlag = true
         }
     }
 
     private fun stopInternal() {
+        Timber.i("PcmAudioPlayer stopInternal")
         audioTrack?.stop()
         audioTrack?.release()
         audioTrack = null
-        state = State.STOPPED
+        stateObs.set(State.STOPPED)
     }
 
     fun release() {

@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
-import androidx.lifecycle.MutableLiveData
 import com.sc.tmp_translate.bean.TransRecordBean
-import com.sc.tmp_translate.bean.TransTextBean
-import java.util.*
+import com.sc.tmp_translate.utils.record.PcmAudioPlayer
 
 /**
  * @author  tsc
@@ -45,5 +43,6 @@ interface ITmpService {
     fun setTransState(index: Int)
 
     fun getTransPlayObs(): ObservableField<String>?
+    fun getPlayStatusObs(): ObservableField<PcmAudioPlayer.State>?
     fun setTransPlay(bean: TransRecordBean)
 }

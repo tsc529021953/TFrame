@@ -125,9 +125,32 @@
                     android:layout_height="0dp"
                     android:id="@+id/data_rv"
                     app:layout_constraintTop_toBottomOf="@+id/back_btn"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/bottom_ly"
                     android:padding="20dp"
                     />
+
+            <LinearLayout
+                    style="@style/trans_bottom_ly_style"
+                    android:id="@+id/bottom_ly"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+
+                <View style="@style/horizontal_space_style"/>
+
+                <ImageView
+                        style="@style/bottom_trans_img_style"
+                        android:id="@+id/translating_iv"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
+                        android:src="@{tmp.getTransStateObs(2) ? @drawable/player_pause : @drawable/player_play}"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="0dp"
+                        android:onClick="@{() -> tmp.setTransState(2)}"
+                        />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -49,7 +49,12 @@ import javax.inject.Inject
  *  数据的位置问题
  *  异显实现  数据更新 自动翻到最新 异显语种翻译 异显检测（按钮那边禁用并提示）
  *  动态识别mic信息，
- * TODO  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录 (记录 + 列表 + 播放 + 删除)  + tts  + 区分是否说话，加静音识别
+ *  开始和暂停按钮  实现双喇叭录音  接入录音翻译
+ *  多种开始暂停控制
+ *  翻译记录的编号问题
+ *   录音文件记录 (记录 + 列表 + 播放 + 删除 删除本地文件同步  + 加载本地记录)
+ *   异显的播放按钮
+ * TODO tts  + 区分是否说话，加静音识别  + 进入退出算一次交流，所以需要加一个编号，用来判断是第几次    +
  */
 class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 

@@ -8,15 +8,13 @@ import android.os.IBinder
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
-import androidx.lifecycle.MutableLiveData
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.sc.tmp_translate.bean.TransRecordBean
-import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
+import com.sc.tmp_translate.utils.record.PcmAudioPlayer
 import timber.log.Timber
-import java.util.ArrayList
 
 /**
  * @author  tsc
@@ -118,6 +116,10 @@ class TmpServiceDelegate: ITmpService {
 
     override fun getTransPlayObs(): ObservableField<String>? {
         return mService?.getTransPlayObs()
+    }
+
+    override fun getPlayStatusObs(): ObservableField<PcmAudioPlayer.State>? {
+        return mService?.getPlayStatusObs()
     }
 
     override fun setTransPlay(bean: TransRecordBean) {

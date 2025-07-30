@@ -93,6 +93,11 @@
         <item name="android:layout_width">@dimen/main_title_ly_height</item>
         <item name="android:layout_height">match_parent</item>
     </style>
+    <style name="record_trans_img_style" parent="bottom_tip_img_style">
+        <item name="android:src">@drawable/ic_trans</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
 
     <style name="setting_select_one_text_style">
         <item name="android:layout_width">0dp</item>

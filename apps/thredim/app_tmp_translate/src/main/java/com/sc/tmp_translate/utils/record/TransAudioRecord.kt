@@ -17,10 +17,9 @@ import java.util.*
 
 
 /**
- * TODO
- * 1.读取两个摄像头
- * 2.打开并录音
- * 3.录音并播放
+ *  * 1.读取两个摄像头
+ *  * 2.打开并录音
+ *  * 3.录音并播放
  */
 class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 

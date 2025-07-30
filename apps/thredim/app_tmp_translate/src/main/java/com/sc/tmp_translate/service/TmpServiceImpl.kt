@@ -16,7 +16,9 @@ import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nbhope.lib_frame.app.HopeBaseApp
+import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
@@ -24,12 +26,14 @@ import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
+import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.constant.MessageConstant
+import com.sc.tmp_translate.da.RecordRepository
 import com.sc.tmp_translate.inter.ITmpService
 import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
@@ -38,6 +42,7 @@ import com.sc.tmp_translate.utils.record.PcmAudioPlayer
 import com.sc.tmp_translate.utils.record.TransAudioRecord
 import kotlinx.coroutines.*
 import timber.log.Timber
+import java.io.File
 import java.lang.ref.WeakReference
 
 
@@ -120,16 +125,13 @@ class TmpServiceImpl : ITmpService, Service() {
         spManager = (application as HopeBaseApp).spManager
         networkCallback.registNetworkCallback(networkCallbackModule)
 
-        fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
-        val languages = getStringArray(R.array.lang_an_array)
-        languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
-        moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))
-        textPlayObb.set(spManager.getBoolean(MessageConstant.SP_TEXT_PLAY, true))
+        // sp数据加载
+        initData()
+//        RecordRepository.updateItems()
         reBuild()
 
 
         Timber.i("XTAG service Create ${HopeUtils.getIP()} ${languageObs?.get()}")
-//        testData()
         initTrans()
 
         // 初始化翻译组件
@@ -139,8 +141,29 @@ class TmpServiceImpl : ITmpService, Service() {
             TranslateConfig.secretKey
         )
 
+        // pcm 初始化
         pcmAudioPlayer = PcmAudioPlayer()
-        // TODO pcm 初始化
+    }
+
+    private fun initData() {
+        mScope.launch {
+            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+            val languages = getStringArray(R.array.lang_an_array)
+            languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
+            moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))
+            textPlayObb.set(spManager.getBoolean(MessageConstant.SP_TEXT_PLAY, true))
+
+            try {
+                val record = spManager.getString(MessageConstant.SP_TRANS_RECORD, "")
+                if (!record.isNullOrEmpty()) {
+                    val list = gson.fromJson<ArrayList<TransRecordBean>>(record, object : TypeToken<List<TransRecordBean?>?>() {}.type)
+                    RecordRepository.updateItems(list)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+//        testData()
     }
 
     override fun onDestroy() {
@@ -274,8 +297,20 @@ class TmpServiceImpl : ITmpService, Service() {
         return pcmAudioPlayer?.currentPathObs
     }
 
+    override fun getPlayStatusObs(): ObservableField<PcmAudioPlayer.State>? {
+        return pcmAudioPlayer?.stateObs
+    }
+
     override fun setTransPlay(bean: TransRecordBean) {
-        // TODO 播放对应资源
+        if (bean.path.isNullOrEmpty()) {
+            Timber.i("未找到播放路径")
+            ToastUtil.showS("未找到播放路径！")
+            return
+        }
+        val exist = File(bean.path).exists()
+        Timber.i("setTransPlay $exist ${bean.path}")
+        if (!exist) ToastUtil.showS("文件已丢失，可移除此记录！")
+        pcmAudioPlayer?.playPause(bean.path)
     }
 
     private val MSG_FLOAT_SHOW = 100
@@ -382,15 +417,15 @@ class TmpServiceImpl : ITmpService, Service() {
             list.forEach { res ->
                 if (isMaster) targetSB1.append(res) else targetSB2.append(res)
             }
+            val lang = languageObs.get() ?: ""
             if (isMaster) {
                 curTransTextBean1.transText = targetSB1.toString()
-                TransRepository.addItem(curTransTextBean1.copy())
-                // TODO 添加一份记录
-
+                // 添加一份记录
+                TransRepository.addItem(curTransTextBean1.copy(), lang, path, spManager)
                 // TODO 数量到达一定大小之后，删除前面的一半数据，避免卡顿
             } else {
                 curTransTextBean2.transText = targetSB2.toString()
-                TransRepository.addItem(curTransTextBean2.copy())
+                TransRepository.addItem(curTransTextBean2.copy(), lang, path, spManager)
             }
         }
     }
@@ -433,7 +468,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun testData() {
         mScope.launch {
-//            delay(5000)
+            delay(1000)
 //            val arr: ArrayList<TransTextBean> = arrayListOf()
             val b1 = TransTextBean()
             b1.text = "你好"
@@ -442,18 +477,21 @@ class TmpServiceImpl : ITmpService, Service() {
             b2.text = "give me some money"
             b2.transText = "给我点钱花花"
             b2.isMaster = false
-
-            TransRepository.addItem(b1)
+            val dir = File(Environment.getExternalStorageDirectory(), "AudioRecordings")
+            val lang = languageObs.get() ?: ""
+            val path1 = File(dir, "1_20250729_231124.pcm").absolutePath
+            val path2 = File(dir, "2_20250729_231124.pcm").absolutePath
+            TransRepository.addItem(b1, lang, path1, spManager)
 //            translatingData.value?.add(b1)
             delay(2000)
-            TransRepository.addItem(b2)
+            TransRepository.addItem(b2, lang, path2, spManager)
             for (i in 0 until 10) {
                 delay(2000)
                 val b3 = TransTextBean()
                 b3.text = "正文 $i"
                 b3.transText = "译文 $i"
                 b3.isMaster = i % 2 == 0
-                TransRepository.addItem(b3)
+                TransRepository.addItem(b3, lang, if (b3.isMaster) path1 else path2, spManager)
             }
 //            translatingData.value?.add(b2)
 //            arr.add(b1)
