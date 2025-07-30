@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <data>
+        <variable
+                name="vm"
+                type="com.sc.tmp_translate.bean.TransRecordBean"/>
+        <variable
+                name="tmp"
+                type="com.sc.tmp_translate.inter.ITmpService"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_title_ly_height"
+            android:id="@+id/bg_ct"
+            >
+
+        <!--编号-->
+        <TextView
+                style="@style/record_text_style"
+                android:id="@+id/num_tv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="100"
+                />
+
+        <!--时间-->
+        <TextView
+                style="@style/record_text_style"
+                android:layout_width="wrap_content"
+                android:id="@+id/text_tv"
+                app:layout_constraintStart_toEndOf="@+id/num_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="2025 89/56 23:23:45"
+                />
+        
+        
+
+        <ImageView style="@style/bottom_trans_img_style"
+                   android:id="@+id/trans2_iv"
+                   app:layout_constraintTop_toTopOf="parent"
+                   app:layout_constraintEnd_toEndOf="parent"
+                   android:layout_marginTop="0dp"
+                   android:padding="20dp"
+                   android:src="@drawable/ic_remove"
+                />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

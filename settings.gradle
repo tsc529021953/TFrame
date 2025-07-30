@@ -35,3 +35,4 @@ project(':app_tmp_translate').projectDir = new File('./apps/thredim/app_tmp_tran
 //project(':serialportlibrary').projectDir = new File('./base_libs/serialportlibrary')
 
 rootProject.name = "TFrame"
+//include ':nativelib'

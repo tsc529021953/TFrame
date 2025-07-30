@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.sc.tmp_translate"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 31
         versionCode 101
         versionName "0.1.1"
@@ -104,6 +104,7 @@ dependencies {
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
     implementation project(path: ':lib_frame')
+//    implementation project(path: ':lib_audio')
     testImplementation deps.junit
     androidTestImplementation deps.espresso.core
 //    implementation deps.hellodaemon
@@ -129,4 +130,5 @@ dependencies {
 
     implementation deps.navigation.ui
     implementation deps.navigation.fragment
+    implementation deps.ffmpeg_kit
 }

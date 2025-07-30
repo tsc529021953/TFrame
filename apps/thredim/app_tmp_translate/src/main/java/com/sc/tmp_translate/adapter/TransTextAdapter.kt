@@ -2,7 +2,6 @@ package com.sc.tmp_translate.adapter
 
 import android.view.Gravity
 import android.view.View
-import androidx.constraintlayout.solver.widgets.ConstraintWidget.DimensionBehaviour
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -10,12 +9,9 @@ import com.chad.library.adapter.base.BaseDelegateMultiAdapter
 import com.chad.library.adapter.base.delegate.BaseMultiTypeDelegate
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.sc.tmp_translate.R
-import com.sc.tmp_translate.bean.DataRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.databinding.ItemMoreDisplayBinding
 import com.sc.tmp_translate.databinding.ItemSameDisplayBinding
-import java.text.SimpleDateFormat
-import java.util.*
 
 /**
  * @author  tsc

@@ -81,10 +81,10 @@
                     android:id="@+id/translating_iv"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
-                    android:src="@{tmp.transStateObs ? @drawable/player_pause : @drawable/player_play}"
+                    android:src="@{tmp.getTransStateObs(1) ? @drawable/player_pause : @drawable/player_play}"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="0dp"
-                    android:onClick="@{() -> tmp.setTransState()}"
+                    android:onClick="@{() -> tmp.setTransState(1)}"
                     />
 
         </LinearLayout>

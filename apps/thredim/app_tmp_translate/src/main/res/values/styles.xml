@@ -88,6 +88,12 @@
         <item name="android:padding">17dp</item>
     </style>
 
+    <style name="record_text_style" parent="main_base_text_style">
+        <item name="android:textSize">@dimen/main_text_size0</item>
+        <item name="android:layout_width">@dimen/main_title_ly_height</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
     <style name="setting_select_one_text_style">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

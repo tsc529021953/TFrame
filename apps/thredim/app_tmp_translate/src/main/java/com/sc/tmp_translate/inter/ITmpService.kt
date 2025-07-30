@@ -5,6 +5,7 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import androidx.lifecycle.MutableLiveData
+import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import java.util.*
 
@@ -39,7 +40,10 @@ interface ITmpService {
     fun setTranslating(play: Boolean)
     fun notifyTransPage(trans: Boolean)
 
-    fun getTransStateObs(): ObservableBoolean?
-    fun setTransState(play: Boolean)
-    fun setTransState()
+    fun getTransStateObs(index: Int): ObservableBoolean?
+    fun setTransState(play: Boolean, index: Int)
+    fun setTransState(index: Int)
+
+    fun getTransPlayObs(): ObservableField<String>?
+    fun setTransPlay(bean: TransRecordBean)
 }

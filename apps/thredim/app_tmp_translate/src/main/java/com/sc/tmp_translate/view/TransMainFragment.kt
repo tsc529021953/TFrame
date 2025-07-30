@@ -1,26 +1,17 @@
 package com.sc.tmp_translate.view
 
-import android.graphics.Color
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import androidx.core.view.get
 import androidx.databinding.Observable
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
-import com.nbhope.lib_frame.base.BaseBindingFragment
-import com.nbhope.lib_frame.event.RemoteMessageEvent
-import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.base.BaseTransFragment
-import com.sc.tmp_translate.bean.DataRepository
-import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.FragmentTransMainBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
-import com.sc.tmp_translate.service.TmpServiceImpl
 import com.sc.tmp_translate.vm.TransMainViewModel
 import javax.inject.Inject
 

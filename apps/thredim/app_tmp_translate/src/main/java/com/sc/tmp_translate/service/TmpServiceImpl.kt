@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
-import androidx.lifecycle.MutableLiveData
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.google.gson.Gson
 import com.nbhope.lib_frame.app.HopeBaseApp
@@ -25,9 +24,9 @@ import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
-import com.sc.tmp_translate.MainActivity.Companion.TRANSLATE_TO
 import com.sc.tmp_translate.R
-import com.sc.tmp_translate.bean.DataRepository
+import com.sc.tmp_translate.da.TransRepository
+import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.constant.MessageConstant
@@ -35,12 +34,11 @@ import com.sc.tmp_translate.inter.ITmpService
 import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
+import com.sc.tmp_translate.utils.record.PcmAudioPlayer
 import com.sc.tmp_translate.utils.record.TransAudioRecord
 import kotlinx.coroutines.*
 import timber.log.Timber
-import java.io.File
 import java.lang.ref.WeakReference
-import javax.inject.Inject
 
 
 /**
@@ -91,7 +89,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var moreDisplayObb: ObservableBoolean = ObservableBoolean(false)
     private var translatingObb: ObservableBoolean = ObservableBoolean(false)
-    private var transStateObb: ObservableBoolean = ObservableBoolean(false)
+    private var transStateObb1: ObservableBoolean = ObservableBoolean(false)
+    private var transStateObb2: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
 
     /*record*/
@@ -99,11 +98,17 @@ class TmpServiceImpl : ITmpService, Service() {
 
     /*trans*/
     private var hsTranslateUtil: HSTranslateUtil? = null
-    var sourceSB = StringBuilder()
-    var targetSB = StringBuilder()
-    var tempSB = StringBuilder()
     var curTransTextBean1 = TransTextBean()
     var curTransTextBean2 = TransTextBean()
+
+    var sourceSB1 = StringBuilder()
+    var targetSB1 = StringBuilder()
+    var tempSB1 = StringBuilder()
+    var sourceSB2 = StringBuilder()
+    var targetSB2 = StringBuilder()
+    var tempSB2 = StringBuilder()
+
+    private var pcmAudioPlayer: PcmAudioPlayer? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -133,10 +138,14 @@ class TmpServiceImpl : ITmpService, Service() {
             TranslateConfig.accessKey,
             TranslateConfig.secretKey
         )
+
+        pcmAudioPlayer = PcmAudioPlayer()
+        // TODO pcm 初始化
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        pcmAudioPlayer?.release()
         timerHandler?.stop()
         transAudioRecord?.release()
         hsTranslateUtil?.release()
@@ -242,18 +251,31 @@ class TmpServiceImpl : ITmpService, Service() {
         LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, trans.toString()))
     }
 
-    override fun getTransStateObs(): ObservableBoolean? {
-        return transStateObb
+    override fun getTransStateObs(index: Int): ObservableBoolean? {
+        return if (index == 1) return transStateObb1 else transStateObb2
     }
 
-    override fun setTransState(play: Boolean) {
-        transStateObb.set(play)
-        if (play) transAudioRecord?.start()
-        else transAudioRecord?.stop()
+    override fun setTransState(play: Boolean, index: Int) {
+        if (!moreDisplayObb.get()) {
+            transStateObb1.set(play)
+            transStateObb2.set(play)
+        } else if (index == 1) transStateObb1.set(play)
+        else transStateObb2.set(play)
+
+        if (play) transAudioRecord?.start(if (!moreDisplayObb.get()) 0 else index)
+        else transAudioRecord?.stop(if (!moreDisplayObb.get()) 0 else index)
     }
 
-    override fun setTransState() {
-        setTransState(!transStateObb.get())
+    override fun setTransState(index: Int) {
+        setTransState(!transStateObb1.get(), index)
+    }
+
+    override fun getTransPlayObs(): ObservableField<String>? {
+        return pcmAudioPlayer?.currentPathObs
+    }
+
+    override fun setTransPlay(bean: TransRecordBean) {
+        // TODO 播放对应资源
     }
 
     private val MSG_FLOAT_SHOW = 100
@@ -296,41 +318,48 @@ class TmpServiceImpl : ITmpService, Service() {
         transAudioRecord = TransAudioRecord(this, object : ITransRecord{
             override fun onRecordEnd(isMaster: Boolean, path: String) {
                 // 执行翻译
-                mScope.launch {
-                    sourceSB.clear()
-                    targetSB.clear()
-                    tempSB.clear()
-                    if (isMaster) {
-                        curTransTextBean1 = TransTextBean()
-                        curTransTextBean1.isMaster = true
-                    }
+                if (isMaster) {
+                    sourceSB1.clear()
+                    targetSB1.clear()
+                    tempSB1.clear()
+                } else {
+                    sourceSB2.clear()
+                    targetSB2.clear()
+                    tempSB2.clear()
+                }
+                if (isMaster) {
+                    curTransTextBean1 = TransTextBean()
+                    curTransTextBean1.isMaster = true
+                } else {
+                    curTransTextBean2 = TransTextBean()
+                    curTransTextBean2.isMaster = false
+                }
 
-                    System.out.println("onRecordEnd2 $isMaster $path")
-                    val ex = getExStr()
-                    val source = if (isMaster) "zh" else ex
-                    val target = if (!isMaster) "zh" else ex
-                    hsTranslateUtil?.translate(path, source, target) { resList ->
+                System.out.println("onRecordEnd2 $isMaster $path")
+                val ex = getExStr()
+                val source = if (isMaster) "zh" else ex
+                val target = if (!isMaster) "zh" else ex
+                hsTranslateUtil?.translate(path, source, target) { resList ->
 //                        isTranslating = false
-                        var isTemp = false
-                        var isSource = true
-                        val list = resList.map { res ->
-                            try {
-                                val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
-                                if (data.Subtitle?.Definite == true) {
-                                    if (data.Subtitle?.Language == target) {
-                                        isSource = false
-                                    }
-                                } else {
-                                    isTemp = true
+                    var isTemp = false
+                    var isSource = true
+                    val list = resList.map { res ->
+                        try {
+                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                            if (data.Subtitle?.Definite == true) {
+                                if (data.Subtitle?.Language == target) {
+                                    isSource = false
                                 }
-                                data?.Subtitle?.Text ?: "解析失败"
-                            } catch (e: Exception) {
-                                res
+                            } else {
+                                isTemp = true
                             }
+                            data?.Subtitle?.Text ?: "解析失败"
+                        } catch (e: Exception) {
+                            res
                         }
-                        System.out.println("Trans ${gson.toJson(list)}")
-                        notifyInfo(isMaster, path, list, isSource, isTemp)
                     }
+                    System.out.println("Trans ${gson.toJson(list)}")
+                    notifyInfo(isMaster, path, list, isSource, isTemp)
                 }
             }
         })
@@ -339,21 +368,29 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun notifyInfo(isMaster: Boolean, path: String, list: List<String>, isSource: Boolean = true, isTemp: Boolean = false) {
         if (isSource) {
-            tempSB.clear()
+            if (isMaster) tempSB1.clear() else tempSB2.clear()
             list.forEach { res ->
-                if (isTemp) tempSB.append(res)
-                else sourceSB.append(res)
+                if (isTemp) if (isMaster) tempSB1.append(res) else tempSB2.append(res)
+                else if (isMaster) sourceSB1.append(res) else sourceSB2.append(res)
             }
             if (isMaster) {
-                curTransTextBean1.text = sourceSB.toString() + tempSB.toString()
+                curTransTextBean1.text = sourceSB1.toString() + tempSB1.toString()
+            } else {
+                curTransTextBean2.text = sourceSB2.toString() + tempSB2.toString()
             }
         } else {
             list.forEach { res ->
-                targetSB.append(res)
+                if (isMaster) targetSB1.append(res) else targetSB2.append(res)
             }
             if (isMaster) {
-                curTransTextBean1.transText = targetSB.toString()
-                DataRepository.addItem(curTransTextBean1.copy())
+                curTransTextBean1.transText = targetSB1.toString()
+                TransRepository.addItem(curTransTextBean1.copy())
+                // TODO 添加一份记录
+
+                // TODO 数量到达一定大小之后，删除前面的一半数据，避免卡顿
+            } else {
+                curTransTextBean2.transText = targetSB2.toString()
+                TransRepository.addItem(curTransTextBean2.copy())
             }
         }
     }
@@ -406,17 +443,17 @@ class TmpServiceImpl : ITmpService, Service() {
             b2.transText = "给我点钱花花"
             b2.isMaster = false
 
-            DataRepository.addItem(b1)
+            TransRepository.addItem(b1)
 //            translatingData.value?.add(b1)
             delay(2000)
-            DataRepository.addItem(b2)
+            TransRepository.addItem(b2)
             for (i in 0 until 10) {
                 delay(2000)
                 val b3 = TransTextBean()
                 b3.text = "正文 $i"
                 b3.transText = "译文 $i"
                 b3.isMaster = i % 2 == 0
-                DataRepository.addItem(b3)
+                TransRepository.addItem(b3)
             }
 //            translatingData.value?.add(b2)
 //            arr.add(b1)

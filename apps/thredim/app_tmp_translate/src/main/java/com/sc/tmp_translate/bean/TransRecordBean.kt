@@ -10,5 +10,7 @@ class TransRecordBean {
 
     var bean: TransTextBean? = null
 
+    var lang: String = "en"
+    var path: String? = null
 
 }

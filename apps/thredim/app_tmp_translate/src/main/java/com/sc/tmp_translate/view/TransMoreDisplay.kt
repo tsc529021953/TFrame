@@ -1,6 +1,5 @@
 package com.sc.tmp_translate.view
 
-import android.app.Dialog
 import android.app.Presentation
 import android.content.Context
 import android.os.Bundle
@@ -17,13 +16,11 @@ import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.nbhope.lib_frame.utils.ViewUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
-import com.sc.tmp_translate.bean.DataRepository
+import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
-import com.sc.tmp_translate.databinding.DisplayOtherBinding
 import com.sc.tmp_translate.databinding.DisplayTransMoreBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import java.util.*
-import kotlin.collections.ArrayList
 
 //, display
 class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((view: View, id: Int) -> Unit)) : Presentation(context, display) {
@@ -60,12 +57,12 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
         refreshTmp()
         initSpinner()
         initTranslating()
-        DataRepository.addObserver(observer)
+        TransRepository.addObserver(observer)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        DataRepository.removeObserver(observer)
+        TransRepository.removeObserver(observer)
     }
 
     fun onFontSizeChanged() {
@@ -136,7 +133,7 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
     }
 
     private fun initTranslating() {
-        adapter2 = TransTextAdapter(DataRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
+        adapter2 = TransTextAdapter(TransRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
             fontSizeCB(v, id)
         }
         binding?.dataRv?.adapter = adapter2

@@ -11,6 +11,7 @@ import androidx.databinding.ObservableFloat
 import androidx.lifecycle.MutableLiveData
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
@@ -103,16 +104,24 @@ class TmpServiceDelegate: ITmpService {
         mService?.notifyTransPage(trans)
     }
 
-    override fun getTransStateObs(): ObservableBoolean? {
-        return mService?.getTransStateObs()
+    override fun getTransStateObs(index: Int): ObservableBoolean? {
+        return mService?.getTransStateObs(index)
     }
 
-    override fun setTransState(play: Boolean) {
-        mService?.setTransState(play)
+    override fun setTransState(play: Boolean,index: Int) {
+        mService?.setTransState(play, index)
     }
 
-    override fun setTransState() {
-        mService?.setTransState()
+    override fun setTransState(index: Int) {
+        mService?.setTransState(index)
+    }
+
+    override fun getTransPlayObs(): ObservableField<String>? {
+        return mService?.getTransPlayObs()
+    }
+
+    override fun setTransPlay(bean: TransRecordBean) {
+        mService?.setTransPlay(bean)
     }
 
     private fun bindService(context: Context) {

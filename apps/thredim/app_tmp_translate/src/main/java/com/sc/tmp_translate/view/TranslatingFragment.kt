@@ -1,25 +1,15 @@
 package com.sc.tmp_translate.view
 
-import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TextView
 import androidx.databinding.Observable
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
 import com.sc.tmp_translate.base.BaseTransFragment
-import com.sc.tmp_translate.bean.DataRepository
+import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
-import com.sc.tmp_translate.databinding.FragmentTransMainBinding
 import com.sc.tmp_translate.databinding.FragmentTranslatingBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
-import com.sc.tmp_translate.vm.TransMainViewModel
 import com.sc.tmp_translate.vm.TranslatingViewModel
 import javax.inject.Inject
 
@@ -58,7 +48,7 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
     }
 
     override fun subscribeUi() {
-        adapter = TransTextAdapter(DataRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
+        adapter = TransTextAdapter(TransRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
             setFontSize(v, id)
         }
         binding.dataRv.adapter = adapter
@@ -85,13 +75,13 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
 
     override fun onDestroy() {
         super.onDestroy()
-        DataRepository.removeObserver(observer)
+        TransRepository.removeObserver(observer)
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().setTranslating(false)
     }
 
     override fun initData() {
-        DataRepository.addObserver(observer)
+        TransRepository.addObserver(observer)
     }
 
     fun refreshDisplay() {

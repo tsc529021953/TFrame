@@ -1,27 +1,29 @@
-package com.sc.tmp_translate.bean
+package com.sc.tmp_translate.da
 
 import android.os.Handler
 import android.os.Looper
+import com.sc.tmp_translate.bean.TransRecordBean
+import com.sc.tmp_translate.bean.TransTextBean
 
-object DataRepository {
-    private val data = mutableListOf<TransTextBean>()
-    private val observers = mutableListOf<(List<TransTextBean>) -> Unit>()
+object RecordRepository {
+    private val data = mutableListOf<TransRecordBean>()
+    private val observers = mutableListOf<(List<TransRecordBean>) -> Unit>()
     private val lock = Any()
 
-    fun getData(): List<TransTextBean> = synchronized(lock) { data.toList() }
+    fun getData(): List<TransRecordBean> = synchronized(lock) { data.toList() }
 
-    fun addObserver(observer: (List<TransTextBean>) -> Unit) {
+    fun addObserver(observer: (List<TransRecordBean>) -> Unit) {
         synchronized(lock) {
             observers += observer
             observer(data) // 初始推送一次
         }
     }
 
-    fun removeObserver(observer: (List<TransTextBean>) -> Unit) {
+    fun removeObserver(observer: (List<TransRecordBean>) -> Unit) {
         synchronized(lock) { observers -= observer }
     }
 
-    fun addItem(item: TransTextBean) {
+    fun addItem(item: TransRecordBean) {
         synchronized(lock) {
             data += item
             System.out.println("data?? ${data[data.size-1].text}")
@@ -29,7 +31,7 @@ object DataRepository {
         }
     }
 
-    fun updateItems(newData: List<TransTextBean>) {
+    fun updateItems(newData: List<TransRecordBean>) {
         synchronized(lock) {
             data.clear()
             data.addAll(newData)

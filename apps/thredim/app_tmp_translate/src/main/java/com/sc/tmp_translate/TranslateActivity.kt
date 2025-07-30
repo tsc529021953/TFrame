@@ -48,7 +48,8 @@ import javax.inject.Inject
  * 下拉的颜色 转换的图标换下 方向下或者改颜色
  *  数据的位置问题
  *  异显实现  数据更新 自动翻到最新 异显语种翻译 异显检测（按钮那边禁用并提示）
- * TODO  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录  + tts
+ *  动态识别mic信息，
+ * TODO  开始和暂停按钮  实现双喇叭录音  接入录音翻译    + 录音文件记录 (记录 + 列表 + 播放 + 删除)  + tts  + 区分是否说话，加静音识别
  */
 class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 

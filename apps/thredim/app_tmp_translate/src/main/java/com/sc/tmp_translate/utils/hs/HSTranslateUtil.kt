@@ -115,7 +115,7 @@ class HSTranslateUtil {
         translate(uri, "zh", "en", cb)
     }
 
-    suspend fun translate(uri: String, source: String, target: String, cb: (resList: List<String>) -> Unit) {
+    fun translate(uri: String, source: String, target: String, cb: (resList: List<String>) -> Unit) {
 //        val input: File = File("audio.wav")
         val input = File(
             uri
