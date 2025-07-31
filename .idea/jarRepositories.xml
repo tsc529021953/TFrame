@@ -106,5 +106,10 @@
       <option name="name" value="maven3" />
       <option name="url" value="https://maven.dts.com/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="https://artifact.bytedance.com/repository/Volcengine/" />
+    </remote-repository>
   </component>
 </project>

@@ -16,10 +16,12 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.databinding.ObservableFloat
 import com.afollestad.materialdialogs.utils.MDUtil.getStringArray
+import com.bytedance.speech.speechengine.SpeechEngine
+import com.bytedance.speech.speechengine.SpeechEngineDefines
+import com.bytedance.speech.speechengine.SpeechEngineGenerator
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nbhope.lib_frame.app.HopeBaseApp
-import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
@@ -29,14 +31,16 @@ import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_translate.R
-import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.RecordRepository
+import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.inter.ITmpService
+import com.sc.tmp_translate.inter.ITmpTTS
 import com.sc.tmp_translate.inter.ITransRecord
+import com.sc.tmp_translate.utils.HSTTSHelper
 import com.sc.tmp_translate.utils.TTSHelper
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
@@ -122,7 +126,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
     lateinit var audioManager: AudioManager
 
-    var ttsHelper: TTSHelper? = null
+    var ttsHelper: ITmpTTS? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -134,12 +138,7 @@ class TmpServiceImpl : ITmpService, Service() {
         spManager = (application as HopeBaseApp).spManager
         networkCallback.registNetworkCallback(networkCallbackModule)
         audioManager = application.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
-        ttsHelper = TTSHelper(application)
-        ttsHelper?.init()
-//        Handler(Looper.getMainLooper()).postDelayed({
-//
-//        }, 1000)
-
+        initSpeech()
 
         // sp数据加载
         initData()
@@ -161,6 +160,17 @@ class TmpServiceImpl : ITmpService, Service() {
         pcmAudioPlayer = PcmAudioPlayer()
     }
 
+    private fun initSpeech() {
+        ttsHelper = HSTTSHelper(application)
+        ttsHelper?.init()
+//        mScope.launch {
+//            delay(5000)
+//            ttsHelper?.speak("你好")
+//            delay(1000)
+//            ttsHelper?.speak("今天天气怎么样")
+//        }
+    }
+
     private fun initData() {
         mScope.launch {
             fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
@@ -178,20 +188,17 @@ class TmpServiceImpl : ITmpService, Service() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
-//            delay(3000)
-//            ttsHelper?.speak("你好，这是语音播报测试")
         }
 //        testData()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        ttsHelper?.release()
         pcmAudioPlayer?.release()
         timerHandler?.stop()
         transAudioRecord?.release()
         hsTranslateUtil?.release()
-        ttsHelper?.shutdown()
     }
 
     private fun initNotice() {
@@ -479,7 +486,7 @@ class TmpServiceImpl : ITmpService, Service() {
                 curTransTextBean2.transText = targetSB2.toString()
                 TransRepository.addItem(curTransTextBean2.copy(), lang, path, this)
             }
-            if (!tarnsText.isNullOrEmpty()) {
+            if (!tarnsText.isNullOrEmpty() && textPlayObb.get()) {
                 try {
                     ttsHelper?.speak(tarnsText)
                 } catch (e: Exception) {

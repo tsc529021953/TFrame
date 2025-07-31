@@ -187,3 +187,5 @@
 -obfuscationdictionary dic.txt
 -classobfuscationdictionary dic.txt
 -packageobfuscationdictionary dic.txt
+
+-keep class com.bytedance.speech.speechengine.SpeechEngineImpl {*;}

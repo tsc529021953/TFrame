@@ -55,7 +55,9 @@ import javax.inject.Inject
  *   录音文件记录 (记录 + 列表 + 播放 + 删除 删除本地文件同步  + 加载本地记录)
  *   异显的播放按钮
  *   进入退出算一次交流，所以需要加一个编号，用来判断是第几次
- * TODO tts  + 区分是否说话，加静音识别  +  异显界面的刷新 +   翻译完把音频文件删除 + 音量按键 + 主翻译的屏蔽打开
+ *    翻译完把音频文件删除 + 音量按键 + 主翻译的屏蔽打开
+ *    异显界面的刷新 +
+ * TODO tts  + 区分是否说话，加静音识别  +  加密
  */
 class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 

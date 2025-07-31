@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_translate"
         minSdkVersion 24
         targetSdkVersion 31
-        versionCode 101
-        versionName "0.1.1"
+        versionCode 102
+        versionName "0.1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -131,4 +131,5 @@ dependencies {
     implementation deps.navigation.ui
     implementation deps.navigation.fragment
     implementation deps.ffmpeg_kit
+    implementation 'com.bytedance.speechengine:speechengine_tts_tob:5.4.8'
 }

@@ -378,6 +378,9 @@ static def addRepos(RepositoryHandler handler) {
     handler.maven { url "https://maven.aliyun.com/repository/public" }
     handler.jcenter()
     handler.google()
+    handler.maven {
+        url "https://artifact.bytedance.com/repository/Volcengine/"
+    }
 //    handler.maven { url "https://maven.aliyun.com/repository/central" }
 //    handler.maven { url "https://maven.aliyun.com/repository/google" }
 //    handler.maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
