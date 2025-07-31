@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.*
@@ -36,6 +37,7 @@ import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.RecordRepository
 import com.sc.tmp_translate.inter.ITmpService
 import com.sc.tmp_translate.inter.ITransRecord
+import com.sc.tmp_translate.utils.TTSHelper
 import com.sc.tmp_translate.utils.hs.HSTranslateUtil
 import com.sc.tmp_translate.utils.hs.TranslateConfig
 import com.sc.tmp_translate.utils.record.PcmAudioPlayer
@@ -97,6 +99,7 @@ class TmpServiceImpl : ITmpService, Service() {
     private var transStateObb1: ObservableBoolean = ObservableBoolean(false)
     private var transStateObb2: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
+    private var transRecordObb: ObservableBoolean = ObservableBoolean(false)
 
     /*record*/
     private var transAudioRecord: TransAudioRecord? = null
@@ -115,6 +118,12 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private var pcmAudioPlayer: PcmAudioPlayer? = null
 
+    var transRecordBean: TransRecordBean? = null // 用于记录一次当前的对话
+
+    lateinit var audioManager: AudioManager
+
+    var ttsHelper: TTSHelper? = null
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -124,6 +133,13 @@ class TmpServiceImpl : ITmpService, Service() {
         networkCallback = (application as HopeBaseApp).getAppComponent().networkCallback
         spManager = (application as HopeBaseApp).spManager
         networkCallback.registNetworkCallback(networkCallbackModule)
+        audioManager = application.getSystemService(Context.AUDIO_SERVICE) as android.media.AudioManager
+        ttsHelper = TTSHelper(application)
+        ttsHelper?.init()
+//        Handler(Looper.getMainLooper()).postDelayed({
+//
+//        }, 1000)
+
 
         // sp数据加载
         initData()
@@ -162,6 +178,9 @@ class TmpServiceImpl : ITmpService, Service() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+
+//            delay(3000)
+//            ttsHelper?.speak("你好，这是语音播报测试")
         }
 //        testData()
     }
@@ -172,6 +191,7 @@ class TmpServiceImpl : ITmpService, Service() {
         timerHandler?.stop()
         transAudioRecord?.release()
         hsTranslateUtil?.release()
+        ttsHelper?.shutdown()
     }
 
     private fun initNotice() {
@@ -270,8 +290,19 @@ class TmpServiceImpl : ITmpService, Service() {
         translatingObb.set(play)
     }
 
-    override fun notifyTransPage(trans: Boolean) {
+    override fun notifyTransPage(trans: Boolean, reset: Boolean) {
         LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_TRANSLATING, trans.toString()))
+//        if (reset) {
+//            transRecordBean = TransRecordBean(languageObs.get() ?: "")
+//        }
+    }
+
+    override fun changeTranslatingState(open: Boolean) {
+        if (open) {
+            transRecordBean = TransRecordBean(languageObs?.get() ?: "")
+        } else {
+            transRecordBean?.end(spManager)
+        }
     }
 
     override fun getTransStateObs(index: Int): ObservableBoolean? {
@@ -279,7 +310,7 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun setTransState(play: Boolean, index: Int) {
-        if (!moreDisplayObb.get()) {
+        if (!moreDisplayObb.get() || index == 0) {
             transStateObb1.set(play)
             transStateObb2.set(play)
         } else if (index == 1) transStateObb1.set(play)
@@ -290,7 +321,7 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun setTransState(index: Int) {
-        setTransState(!transStateObb1.get(), index)
+        setTransState(if (index == 2 && moreDisplayObb.get()) !transStateObb2.get() else !transStateObb1.get(), index)
     }
 
     override fun getTransPlayObs(): ObservableField<String>? {
@@ -311,6 +342,18 @@ class TmpServiceImpl : ITmpService, Service() {
         Timber.i("setTransPlay $exist ${bean.path}")
         if (!exist) ToastUtil.showS("文件已丢失，可移除此记录！")
         pcmAudioPlayer?.playPause(bean.path)
+    }
+
+    override fun getTransRecordObs(): ObservableBoolean? {
+        return transRecordObb
+    }
+
+    override fun setTransRecord(play: Boolean) {
+        transRecordObb.set(play)
+    }
+
+    override fun showVolume() {
+        audioManager.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
     }
 
     private val MSG_FLOAT_SHOW = 100
@@ -388,7 +431,13 @@ class TmpServiceImpl : ITmpService, Service() {
                             } else {
                                 isTemp = true
                             }
-                            data?.Subtitle?.Text ?: "解析失败"
+                            val res2 = data?.Subtitle?.Text ?: "解析失败"
+                            if (res == "解析失败") {
+                                try {
+                                    ToastUtil.showS(res2)
+                                } catch (e: Exception) {}
+                            }
+                            res2
                         } catch (e: Exception) {
                             res
                         }
@@ -418,14 +467,24 @@ class TmpServiceImpl : ITmpService, Service() {
                 if (isMaster) targetSB1.append(res) else targetSB2.append(res)
             }
             val lang = languageObs.get() ?: ""
+            var tarnsText = ""
             if (isMaster) {
                 curTransTextBean1.transText = targetSB1.toString()
+                tarnsText = curTransTextBean1.transText
                 // 添加一份记录
-                TransRepository.addItem(curTransTextBean1.copy(), lang, path, spManager)
+                TransRepository.addItem(curTransTextBean1.copy(), lang, path, this)
                 // TODO 数量到达一定大小之后，删除前面的一半数据，避免卡顿
             } else {
+                tarnsText = curTransTextBean2.transText
                 curTransTextBean2.transText = targetSB2.toString()
-                TransRepository.addItem(curTransTextBean2.copy(), lang, path, spManager)
+                TransRepository.addItem(curTransTextBean2.copy(), lang, path, this)
+            }
+            if (!tarnsText.isNullOrEmpty()) {
+                try {
+                    ttsHelper?.speak(tarnsText)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
@@ -468,11 +527,12 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun testData() {
         mScope.launch {
-            delay(1000)
+            delay(500)
+            transRecordBean = TransRecordBean(languageObs.get() ?: "")
 //            val arr: ArrayList<TransTextBean> = arrayListOf()
             val b1 = TransTextBean()
-            b1.text = "你好"
-            b1.transText = "Hello"
+            b1.text = "你好 老弟"
+            b1.transText = "Hello Bro"
             val b2 = TransTextBean()
             b2.text = "give me some money"
             b2.transText = "给我点钱花花"
@@ -481,21 +541,20 @@ class TmpServiceImpl : ITmpService, Service() {
             val lang = languageObs.get() ?: ""
             val path1 = File(dir, "1_20250729_231124.pcm").absolutePath
             val path2 = File(dir, "2_20250729_231124.pcm").absolutePath
-            TransRepository.addItem(b1, lang, path1, spManager)
+            TransRepository.addItem(b1, lang, path1, this@TmpServiceImpl)
 //            translatingData.value?.add(b1)
-            delay(2000)
-            TransRepository.addItem(b2, lang, path2, spManager)
+            delay(500)
+            TransRepository.addItem(b2, lang, path2, this@TmpServiceImpl)
             for (i in 0 until 10) {
                 delay(2000)
                 val b3 = TransTextBean()
-                b3.text = "正文 $i"
-                b3.transText = "译文 $i"
+                b3.text = "正文3 $i"
+                b3.transText = "译文3 $i"
                 b3.isMaster = i % 2 == 0
-                TransRepository.addItem(b3, lang, if (b3.isMaster) path1 else path2, spManager)
+                TransRepository.addItem(b3, lang, if (b3.isMaster) path1 else path2, this@TmpServiceImpl)
             }
-//            translatingData.value?.add(b2)
-//            arr.add(b1)
-//            arr.add(b2)
+            transRecordBean?.end(spManager)
+            transRecordBean = null
         }
     }
 

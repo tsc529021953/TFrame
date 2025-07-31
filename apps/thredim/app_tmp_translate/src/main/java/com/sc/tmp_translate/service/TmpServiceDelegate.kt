@@ -98,8 +98,12 @@ class TmpServiceDelegate: ITmpService {
         mService?.setTranslating(play)
     }
 
-    override fun notifyTransPage(trans: Boolean) {
-        mService?.notifyTransPage(trans)
+    override fun notifyTransPage(trans: Boolean, reset: Boolean) {
+        mService?.notifyTransPage(trans, reset)
+    }
+
+    override fun changeTranslatingState(open: Boolean) {
+        mService?.changeTranslatingState(open)
     }
 
     override fun getTransStateObs(index: Int): ObservableBoolean? {
@@ -124,6 +128,18 @@ class TmpServiceDelegate: ITmpService {
 
     override fun setTransPlay(bean: TransRecordBean) {
         mService?.setTransPlay(bean)
+    }
+
+    override fun getTransRecordObs(): ObservableBoolean? {
+        return mService?.getTransRecordObs()
+    }
+
+    override fun setTransRecord(play: Boolean) {
+        mService?.setTransRecord(play)
+    }
+
+    override fun showVolume() {
+        mService?.showVolume()
     }
 
     private fun bindService(context: Context) {

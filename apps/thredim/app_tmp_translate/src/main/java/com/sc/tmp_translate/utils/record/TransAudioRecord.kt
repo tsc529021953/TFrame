@@ -151,7 +151,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 
     fun start(index: Int = 0) {
         isRecordEnd = false
-        if (!isRecord1 && audioRecord1?.state == AudioRecord.STATE_INITIALIZED) {
+        if ((index == 1 || index == 0) && !isRecord1 && audioRecord1?.state == AudioRecord.STATE_INITIALIZED) {
             isRecord1 = true
             val outputFile = createOutputFile(1)
             try {
@@ -160,13 +160,14 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("文件1创建失败: ${e.message}")
                 outputStream1 = null
             }
+
+            log("开始录制 $index")
             audioRecord1?.startRecording()
             //发数据的线程
             Thread {
                 var read = -1
                 while (!isRecordEnd) {
                     read = audioRecord1!!.read(recordBuffer1, 0, recordBuffer1.size)
-                    log("read1 $read")
                     audioTrack1?.write(recordBuffer1, 0, read)
                     if (read > 0) {
                         outputStream1?.write(recordBuffer1, 0, read)
@@ -178,7 +179,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 } catch (e: Exception) {
                     log( "关闭文件1失败: ${e.message}")
                 }
-//                iTransRecord?.onRecordEnd(true, outputFile.absolutePath)
+                iTransRecord?.onRecordEnd(true, outputFile.absolutePath)
                 audioRecord1?.stop()
                 audioTrack1?.stop()
                 if (isRelease) {
@@ -192,7 +193,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("录音1结束 $isRelease")
             }.start()
         }
-        if (!isRecord2  && audioRecord2?.state == AudioRecord.STATE_INITIALIZED) {
+        if ((index == 2 || index == 0) && !isRecord2  && audioRecord2?.state == AudioRecord.STATE_INITIALIZED) {
             isRecord2 = true
             val outputFile = createOutputFile(2)
             try {
@@ -232,24 +233,26 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("录音2结束 $isRelease")
             }.start()
         }
-        if (tinyCapManager2?.isRecording == false && card2 > 0) {
+        if ((index == 2 || index == 0) && tinyCapManager2?.isRecording == false && card2 > 0) {
             val outputFile = createOutputFile(2)
             tinyCapManager2?.newPath = outputFile.absolutePath
             val res = tinyCapManager2?.startRecording(getTempPath(2).absolutePath)
-            log("开始录制 $res ${outputFile.absolutePath}")
+            log("开始录制 $index $res ${outputFile.absolutePath}")
         }
     }
 
     fun stop(index: Int = 0) {
-        if (isRecordEnd) {
-            audioRecord1?.release()
-            audioRecord1 = null
+        if (index == 1 || index == 0) {
+            if (isRecordEnd) {
+                audioRecord1?.release()
+                audioRecord1 = null
 
-            audioRecord2?.release()
-            audioRecord2 = null
+                audioRecord2?.release()
+                audioRecord2 = null
+            }
+            isRecordEnd = true
         }
-        isRecordEnd = true
-        if (tinyCapManager2?.isRecording == true && card2 > 0) {
+        if ((index == 2 || index == 0) && tinyCapManager2?.isRecording == true && card2 > 0) {
             tinyCapManager2?.stopRecording()
             ffmpegDecode(tinyCapManager2!!.outputPath, tinyCapManager2!!.newPath) { res ,msg ->
                 if (res != 0) {

@@ -2,14 +2,10 @@ package com.sc.tmp_translate.da
 
 import android.os.Handler
 import android.os.Looper
-import com.nbhope.lib_frame.utils.FileSpManager
-import com.nbhope.lib_frame.utils.SharedPreferencesManager
-import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.service.TmpServiceImpl
-import java.io.File
 
-object TransRepository {
+object TransRecordRepository {
     private val data = mutableListOf<TransTextBean>()
     private val observers = mutableListOf<(List<TransTextBean>) -> Unit>()
     private val lock = Any()
@@ -38,19 +34,6 @@ object TransRepository {
         synchronized(lock) {
             data += item
             notifyObservers()
-            try {
-                val file = File(path)
-                if (file.exists() && file.isFile) {
-                    file.delete()
-                }
-            } catch (e: Exception) {  e.printStackTrace() }
-            // 添加到记录中
-            service.transRecordBean?.beans?.add(item)
-//            val bean = TransRecordBean()
-//            bean.lang = lang
-//            bean.path = path
-//            bean.bean = item
-//            RecordRepository.addItem(bean, spManager)
         }
     }
 

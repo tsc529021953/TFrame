@@ -6,19 +6,19 @@
     app:startDestination="@+id/navigation_trans_main"
     tools:ignore="UnusedNavigation">
 
-    <keep_state_fragment
+    <fragment
         android:id="@+id/navigation_trans_main"
         android:name="com.sc.tmp_translate.view.TransMainFragment"
         android:label="@string/trans_main"
         tools:layout="@layout/fragment_trans_main" />
 
-    <keep_state_fragment
+    <fragment
         android:id="@+id/navigation_trans_record"
         android:name="com.sc.tmp_translate.view.TransRecordFragment"
         android:label="@string/trans_record"
         tools:layout="@layout/fragment_trans_record" />
 
-    <keep_state_fragment
+    <fragment
         android:id="@+id/navigation_translating"
         android:name="com.sc.tmp_translate.view.TranslatingFragment"
         android:label="@string/translating"

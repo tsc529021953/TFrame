@@ -18,6 +18,7 @@ import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
+import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.DisplayTransMoreBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import java.util.*
@@ -57,12 +58,14 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
         refreshTmp()
         initSpinner()
         initTranslating()
-        TransRepository.addObserver(observer)
+//        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true)
+            TransRepository.addObserver(observer)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        TransRepository.removeObserver(observer)
+//        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true)
+            TransRepository.removeObserver(observer)
     }
 
     fun onFontSizeChanged() {
@@ -133,12 +136,22 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
     }
 
     private fun initTranslating() {
-        adapter2 = TransTextAdapter(TransRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
+        val data = if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true) TransRepository.getData().toMutableList()
+        else TransRecordRepository.getData().toMutableList()
+        adapter2 = TransTextAdapter(data, TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, false) { v, id ->
             fontSizeCB(v, id)
         }
         binding?.dataRv?.adapter = adapter2
         val layoutManager = LinearLayoutManager(context)
         binding?.dataRv?.layoutManager = layoutManager
+    }
+
+    fun refreshData() {
+        if (this::adapter2.isInitialized) {
+            val data = if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true) TransRepository.getData().toMutableList()
+            else TransRecordRepository.getData().toMutableList()
+            adapter2.setNewInstance(data)
+        }
     }
 
     fun refreshLanguage() {

@@ -2,14 +2,17 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto">
-    
+
     <data>
+
         <variable
                 name="vm"
                 type="com.sc.tmp_translate.bean.TransRecordBean"/>
+
         <variable
                 name="tmp"
                 type="com.sc.tmp_translate.inter.ITmpService"/>
+
         <import type="com.sc.tmp_translate.utils.record.PcmAudioPlayer.State"/>
     </data>
 
@@ -37,45 +40,63 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="2025 89/56 23:23:45"
-                android:text="@{vm.bean.time}"
+                android:text="@{vm.startTimeStr}"
                 />
 
-        <ImageView style="@style/record_trans_img_style"
-                   android:id="@+id/trans2_iv"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
+        <ImageView
+                style="@style/record_trans_img_style"
+                android:id="@+id/trans2_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
                 />
 
-        <TextView style="@style/lang_lr_top_text_style"
-                  android:id="@+id/left_lang2_tv"
-                  app:layout_constraintEnd_toStartOf="@+id/trans2_iv"
-                  app:layout_constraintTop_toTopOf="@+id/trans2_iv"
-                  app:layout_constraintBottom_toBottomOf="@+id/trans2_iv"
-                  android:text="@string/language_zn"
-                  android:textSize="@dimen/main_text_size0"
+        <TextView
+                style="@style/lang_lr_top_text_style"
+                android:id="@+id/left_lang2_tv"
+                app:layout_constraintEnd_toStartOf="@+id/trans2_iv"
+                app:layout_constraintTop_toTopOf="@+id/trans2_iv"
+                app:layout_constraintBottom_toBottomOf="@+id/trans2_iv"
+                android:text="@string/language_zn"
+                android:textSize="@dimen/main_text_size0"
                 />
 
-        <TextView style="@style/lang_lr_top_text_style"
-                  android:id="@+id/right_lang_tv"
-                  android:layout_height="match_parent"
-                  app:layout_constraintTop_toTopOf="parent"
-                  app:layout_constraintEnd_toStartOf="@+id/play_iv"
-                  android:layout_marginEnd="30dp"
-                  android:textSize="@dimen/main_text_size0"
+        <TextView
+                style="@style/lang_lr_top_text_style"
+                android:id="@+id/right_lang_tv"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/time_tv"
+                android:layout_marginEnd="50dp"
+                android:textSize="@dimen/main_text_size0"
                 />
 
-        <ImageView style="@style/record_trans_img_style"
-                   android:id="@+id/play_iv"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintEnd_toStartOf="@+id/remove_iv"
-                   android:src="@{tmp.transPlayObs == vm.path &amp;&amp; tmp.playStatusObs == State.PLAYING ? @drawable/player_pause : @drawable/player_play}"
+        <TextView
+                style="@style/lang_lr_top_text_style"
+                android:id="@+id/time_tv"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/play_iv"
+                android:layout_marginEnd="30dp"
+                android:textSize="@dimen/main_text_size0"
+                android:text="@{vm.useTimerStr}"
                 />
 
-        <ImageView style="@style/record_trans_img_style"
-                   android:id="@+id/remove_iv"
-                   app:layout_constraintTop_toTopOf="parent"
-                   app:layout_constraintEnd_toEndOf="parent"
-                   android:src="@drawable/ic_remove"
+        <ImageView
+                style="@style/record_trans_img_style"
+                android:id="@+id/play_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/remove_iv"
+                android:src="@{tmp.transPlayObs == vm.path &amp;&amp; tmp.playStatusObs == State.PLAYING ? @drawable/player_pause : @drawable/player_play}"
+                android:visibility="gone"
+                />
+
+        <ImageView
+                style="@style/record_trans_img_style"
+                android:id="@+id/remove_iv"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:src="@drawable/ic_remove"
+                android:visibility="gone"
                 />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

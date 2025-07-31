@@ -34,32 +34,25 @@ class TransRecordAdapter(data: MutableList<TransRecordBean>, var sp: SharedPrefe
         getMultiTypeDelegate()?.addItemType(0, R.layout.item_record)
     }
 
-    fun refreshNumber() {
-        try {
-            for (i in 0 until data.size) {
-                (getViewByPosition(i, R.id.num_tv) as TextView).text = "${(data.indexOf(data[i]) + 1)}."
-            }
-        } catch (e: Exception) {}
-    }
-
     override fun convert(holder: BaseViewHolder, item: TransRecordBean) {
         val view = holder.itemView
         val binding = DataBindingUtil.bind<ItemRecordBinding>(view) ?: return
         binding.tmp = TmpServiceDelegate.getInstance()
         binding.vm = item
-        val zh = context.resources.getString(R.string.language_zn)
-        if (item.bean?.isMaster == false) {
-            binding.rightLangTv.text = zh
-            binding.leftLang2Tv.text = item.lang
-        } else {
+//        val zh = context.resources.getString(R.string.language_zn)
+//        if (item.bean?.isMaster == false) {
+//            binding.rightLangTv.text = zh
+//            binding.leftLang2Tv.text = item.lang
+//        } else {
             binding.rightLangTv.text = item.lang
-            binding.leftLang2Tv.text = zh
-        }
+//            binding.leftLang2Tv.text = zh
+//        }
         binding.numTv.text = "${(data.indexOf(item) + 1)}."
         fontSizeCB.invoke(binding.numTv, R.dimen.main_text_size0)
         fontSizeCB.invoke(binding.textTv, R.dimen.main_text_size0)
         fontSizeCB.invoke(binding.leftLang2Tv, R.dimen.main_text_size0)
         fontSizeCB.invoke(binding.rightLangTv, R.dimen.main_text_size0)
+        fontSizeCB.invoke(binding.timeTv, R.dimen.main_text_size0)
         binding.removeIv.setOnClickListener {
             RecordRepository.removeItem(item, sp)
         }

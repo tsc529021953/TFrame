@@ -54,9 +54,10 @@ import javax.inject.Inject
  *  翻译记录的编号问题
  *   录音文件记录 (记录 + 列表 + 播放 + 删除 删除本地文件同步  + 加载本地记录)
  *   异显的播放按钮
- * TODO tts  + 区分是否说话，加静音识别  + 进入退出算一次交流，所以需要加一个编号，用来判断是第几次    +
+ *   进入退出算一次交流，所以需要加一个编号，用来判断是第几次
+ * TODO tts  + 区分是否说话，加静音识别  +  异显界面的刷新 +   翻译完把音频文件删除 + 音量按键 + 主翻译的屏蔽打开
  */
-class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
+class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 
     companion object {
 
@@ -97,6 +98,16 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
         }
     }
 
+    private var translatingObsListener = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(p0: Observable?, p1: Int) {
+            runOnUiThread {
+                if (TmpServiceDelegate.getInstance().getTranslatingObs()?.get() == true) {
+                    dialog?.refreshData()
+                }
+            }
+        }
+    }
+
     override fun subscribeUi() {
         checkPermissions()
         firstView = true
@@ -105,7 +116,8 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
     }
 
     override fun initData() {
-        val devices =(getSystemService(Context.AUDIO_SERVICE) as AudioManager).getDevices(AudioManager.GET_DEVICES_INPUTS)
+        val devices =
+            (getSystemService(Context.AUDIO_SERVICE) as AudioManager).getDevices(AudioManager.GET_DEVICES_INPUTS)
         log("initData devices size ${devices.size}")
     }
 
@@ -115,16 +127,20 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
     }
 
     override fun onBackPressed() {
-//        super.onBackPressed()
-        System.out.println("onBackPressed ${navController.currentDestination?.id} ${R.id.navigation_trans_main}")
-        when (navController.currentDestination?.id) {
-            R.id.navigation_trans_record -> back()
-            R.id.navigation_translating -> {
-                back()
-                TmpServiceDelegate.getInstance().setTranslating(false)
-            }
-            else -> finish()
-        }
+        super.onBackPressed()
+//        navController.backStack.forEach {
+//            System.out.println("onBackPressed Destination: ${it.destination.id}")
+//        }
+//        System.out.println("onBackPressed ${navController.currentDestination?.id} ${R.id.navigation_trans_main} ${R.id.navigation_translating} ${R.id.navigation_trans_record}")
+//        when (navController.currentDestination?.id) {
+//            R.id.navigation_trans_record -> back()
+//            R.id.navigation_translating -> {
+//                back()
+//                TmpServiceDelegate.getInstance().setTranslating(false)
+//            }
+//
+//            else -> finish()
+//        }
     }
 
     override fun onDestroy() {
@@ -132,10 +148,12 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
         log("释放")
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().getTransLangObs()?.removeOnPropertyChangedCallback(languageObsListener)
+        TmpServiceDelegate.getInstance().getTranslatingObs()?.removeOnPropertyChangedCallback(translatingObsListener)
         if (dialog != null) {
             try {
                 dialog?.dismiss()
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
         }
     }
 
@@ -144,6 +162,7 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
             binding.tmp = TmpServiceDelegate.getInstance()
             TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
             TmpServiceDelegate.getInstance().getTransLangObs()?.addOnPropertyChangedCallback(languageObsListener)
+            TmpServiceDelegate.getInstance().getTranslatingObs()?.addOnPropertyChangedCallback(translatingObsListener)
             refreshLanguage()
             refreshDisplay()
         }
@@ -188,16 +207,16 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
         navController = mNavHostFragment.navController
         navController.navigatorProvider.addNavigator(navigator)
         navController.setGraph(R.navigation.home_navigation)
-        navController.navigate(R.id.navigation_trans_main)
+//        navController.navigate(R.id.navigation_trans_main)
         navController.addOnDestinationChangedListener { navController, navDestination, bundle ->
             log("页面切换 $navDestination")
         }
     }
 
     fun refreshMoreDisplay() {
-        
+
     }
-    
+
     private fun showDLBtn(show: Boolean = true) {
         binding.showDlBtn.visibility = if (show) View.VISIBLE else View.GONE
     }
@@ -239,8 +258,12 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
     private fun back() {
         this.runOnUiThread {
             showDLBtn()
-            navController.navigate(R.id.navigation_trans_main)
+//            if (!navController.popBackStack(R.id.navigation_trans_main, false)) {
+//                navController.navigate(R.id.navigation_trans_main);
+//            }
+//            navController.navigate(R.id.navigation_trans_main)
 //                    val res = navController.popBackStack()
+            navController?.navigateUp()
             log("执行返回3")
         }
     }
@@ -275,6 +298,7 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
             MessageConstant.CMD_BACK -> {
                 back()
             }
+
             MessageConstant.CMD_TRANSLATING -> {
                 log("翻译 $data")
                 val translating = data.toBoolean()
@@ -283,8 +307,18 @@ class TranslateActivity: BaseTransActivity<ActivityTranslateBinding, TranslateVi
                         navController.navigate(R.id.navigation_translating)
                     }
                 } else back()
+//                else if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() == true) {
+//                    this.runOnUiThread {
+//                        if (!navController.popBackStack(R.id.navigation_trans_record, false)) {
+//                            navController.navigate(R.id.navigation_trans_record);
+//                        }
+////                        navController.navigate(R.id.navigation_trans_record)
+//                    }
+//                    TmpServiceDelegate.getInstance().setTransRecord(false)
+//                } else back()
                 TmpServiceDelegate.getInstance().setTranslating(translating)
             }
+
             MessageConstant.CMD_BIND_SUCCESS -> {
                 initListener()
             }

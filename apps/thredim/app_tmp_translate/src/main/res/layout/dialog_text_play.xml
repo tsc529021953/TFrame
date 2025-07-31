@@ -37,9 +37,9 @@
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/min_tv"
                       android:text="@string/setting_text_play_open"
-                      android:onClick="@{()->tmp.setTextPlay(false)}"
+                      android:onClick="@{()->tmp.setTextPlay(true)}"
                       app:boolData="@{tmp.textPlayObs}"
-                      app:boolDef="@{false}"
+                      app:boolDef="@{true}"
                     />
 
             <View android:layout_width="20dp"
@@ -48,9 +48,9 @@
             <TextView style="@style/setting_select_one_text_style"
                       android:id="@+id/nor_tv"
                       android:text="@string/setting_text_play_close"
-                      android:onClick="@{()->tmp.setTextPlay(true)}"
+                      android:onClick="@{()->tmp.setTextPlay(false)}"
                       app:boolData="@{tmp.textPlayObs}"
-                      app:boolDef="@{true}"
+                      app:boolDef="@{false}"
                     />
 
         </LinearLayout>

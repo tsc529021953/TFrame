@@ -55,6 +55,15 @@ class TransTextBean {
             val d1 = Date(time)
             return format.format(d1)
         }
+
+        fun formatSecondsToHMS(mill: Long): String {
+            val seconds = mill / 1000
+            val h = seconds / 3600
+            val m = (seconds % 3600) / 60
+            val s = seconds % 60
+            return String.format("%02d:%02d:%02d", h, m, s)
+        }
+
     }
 
 }

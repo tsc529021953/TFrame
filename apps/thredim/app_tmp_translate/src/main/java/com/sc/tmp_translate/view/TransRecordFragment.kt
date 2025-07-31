@@ -14,9 +14,11 @@ import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant.CMD_BACK
 import com.sc.tmp_translate.da.RecordRepository
+import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.databinding.FragmentTransRecordBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
+import com.sc.tmp_translate.service.TmpServiceImpl
 import com.sc.tmp_translate.vm.TransRecordViewModel
 import javax.inject.Inject
 
@@ -57,6 +59,14 @@ class TransRecordFragment : BaseTransFragment<FragmentTransRecordBinding, TransR
     override fun subscribeUi() {
         adapter = TransRecordAdapter(RecordRepository.getData().toMutableList(), viewModel.spManager) { v, id ->
             setFontSize(v, id)
+        }
+        adapter.setOnItemClickListener { baseQuickAdapter, view, i ->
+            // 设置数据
+            TransRecordRepository.updateItems((adapter.getItem(i) as TransRecordBean).beans)
+            // 改变状态
+            TmpServiceDelegate.getInstance().setTransRecord(true)
+            // 跳转界面
+            TmpServiceDelegate.getInstance().notifyTransPage(true, false)
         }
         binding.dataRv.adapter = adapter
         val layoutManager = LinearLayoutManager(requireActivity())

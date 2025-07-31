@@ -8,6 +8,7 @@ import com.sc.tmp_translate.base.BaseTransFragment
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
+import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.FragmentTranslatingBinding
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.vm.TranslatingViewModel
@@ -47,14 +48,29 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
             binding.tmp = TmpServiceDelegate.getInstance()
     }
 
+//    override fun onResume() {
+//        super.onResume()
+//        if (this::adapter.isInitialized) {
+//            val data = if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true) TransRepository.getData().toMutableList()
+//            else TransRecordRepository.getData().toMutableList()
+//            adapter.setNewInstance(data)
+//            System.out.println("刷新数据")
+//        }
+//    }
+
     override fun subscribeUi() {
-        adapter = TransTextAdapter(TransRepository.getData().toMutableList(), TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
+        System.out.println("翻译界面初始化")
+        val data = if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true) {
+            TmpServiceDelegate.getInstance().changeTranslatingState(true)
+            TransRepository.getData().toMutableList()
+        }
+        else TransRecordRepository.getData().toMutableList()
+        adapter = TransTextAdapter(data, TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() ?: false, true) { v, id ->
             setFontSize(v, id)
         }
         binding.dataRv.adapter = adapter
         val layoutManager = LinearLayoutManager(activity!!)
         binding.dataRv.layoutManager = layoutManager
-//        binding.dataRv.addItemDecoration(NormaltemDecoration(KGItemAdapter.getD2P(6, this)))
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
     }
 
@@ -75,13 +91,21 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
 
     override fun onDestroy() {
         super.onDestroy()
-        TransRepository.removeObserver(observer)
+        System.out.println("翻译界面释放")
+        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true) {
+            TransRepository.removeObserver(observer)
+            TmpServiceDelegate.getInstance().changeTranslatingState(false)
+        }
+
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.removeOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().setTranslating(false)
+        TmpServiceDelegate.getInstance().setTransState(false, 0)
+        TmpServiceDelegate.getInstance().setTransRecord(false)
     }
 
     override fun initData() {
-        TransRepository.addObserver(observer)
+        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true)
+            TransRepository.addObserver(observer)
     }
 
     fun refreshDisplay() {

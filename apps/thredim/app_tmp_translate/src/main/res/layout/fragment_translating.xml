@@ -28,7 +28,7 @@
                 android:id="@+id/back_btn"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:onClick="@{() -> tmp.notifyTransPage(false)}"
+                android:onClick="@{() -> tmp.notifyTransPage(false, false)}"
                 />
 
         <ImageView
@@ -72,15 +72,24 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="@{tmp.transRecordObs ? View.GONE : View.VISIBLE}"
                 >
+
+            <ImageView
+                    style="@style/bottom_trans_img_style"
+                    android:id="@+id/volume_iv"
+                    android:src="@drawable/ic_volume"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="0dp"
+                    android:onClick="@{() -> tmp.showVolume()}"
+                    android:visibility="@{tmp.textPlayObs ? View.VISIBLE: View.GONE}"
+                    />
 
             <View style="@style/horizontal_space_style"/>
 
             <ImageView
                     style="@style/bottom_trans_img_style"
                     android:id="@+id/translating_iv"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/right_lang_tv"
                     android:src="@{tmp.getTransStateObs(1) ? @drawable/player_pause : @drawable/player_play}"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="0dp"

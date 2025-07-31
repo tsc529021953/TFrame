@@ -13,7 +13,7 @@ class RecordDiffCallback(
     override fun getNewListSize() = newList.size
 
     override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
-        return oldList[oldPos].bean?.timer == newList[newPos].bean?.timer
+        return oldList[oldPos].startTime == newList[newPos].startTime
     }
 
     override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
