@@ -189,7 +189,7 @@ class TmpServiceImpl : ITmpService, Service() {
                 e.printStackTrace()
             }
         }
-//        testData()
+        testData()
     }
 
     override fun onDestroy() {
@@ -308,6 +308,8 @@ class TmpServiceImpl : ITmpService, Service() {
         if (open) {
             transRecordBean = TransRecordBean(languageObs?.get() ?: "")
         } else {
+            if (transRecordBean?.beans.isNullOrEmpty()) return
+            TransRepository.clear()
             transRecordBean?.end(spManager)
         }
     }
@@ -420,7 +422,7 @@ class TmpServiceImpl : ITmpService, Service() {
                     curTransTextBean2.isMaster = false
                 }
 
-                System.out.println("onRecordEnd2 $isMaster $path")
+                log("onRecordEnd2 $isMaster $path")
                 val ex = getExStr()
                 val source = if (isMaster) "zh" else ex
                 val target = if (!isMaster) "zh" else ex
@@ -449,7 +451,7 @@ class TmpServiceImpl : ITmpService, Service() {
                             res
                         }
                     }
-                    System.out.println("Trans ${gson.toJson(list)}")
+                    log("Trans ${gson.toJson(list)}")
                     notifyInfo(isMaster, path, list, isSource, isTemp)
                 }
             }
@@ -565,4 +567,7 @@ class TmpServiceImpl : ITmpService, Service() {
         }
     }
 
+    private fun log(msg: Any?) {
+        Timber.i("TMPService ${msg ?: "null"}")
+    }
 }

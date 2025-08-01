@@ -9,6 +9,7 @@ import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
 import com.arthenica.ffmpegkit.ReturnCode
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
+import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -317,7 +318,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
     }
 
     private fun log(msg: Any?) {
-        System.out.println("TARecord ${msg ?: "null"}")
+        Timber.i("TARecord ${msg ?: "null"}")
     }
 
 }

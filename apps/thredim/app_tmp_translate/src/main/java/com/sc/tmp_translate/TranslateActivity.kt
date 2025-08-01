@@ -57,7 +57,10 @@ import javax.inject.Inject
  *   进入退出算一次交流，所以需要加一个编号，用来判断是第几次
  *    翻译完把音频文件删除 + 音量按键 + 主翻译的屏蔽打开
  *    异显界面的刷新 +
- * TODO tts  + 区分是否说话，加静音识别  +  加密
+ *    tts  +
+ *    8-1
+ *
+ * TODO 区分是否说话，加静音识别  +  加密  出来之后，移除之前的记录   空数据不做记录
  */
 class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 

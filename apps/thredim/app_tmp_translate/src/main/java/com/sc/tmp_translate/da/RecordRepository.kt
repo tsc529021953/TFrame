@@ -44,7 +44,7 @@ object RecordRepository {
             spManager.setString(MessageConstant.SP_TRANS_RECORD, gson.toJson(data))
             val file = File(item.path)
             if (file.exists() && file.isFile) {
-                file.delete()
+//                file.delete()  // TODO 后续再做移除
             }
         }
     }

@@ -62,6 +62,13 @@ object TransRepository {
         }
     }
 
+    fun clear() {
+        synchronized(lock) {
+            data.clear()
+            notifyObservers()
+        }
+    }
+
     private fun notifyObservers() {
         val snapshot = data.toList()
         val mainHandler = Handler(Looper.getMainLooper())
