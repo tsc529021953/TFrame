@@ -59,8 +59,8 @@ import javax.inject.Inject
  *    异显界面的刷新 +
  *    tts  +
  *    8-1
- *
- * TODO 区分是否说话，加静音识别  +  加密  出来之后，移除之前的记录   空数据不做记录
+ *   出来之后，移除之前的记录   空数据不做记录
+ * TODO 区分是否说话，加静音识别  +  加密
  */
 class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateViewModel>() {
 

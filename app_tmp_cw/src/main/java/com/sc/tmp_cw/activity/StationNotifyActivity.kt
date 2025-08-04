@@ -71,6 +71,7 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
 //            finish()
 //        }
 //        timerHandler?.start()
+
     }
 
     override fun onResume() {
@@ -102,6 +103,18 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
             if (m != null && m!! >= 0 && m!! < 10 && m!! != 1) {
                 binding.carIv.post {
                     refreshAnimation(m)
+                }
+            } else if (m!! == 1) {
+                // 如果打开的时候是即将到达
+                viewModel.mScope.launch {
+                    delay(ANIMATION_TIME) // 延迟动画时间
+                    val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
+                    if (m != 0 && m != 2) {
+                        this@StationNotifyActivity.runOnUiThread {
+                            Timber.i("关闭即将到达动画")
+                            finish()
+                        }
+                    }
                 }
             }
         }

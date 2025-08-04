@@ -204,8 +204,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             layoutClick(binding.jhBtn, true) {
                 navController.navigate(R.id.navigation_interactive, null)
             }
-
-//            TmpServiceDelegate.service()?.test("")
         }
 //        ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
 

@@ -189,7 +189,7 @@ class TmpServiceImpl : ITmpService, Service() {
                 e.printStackTrace()
             }
         }
-        testData()
+//        testData()
     }
 
     override fun onDestroy() {
