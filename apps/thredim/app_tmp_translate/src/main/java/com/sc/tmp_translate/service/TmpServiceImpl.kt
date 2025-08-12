@@ -330,7 +330,8 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun setTransState(index: Int) {
-        setTransState(if (index == 2 && moreDisplayObb.get()) !transStateObb2.get() else !transStateObb1.get(), index)
+//        setTransState(if (index == 2 && moreDisplayObb.get()) !transStateObb2.get() else !transStateObb1.get(), index)
+        setTransState(!transStateObb1.get(), 0)
     }
 
     override fun getTransPlayObs(): ObservableField<String>? {
@@ -404,6 +405,9 @@ class TmpServiceImpl : ITmpService, Service() {
     private fun initTrans() {
         transAudioRecord = TransAudioRecord(this, object : ITransRecord{
             override fun onRecordEnd(isMaster: Boolean, path: String) {
+                // 录音完成
+
+
                 // 执行翻译
                 if (isMaster) {
                     sourceSB1.clear()

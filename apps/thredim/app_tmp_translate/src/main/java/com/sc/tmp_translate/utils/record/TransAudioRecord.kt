@@ -55,29 +55,31 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
     private var recorder1Ptr: Long = 0
     private var recorder2Ptr: Long = 0
 
+    private var tinyCapManager1: TinyCapManager? = null
     private var tinyCapManager2: TinyCapManager? = null
 
     private var minSize = 0
     private var minTrackSize = 0
 
     fun init() {
-        val devices = am.getDevices(AudioManager.GET_DEVICES_INPUTS)
-        log("devices size ${devices.size}")
-        devices.forEach {
-            log("device ${it.id} ${it.productName} ${it.address} ${it.type} ${it.type == AudioDeviceInfo.TYPE_USB_DEVICE}")
-            if (it.type == AudioDeviceInfo.TYPE_USB_DEVICE) {
-                log("USB MIC ${it.id} ${it.productName}")
-                val list1 = it.address.split(";")
-                if (list1.size > 1 && list1[0].contains("card=")) {
-                    card1 = list1[0].replace("card=", "").toIntOrNull() ?: -1
-                    if (card1 == -1) {
-                        log("未能读到主麦克相关信息 ${it.address}")
-                    } else log("麦克风1的Id为 $card1")
-                } else {
-                    log("未能读到主麦克相关信息 ${it.address}")
-                }
-            }
-        }
+        // 此处通过系统API来读取设备数据
+//        val devices = am.getDevices(AudioManager.GET_DEVICES_INPUTS)
+//        log("devices size ${devices.size}")
+//        devices.forEach {
+//            log("device ${it.id} ${it.productName} ${it.address} ${it.type} ${it.type == AudioDeviceInfo.TYPE_USB_DEVICE}")
+//            if (it.type == AudioDeviceInfo.TYPE_USB_DEVICE) {
+//                log("USB MIC ${it.id} ${it.productName}")
+//                val list1 = it.address.split(";")
+//                if (list1.size > 1 && list1[0].contains("card=")) {
+//                    card1 = list1[0].replace("card=", "").toIntOrNull() ?: -1
+//                    if (card1 == -1) {
+//                        log("未能读到主麦克相关信息 ${it.address}")
+//                    } else log("麦克风1的Id为 $card1")
+//                } else {
+//                    log("未能读到主麦克相关信息 ${it.address}")
+//                }
+//            }
+//        }
         AudioCardUtils.readSoundCards(object : AudioCardUtils.OnCardInfoReadListener{
             override fun onReadCompleted(
                 allCards: List<AudioCardUtils.SoundCardInfo>,
@@ -86,12 +88,15 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("读取的USB麦克风数${usbCards.size} ${allCards.size}")
                 for (i in usbCards.indices) {
                     log(usbCards[i].toString())
-                    if (usbCards[i].index != card1) card2 = usbCards[i].index
+                    if (card1 == -1) { card1 = usbCards[i].index }
+                    else if (usbCards[i].index != card1) card2 = usbCards[i].index
                 }
                 if (card1 == -1) {
-                    log("读取麦克风信息失败 $card2")
+                    log("读取麦克风信息失败 $card1 $card2")
                 } else {
+                    tinyCapManager1?.card = card1
                     tinyCapManager2?.card = card2
+                    log("麦克风1的Id为 $card1")
                     log("麦克风2的Id为 $card2")
                 }
 
@@ -115,18 +120,19 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
         val device2 = "/dev/snd/pcmC5D0c" // 第二个USB声卡
         // 初始化录音器
 
+        tinyCapManager1 = TinyCapManager()
         tinyCapManager2 = TinyCapManager()
-        log("初始化结果 tinyCapManager2 ${TinyCapManager.isTinyCapAvailable()}")
+        log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
 //        recorder1Ptr = DualRecorderJNI.initRecorder(device1, SAMPLE_RATE_IN_HZ, 1);
 //        recorder2Ptr = DualRecorderJNI.initRecorder(device2, SAMPLE_RATE_IN_HZ, 1);
 //        log("初始化结果： recorder1Ptr $recorder1Ptr  recorder2Ptr $recorder2Ptr ")
-        audioRecord1 = AudioRecord(
-            AUDIO_SOURCE,
-            SAMPLE_RATE_IN_HZ,
-            RECORD_CHANNEL_CONFIG,
-            AUDIO_FORMAT,
-            minSize
-        )
+//        audioRecord1 = AudioRecord(
+//            AUDIO_SOURCE,
+//            SAMPLE_RATE_IN_HZ,
+//            RECORD_CHANNEL_CONFIG,
+//            AUDIO_FORMAT,
+//            minSize
+//        )
 //        audioRecord1.setPreferredDevice()
 //        audioRecord2 = AudioRecord(
 //            MediaRecorder.AudioSource.VOICE_UPLINK,
@@ -234,6 +240,12 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("录音2结束 $isRelease")
             }.start()
         }
+        if ((index == 1 || index == 0) && tinyCapManager1?.isRecording == false && card1 > 0) {
+            val outputFile = createOutputFile(1)
+            tinyCapManager1?.newPath = outputFile.absolutePath
+            val res = tinyCapManager1?.startRecording(getTempPath(1).absolutePath)
+            log("开始录制 $index $res ${outputFile.absolutePath}")
+        }
         if ((index == 2 || index == 0) && tinyCapManager2?.isRecording == false && card2 > 0) {
             val outputFile = createOutputFile(2)
             tinyCapManager2?.newPath = outputFile.absolutePath
@@ -253,13 +265,25 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
             }
             isRecordEnd = true
         }
+        if ((index == 1 || index == 0) && tinyCapManager1?.isRecording == true && card1 > 0) {
+            tinyCapManager1?.stopRecording()
+            ffmpegDecode(tinyCapManager1!!.outputPath, tinyCapManager1!!.newPath) { res ,msg ->
+                if (res != 0) {
+                    log("1 转码失败 $msg")
+                } else {
+                    log("1 转码成功")
+                    // 调用翻译
+                    iTransRecord?.onRecordEnd(true, tinyCapManager1!!.newPath)
+                }
+            }
+        }
         if ((index == 2 || index == 0) && tinyCapManager2?.isRecording == true && card2 > 0) {
             tinyCapManager2?.stopRecording()
             ffmpegDecode(tinyCapManager2!!.outputPath, tinyCapManager2!!.newPath) { res ,msg ->
                 if (res != 0) {
-                    log("转码失败 $msg")
+                    log("2 转码失败 $msg")
                 } else {
-                    log("转码成功")
+                    log("2 转码成功")
                     // 调用翻译
                     iTransRecord?.onRecordEnd(false, tinyCapManager2!!.newPath)
                 }
