@@ -47,16 +47,16 @@
                         </intent-filter>
         </activity>
 
-        <receiver
-                android:name="com.sc.tmp_translate.receiver.StartReceiver"
-                android:enabled="true"
-                android:exported="true"
-                >
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.provider.Telephony.SECRET_CODE"/>
-            </intent-filter>
-        </receiver>
+<!--        <receiver-->
+<!--                android:name="com.sc.tmp_translate.receiver.StartReceiver"-->
+<!--                android:enabled="true"-->
+<!--                android:exported="true"-->
+<!--                >-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.BOOT_COMPLETED"/>-->
+<!--                <action android:name="android.provider.Telephony.SECRET_CODE"/>-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
 
         <service
                 android:name="com.sc.tmp_translate.service.TmpServiceImpl"

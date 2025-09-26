@@ -135,4 +135,10 @@ object TextPinyinUtil {
         }
         return false
     }
+
+    fun containsChinese(text: String): Boolean {
+        val pattern = Regex("[\\u4E00-\\u9FFF]")
+        return pattern.containsMatchIn(text)
+    }
+
 }

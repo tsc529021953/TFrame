@@ -13,4 +13,7 @@ object MessageConstant {
     const val SP_MORE_DISPLAY = "SP_MORE_DISPLAY" // 是否显示异显
     const val SP_TEXT_PLAY = "SP_TEXT_PLAY" // 是否显示异显
     const val SP_TRANS_RECORD = "SP_TRANS_RECORD" // 翻译记录
+
+    const val TIP_ANA_FAIL = "解析失败"
+    const val TIP_NO_REQUEST_ID = "未找到请求ID"
 }

@@ -118,6 +118,10 @@ class TmpServiceDelegate: ITmpService {
         mService?.setTransState(index)
     }
 
+    override fun getTransRecognition(index: Int): ObservableBoolean? {
+        return mService?.getTransRecognition(index)
+    }
+
     override fun getTransPlayObs(): ObservableField<String>? {
         return mService?.getTransPlayObs()
     }

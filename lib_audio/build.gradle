@@ -6,19 +6,19 @@ android {
             dirs 'libs'
         }
     }
-    defaultConfig {
-        externalNativeBuild {
-            cmake {
-//                cppFlags ""
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-//            path "src/main/jni/CMakeLists.txt"
-//            version "3.10.2"
-        }
-    }
+//    defaultConfig {
+//        externalNativeBuild {
+//            cmake {
+////                cppFlags ""
+//            }
+//        }
+//    }
+//    externalNativeBuild {
+//        cmake {
+////            path "src/main/jni/CMakeLists.txt"
+////            version "3.10.2"
+//        }
+//    }
 }
 
 dependencies {
@@ -34,4 +34,5 @@ dependencies {
     testImplementation deps.atsl.ext_junit
     testImplementation deps.junit
 //    implementation project(path: ':lib_frame')
+    implementation deps.webrtc_apm
 }

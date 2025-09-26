@@ -19,6 +19,8 @@ public class TinyCapManager {
 
     private Process recordProcess;
 
+    boolean recordRunning = false;
+
     public TinyCapManager() {
 
     }
@@ -43,6 +45,7 @@ public class TinyCapManager {
         try {
             Log.d(TAG, "Executing: " + cmd);
             recordProcess = Runtime.getRuntime().exec(new String[]{"sh", "-c", cmd});
+            recordRunning = true;
             return true;
         } catch (IOException e) {
             e.printStackTrace();

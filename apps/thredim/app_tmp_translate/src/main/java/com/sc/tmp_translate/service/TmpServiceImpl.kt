@@ -25,10 +25,7 @@ import com.nbhope.lib_frame.app.HopeBaseApp
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
 import com.nbhope.lib_frame.network.NetworkCallbackModule
-import com.nbhope.lib_frame.utils.HopeUtils
-import com.nbhope.lib_frame.utils.LiveEBUtil
-import com.nbhope.lib_frame.utils.SharedPreferencesManager
-import com.nbhope.lib_frame.utils.TimerHandler
+import com.nbhope.lib_frame.utils.*
 import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.bean.TransRecordBean
@@ -102,6 +99,8 @@ class TmpServiceImpl : ITmpService, Service() {
     private var translatingObb: ObservableBoolean = ObservableBoolean(false)
     private var transStateObb1: ObservableBoolean = ObservableBoolean(false)
     private var transStateObb2: ObservableBoolean = ObservableBoolean(false)
+    private var transRecognitionObb1: ObservableBoolean = ObservableBoolean(false)
+    private var transRecognitionObb2: ObservableBoolean = ObservableBoolean(false)
     private var textPlayObb: ObservableBoolean = ObservableBoolean(true)
     private var transRecordObb: ObservableBoolean = ObservableBoolean(false)
 
@@ -112,6 +111,8 @@ class TmpServiceImpl : ITmpService, Service() {
     private var hsTranslateUtil: HSTranslateUtil? = null
     var curTransTextBean1 = TransTextBean()
     var curTransTextBean2 = TransTextBean()
+
+    private var transTextMap = LinkedHashMap<String, String>()
 
     var sourceSB1 = StringBuilder()
     var targetSB1 = StringBuilder()
@@ -319,11 +320,44 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     override fun setTransState(play: Boolean, index: Int) {
+        if (play && (transRecognitionObb1?.get() || transRecognitionObb2?.get())) {
+            ToastUtil.showS("识别翻译中，请稍候！")
+            return
+        }
+        val cb = {
+            ToastUtil.showS("识别翻译中，请稍候！")
+        }
         if (!moreDisplayObb.get() || index == 0) {
+            if (play) {
+                if (transRecognitionObb1?.get() || transRecognitionObb2?.get()) {
+                    cb.invoke()
+                    return
+                }
+                transRecognitionObb1.set(true)
+                transRecognitionObb2.set(true)
+            }
             transStateObb1.set(play)
             transStateObb2.set(play)
-        } else if (index == 1) transStateObb1.set(play)
-        else transStateObb2.set(play)
+        } else if (index == 1) {
+            if (play) {
+                if (transRecognitionObb1?.get()) {
+                    cb.invoke()
+                    return
+                }
+                transRecognitionObb1.set(true)
+            }
+            transStateObb1.set(play)
+        }
+        else {
+            if (play) {
+                if (transRecognitionObb2?.get()) {
+                    cb.invoke()
+                    return
+                }
+                transRecognitionObb2.set(true)
+            }
+            transStateObb2.set(play)
+        }
 
         if (play) transAudioRecord?.start(if (!moreDisplayObb.get()) 0 else index)
         else transAudioRecord?.stop(if (!moreDisplayObb.get()) 0 else index)
@@ -332,6 +366,10 @@ class TmpServiceImpl : ITmpService, Service() {
     override fun setTransState(index: Int) {
 //        setTransState(if (index == 2 && moreDisplayObb.get()) !transStateObb2.get() else !transStateObb1.get(), index)
         setTransState(!transStateObb1.get(), 0)
+    }
+
+    override fun getTransRecognition(index: Int): ObservableBoolean? {
+        return if (index == 1) transRecognitionObb1 else transRecognitionObb2
     }
 
     override fun getTransPlayObs(): ObservableField<String>? {
@@ -402,65 +440,134 @@ class TmpServiceImpl : ITmpService, Service() {
 
     }
 
+    fun tipError(msg: String = MessageConstant.TIP_ANA_FAIL) {
+        log(msg)
+//        try {
+//            ToastUtil.showS(msg)
+//        } catch (e: Exception) {}
+    }
+
     private fun initTrans() {
         transAudioRecord = TransAudioRecord(this, object : ITransRecord{
-            override fun onRecordEnd(isMaster: Boolean, path: String) {
+            override fun onRecordEnd(isMaster: Boolean, path: String?) {
                 // 录音完成
-
-
-                // 执行翻译
-                if (isMaster) {
-                    sourceSB1.clear()
-                    targetSB1.clear()
-                    tempSB1.clear()
-                } else {
-                    sourceSB2.clear()
-                    targetSB2.clear()
-                    tempSB2.clear()
-                }
-                if (isMaster) {
-                    curTransTextBean1 = TransTextBean()
-                    curTransTextBean1.isMaster = true
-                } else {
-                    curTransTextBean2 = TransTextBean()
-                    curTransTextBean2.isMaster = false
-                }
+                if (isMaster) transRecognitionObb1.set(false)
+                else transRecognitionObb2.set(false)
+                if (path == null) return
+//                // 执行翻译
+//                if (isMaster) {
+//                    sourceSB1.clear()
+//                    targetSB1.clear()
+//                    tempSB1.clear()
+//                } else {
+//                    sourceSB2.clear()
+//                    targetSB2.clear()
+//                    tempSB2.clear()
+//                }
+//                if (isMaster) {
+//                    curTransTextBean1 = TransTextBean()
+//                    curTransTextBean1.isMaster = true
+//                } else {
+//                    curTransTextBean2 = TransTextBean()
+//                    curTransTextBean2.isMaster = false
+//                }
 
                 log("onRecordEnd2 $isMaster $path")
                 val ex = getExStr()
                 val source = if (isMaster) "zh" else ex
                 val target = if (!isMaster) "zh" else ex
                 hsTranslateUtil?.translate(path, source, target) { resList ->
-//                        isTranslating = false
-                    var isTemp = false
-                    var isSource = true
-                    val list = resList.map { res ->
+                    if (resList.isNotEmpty()) {
                         try {
+                            val res = resList[0]
                             val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
-                            if (data.Subtitle?.Definite == true) {
-                                if (data.Subtitle?.Language == target) {
-                                    isSource = false
+                            val res2 = data?.Subtitle?.Text ?: MessageConstant.TIP_ANA_FAIL
+                            val res3 = data?.ResponseMetaData?.RequestId ?: MessageConstant.TIP_NO_REQUEST_ID
+                            if (res2 == MessageConstant.TIP_NO_REQUEST_ID) {
+                                tipError(res3)
+                                return@translate
+                            }
+                            if (res2 != MessageConstant.TIP_ANA_FAIL) {
+                                if (data.Subtitle?.Definite == true) {
+                                    // 可能是原文或者译文
+                                    val key = data.ResponseMetaData!!.RequestId
+                                    if (data.Subtitle?.Language == target) {
+                                        log("译文 $res2")
+                                        if (transTextMap.containsKey(key)) {
+                                            if (isMaster && !TextPinyinUtil.containsChinese(transTextMap[key]!!)) {
+                                                log("应该是串音了 ${transTextMap[key]}")
+                                                return@translate
+                                            }
+                                            notifyInfo(res2, transTextMap[key]!!, isMaster, path)
+                                        } else {
+                                            log("未找到原文 $key")
+                                        }
+                                    } else {
+                                        log("原文 $res2")
+                                        transTextMap[key] = res2
+                                    }
+                                } else {
+                                    log("解析中 $res2")
                                 }
                             } else {
-                                isTemp = true
+                                tipError()
                             }
-                            val res2 = data?.Subtitle?.Text ?: "解析失败"
-                            if (res == "解析失败") {
-                                try {
-                                    ToastUtil.showS(res2)
-                                } catch (e: Exception) {}
-                            }
-                            res2
                         } catch (e: Exception) {
-                            res
+
                         }
                     }
-                    log("Trans ${gson.toJson(list)}")
-                    notifyInfo(isMaster, path, list, isSource, isTemp)
+
+
+////                        isTranslating = false
+//                    var isTemp = false
+//                    var isSource = true
+//                    val list = resList.map { res ->
+//                        try {
+//                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+//                            if (data.Subtitle?.Definite == true) {
+//                                if (data.Subtitle?.Language == target) {
+//                                    isSource = false
+//                                }
+//                            } else {
+//                                isTemp = true
+//                            }
+//                            val res2 = data?.Subtitle?.Text ?: "解析失败"
+//                            if (res == "解析失败") {
+//                                try {
+//                                    ToastUtil.showS(res2)
+//                                } catch (e: Exception) {}
+//                            }
+//                            res2
+//                        } catch (e: Exception) {
+//                            res
+//                        }
+//                    }
+//                    log("Trans ${gson.toJson(list)}")
+//                    notifyInfo(isMaster, path, list, isSource, isTemp)
                 }
             }
         })
         transAudioRecord?.init()
+    }
+
+    private fun notifyInfo(transText: String, text: String, isMaster: Boolean, path: String) {
+        var bean = TransTextBean()
+        bean.text = text
+        bean.transText = transText
+        bean.isMaster = isMaster
+        val lang = languageObs.get() ?: ""
+        TransRepository.addItem(bean.copy(), lang, path, this)
+        playText(transText)
+    }
+
+    private fun playText(tarnsText: String?) {
+        if (!tarnsText.isNullOrEmpty() && textPlayObb.get()) {
+            try {
+                ttsHelper?.speak(tarnsText)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private fun notifyInfo(isMaster: Boolean, path: String, list: List<String>, isSource: Boolean = true, isTemp: Boolean = false) {
@@ -492,13 +599,7 @@ class TmpServiceImpl : ITmpService, Service() {
                 curTransTextBean2.transText = targetSB2.toString()
                 TransRepository.addItem(curTransTextBean2.copy(), lang, path, this)
             }
-            if (!tarnsText.isNullOrEmpty() && textPlayObb.get()) {
-                try {
-                    ttsHelper?.speak(tarnsText)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
+            playText(tarnsText)
         }
     }
 

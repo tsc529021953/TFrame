@@ -45,6 +45,9 @@ interface ITmpService {
     fun setTransState(play: Boolean, index: Int)
     fun setTransState(index: Int)
 
+    // 是否处于识别中
+    fun getTransRecognition(index: Int): ObservableBoolean?
+
     // 音频播放
     fun getTransPlayObs(): ObservableField<String>?
     fun getPlayStatusObs(): ObservableField<PcmAudioPlayer.State>?

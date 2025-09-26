@@ -1,23 +1,23 @@
 package com.sc.tmp_translate
 
 import android.Manifest
-import android.app.Dialog
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.media.AudioManager
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 import android.view.Display
 import android.view.View
-import android.view.ViewGroup
 import androidx.databinding.Observable
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.nbhope.lib_frame.base.BaseBindingActivity
-import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.DisplayUtil
-import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.view.DrawLayoutUtils
+import com.sc.lib_audio.utils.PcmDiffProcessor
 import com.sc.tmp_translate.base.BaseTransActivity
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.databinding.ActivityTranslateBinding
@@ -114,10 +114,28 @@ class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateV
     }
 
     override fun subscribeUi() {
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+
         checkPermissions()
         firstView = true
         initView()
         initNav()
+
+//        setting(this)
+//        val path = Environment.getExternalStorageDirectory().absolutePath
+//        PcmDiffProcessor.alignAndSplit(
+//            pcmPath1 = "$path/test1.pcm",
+//            pcmPath2 = "$path/test2.pcm",
+//            output1 = "$path/output1.pcm",
+//            output2 = "$path/output2.pcm",
+//            sampleRate = 16000,
+//            channels = 1,
+//        )
     }
 
     override fun initData() {
@@ -174,6 +192,9 @@ class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateV
     }
 
     private fun initView() {
+        binding.backBtn.setOnClickListener {
+            finish()
+        }
         // logo
         binding.logoLy.visibility = View.GONE
         binding.logoLy.setOnClickListener {
@@ -276,6 +297,18 @@ class TranslateActivity : BaseTransActivity<ActivityTranslateBinding, TranslateV
     private fun checkPermissions() {
         if (!hasPermission()) {
             requestPermissions(PERMISSIONS, 10086)
+        }
+    }
+
+    fun setting(activity: Activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                val intent: Intent = Intent(
+                    Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                )
+                intent.setData(Uri.parse("package:" + activity.packageName))
+                activity.startActivity(intent)
+            }
         }
     }
 
