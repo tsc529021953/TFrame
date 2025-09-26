@@ -23,6 +23,8 @@ include ':app_tmp_cw' /*视睿迪透明屏车窗交互系统    */
 //include ':app_tmp'
 include ':app_tmp_translate' /*视睿迪透明屏翻译软件*/
 project(':app_tmp_translate').projectDir = new File('./apps/thredim/app_tmp_translate')
+include ':app_td_common' /*视睿迪普通需求*/
+project(':app_td_common').projectDir = new File('./apps/thredim/app_td_common')
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'
