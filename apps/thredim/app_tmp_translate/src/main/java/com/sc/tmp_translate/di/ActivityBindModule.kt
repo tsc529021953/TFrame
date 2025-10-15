@@ -4,6 +4,7 @@ import com.sc.tmp_translate.MainActivity
 import com.nbhope.lib_frame.di.scope.ActivityScope
 import com.sc.tmp_translate.DisplayActivity
 import com.sc.tmp_translate.TranslateActivity
+import com.sc.tmp_translate.TranslateOneDisplayActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -17,9 +18,13 @@ abstract class ActivityBindModule {
 
     @ActivityScope
     @ContributesAndroidInjector
-    abstract fun contributDisplayActivity(): DisplayActivity
+    abstract fun contributeDisplayActivity(): DisplayActivity
 
     @ActivityScope
     @ContributesAndroidInjector(modules = [HomeBuildersModule::class])
-    abstract fun contributTranslateActivity(): TranslateActivity
+    abstract fun contributeTranslateActivity(): TranslateActivity
+
+    @ActivityScope
+    @ContributesAndroidInjector(modules = [HomeBuildersModule::class])
+    abstract fun contributeTranslateOneDisplayActivity(): TranslateOneDisplayActivity
 }

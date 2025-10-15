@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <data>
+        <variable
+                name="vm"
+                type="com.sc.tmp_translate.vm.TranslateViewModel"/>
+        <variable
+                name="tmp"
+                type="com.sc.tmp_translate.inter.ITmpService"/>
+        <import type="android.view.View"/>
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/dl_ly"
+            >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <fragment
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/nav_host_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:defaultNavHost="true"
+                    />
+<!--            android:descendantFocusability="afterDescendants"-->
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:layout_width="@dimen/right_dl_show_btn_size"
+                    android:layout_height="@dimen/right_dl_show_btn_size"
+                    android:src="@drawable/ic_left"
+                    android:id="@+id/show_dl_btn"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:visibility="gone"
+                    />
+
+            <View
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/back_btn"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:visibility="gone"
+                    />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/logo_ly"
+                    android:background="@color/black"
+                    tools:visibility="gone"
+                    >
+
+                <ImageView
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:id="@+id/logo_btn"
+                        android:src="@drawable/logo"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+                android:layout_width="@dimen/right_dl_width"
+                android:layout_height="match_parent"
+                android:id="@+id/right_dl"
+                android:orientation="vertical"
+                android:layout_gravity="end"
+                android:background="@color/black"
+                >
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/ic_display"
+                    android:id="@+id/display_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/ic_font_size"
+                    android:id="@+id/font_size_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/ic_text_setting"
+                    android:id="@+id/text_btn"
+                    />
+
+            <View style="@style/vertical_space_style"
+                  android:visibility="@{tmp.translatingObs ? View.GONE : View.VISIBLE}"
+                    />
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/ic_sound_record"
+                    android:id="@+id/record_btn"
+                    android:visibility="@{tmp.translatingObs ? View.GONE : View.VISIBLE}"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+        </LinearLayout>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</layout>

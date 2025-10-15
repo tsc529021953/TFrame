@@ -10,7 +10,7 @@ import com.arthenica.ffmpegkit.ReturnCode
 import com.sc.lib_audio.utils.PcmDiffProcessor
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
-import com.signway.aec.AEC
+//import com.signway.aec.AEC
 import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.File
@@ -60,8 +60,8 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
     private var tinyCapManager1: TinyCapManager? = null
     private var tinyCapManager2: TinyCapManager? = null
 
-    private var pcmRecord1: AEC? = null
-    private var pcmRecord2: AEC? = null
+//    private var pcmRecord1: AEC? = null
+//    private var pcmRecord2: AEC? = null
 
     private var minSize = 0
     private var minTrackSize = 0
@@ -99,10 +99,10 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
         val device2 = "/dev/snd/pcmC5D0c" // 第二个USB声卡
         // 初始化录音器
 
-//        tinyCapManager1 = TinyCapManager()
-//        tinyCapManager2 = TinyCapManager()
-        pcmRecord1 = AEC()
-        pcmRecord2 = AEC()
+        tinyCapManager1 = TinyCapManager()
+        tinyCapManager2 = TinyCapManager()
+//        pcmRecord1 = AEC()
+//        pcmRecord2 = AEC()
         log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
 //        recorder1Ptr = DualRecorderJNI.initRecorder(device1, SAMPLE_RATE_IN_HZ, 1);
 //        recorder2Ptr = DualRecorderJNI.initRecorder(device2, SAMPLE_RATE_IN_HZ, 1);
@@ -261,7 +261,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
             val res = tinyCapManager2?.startRecording(getTempPath(2).absolutePath)
             log("开始录制 $index $res ${outputFile.absolutePath}")
         }
-        if ((index == 1 || index == 0) && !isRecord1 && pcmRecord1 != null && card1 > 0) {
+        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
             isRecord1 = true
             val outputFile = createOutputFile(1)
             try {
@@ -272,16 +272,16 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
             }
 
             log("开始录制 $index")
-            pcmRecord1?.open(card1, 0, 16000, 1)
+//            pcmRecord1?.open(card1, 0, 16000, 1)
             // 线程读取数据
             Thread {
                 var read = -1
                 while (!isRecordEnd) {
 
-                    read = pcmRecord1!!.read(recordBuffer1, recordBuffer1.size)
-                    if (read > 0) {
-                        outputStream1?.write(recordBuffer1, 0, read)
-                    }
+//                    read = pcmRecord1!!.read(recordBuffer1, recordBuffer1.size)
+//                    if (read > 0) {
+//                        outputStream1?.write(recordBuffer1, 0, read)
+//                    }
                 }
                 try {
                     outputStream2?.flush()
@@ -290,9 +290,9 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                     log( "关闭文件1失败: ${e.message}")
                 }
                 onRecordEnd(true, outputFile.absolutePath)
-                pcmRecord1?.close()
+//                pcmRecord1?.close()
                 if (isRelease) {
-                    pcmRecord1 = null
+//                    pcmRecord1 = null
                 }
                 isRecord1 = false
                 log("录音1结束 $isRelease")

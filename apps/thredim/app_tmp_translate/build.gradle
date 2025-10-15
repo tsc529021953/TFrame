@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_translate"
         minSdkVersion 24
         targetSdkVersion 31
-        versionCode 107
-        versionName "0.1.7"
+        versionCode 109
+        versionName "0.1.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -24,18 +24,18 @@ android {
             abiFilters 'armeabi-v7a','arm64-v8a'
         }
     }
-
+    packagingOptions { exclude 'META-INF/DEPENDENCIES' }
     kotlinOptions {
         jvmTarget = '1.8'
     }
     dataBinding {
         enabled = true
     }
-    sourceSets {
-        main {
-            jniLibs.srcDirs = ['src/main/libs']
-        }
-    }
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['src/main/libs']
+//        }
+//    }
 
     ndkVersion '21.0.6113669'
 
@@ -92,11 +92,11 @@ android {
 
 //    useLibrary 'org.apache.http.legacy'
 
-    externalNativeBuild {
-        ndkBuild {
-            path "src/main/jni/Android.mk"
-        }
-    }
+//    externalNativeBuild {
+//        ndkBuild {
+//            path "src/main/jni/Android.mk"
+//        }
+//    }
 }
 
 static def releaseTime(String formater) {
@@ -134,8 +134,11 @@ dependencies {
     kapt deps.dagger.android_support_compiler
     kapt deps.dagger.compiler
     implementation deps.circleindicator
-
-    implementation deps.hs_translate
+    implementation("com.volcengine:volc-sdk-java:1.0.238")
+//    implementation("com.volcengine:volcengine-java-sdk-core:0.2.36")
+    implementation("com.volcengine:volcengine-java-sdk-translate20250301:0.2.36")
+//    implementation deps.hs_translate
+//    implementation project(path: ':volc-sdk-java')
     implementation("javax.websocket:javax.websocket-client-api:1.1"){
         exclude module: 'slf4j-api'
     }
@@ -148,6 +151,7 @@ dependencies {
     implementation deps.navigation.fragment
     implementation deps.ffmpeg_kit
     implementation 'com.bytedance.speechengine:speechengine_tts_tob:5.4.8'
-
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14' // 最新稳定版
+    implementation 'org.apache.httpcomponents:httpcore:4.4.16'
     implementation deps.webrtc_apm
 }

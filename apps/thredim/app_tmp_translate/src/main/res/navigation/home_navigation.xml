@@ -24,4 +24,10 @@
         android:label="@string/translating"
         tools:layout="@layout/fragment_translating" />
 
+    <fragment
+        android:id="@+id/navigation_translating_od"
+        android:name="com.sc.tmp_translate.view.TranslatingODFragment"
+        android:label="@string/translating"
+        tools:layout="@layout/fragment_translating_od" />
+
 </navigation>

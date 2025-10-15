@@ -122,7 +122,7 @@ versions.shimmer = "0.4.0" // 闪光特效
 versions.webrtc_apm = "0.0.1"
 
 /*translate*/
-versions.hs_translate = "2.0.1-SNAPSHOT" // 火山翻译
+versions.hs_translate = "2.0.1-SNAPSHOT" //"2.0.1-SNAPSHOT 1.0.238" // 火山翻译
 
 ext.versions = versions
 

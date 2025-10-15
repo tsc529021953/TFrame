@@ -158,7 +158,7 @@ class TmpServiceImpl : ITmpService, Service() {
         )
 
         // pcm 初始化
-        pcmAudioPlayer = PcmAudioPlayer()
+//        pcmAudioPlayer = PcmAudioPlayer()
     }
 
     private fun initSpeech() {
@@ -516,34 +516,6 @@ class TmpServiceImpl : ITmpService, Service() {
 
                         }
                     }
-
-
-////                        isTranslating = false
-//                    var isTemp = false
-//                    var isSource = true
-//                    val list = resList.map { res ->
-//                        try {
-//                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
-//                            if (data.Subtitle?.Definite == true) {
-//                                if (data.Subtitle?.Language == target) {
-//                                    isSource = false
-//                                }
-//                            } else {
-//                                isTemp = true
-//                            }
-//                            val res2 = data?.Subtitle?.Text ?: "解析失败"
-//                            if (res == "解析失败") {
-//                                try {
-//                                    ToastUtil.showS(res2)
-//                                } catch (e: Exception) {}
-//                            }
-//                            res2
-//                        } catch (e: Exception) {
-//                            res
-//                        }
-//                    }
-//                    log("Trans ${gson.toJson(list)}")
-//                    notifyInfo(isMaster, path, list, isSource, isTemp)
                 }
             }
         })

@@ -23,8 +23,10 @@ buildscript {
         maven { url 'https://jitpack.io' }
         google()
         jcenter()
-        mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        mavenCentral()
+//        maven { url 'https://open.volcengineapi.com' }
+//        maven { url 'https://repo1.maven.org/maven2/' }
     }
 }
 
@@ -35,11 +37,13 @@ allprojects {
             allowInsecureProtocol = true
             url 'http://maven.aliyun.com/nexus/content/groups/public/'
         }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
         google()
         maven { url "https://jitpack.io" }
         jcenter()
         mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+//        maven { url 'https://open.volcengineapi.com' }
+//        maven { url 'https://repo1.maven.org/maven2/' }
 
     }
     configurations.all {
