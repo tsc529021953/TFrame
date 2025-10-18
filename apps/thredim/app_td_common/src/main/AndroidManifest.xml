@@ -19,9 +19,9 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame">
 
+<!--        android:theme="@style/TransparentActivity"-->
         <activity
-                android:name="com.sc.common.MainActivity"
-                android:theme="@style/TransparentActivity"
+                android:name="com.sc.common.HomeActivity"
                 android:screenOrientation="landscape" android:exported="true">
                         <intent-filter>
                             <action android:name="android.intent.action.MAIN" />

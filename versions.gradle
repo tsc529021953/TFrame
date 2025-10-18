@@ -124,6 +124,10 @@ versions.webrtc_apm = "0.0.1"
 /*translate*/
 versions.hs_translate = "2.0.1-SNAPSHOT" //"2.0.1-SNAPSHOT 1.0.238" // 火山翻译
 
+/*浏览器相关*/
+versions.tbssdk = "44286" // x5内核浏览器
+
+
 ext.versions = versions
 
 def deps = [:] //依赖
@@ -356,6 +360,9 @@ deps.webrtc_apm = "com.github.brucekayle:webrtc-apm:$versions.webrtc_apm"
 deps.shimmer = "com.facebook.shimmer:shimmer:$versions.shimmer"
 /*translate*/
 deps.hs_translate = "com.volcengine:volc-sdk-java:$versions.hs_translate"
+
+/*浏览器*/
+deps.tbssdk = "com.tencent.tbs:tbssdk:$versions.tbssdk"
 
 ext.deps = deps
 

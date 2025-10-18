@@ -60,6 +60,9 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
     private var tinyCapManager1: TinyCapManager? = null
     private var tinyCapManager2: TinyCapManager? = null
 
+    private var tinyCapRecord1: TinyCapRecord? = null
+    private var tinyCapRecord2: TinyCapRecord? = null
+
 //    private var pcmRecord1: AEC? = null
 //    private var pcmRecord2: AEC? = null
 
@@ -99,8 +102,11 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
         val device2 = "/dev/snd/pcmC5D0c" // 第二个USB声卡
         // 初始化录音器
 
-        tinyCapManager1 = TinyCapManager()
-        tinyCapManager2 = TinyCapManager()
+//        tinyCapManager1 = TinyCapManager()
+//        tinyCapManager2 = TinyCapManager()
+
+        tinyCapRecord1 = TinyCapRecord()
+//        tinyCapRecord2 = TinyCapRecord()
 //        pcmRecord1 = AEC()
 //        pcmRecord2 = AEC()
         log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
@@ -151,6 +157,8 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 } else {
                     tinyCapManager1?.card = card1
                     tinyCapManager2?.card = card2
+                    tinyCapRecord1?.card = card1
+                    tinyCapRecord2?.card = card2
                     log("麦克风1的Id为 $card1")
                     log("麦克风2的Id为 $card2")
                 }
@@ -209,7 +217,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("录音1结束 $isRelease")
             }.start()
         }
-        if ((index == 2 || index == 0) && !isRecord2  && audioRecord2?.state == AudioRecord.STATE_INITIALIZED) {
+        if ((index == 2 || index == 0) && !isRecord2 && audioRecord2?.state == AudioRecord.STATE_INITIALIZED) {
             isRecord2 = true
             val outputFile = createOutputFile(2)
             try {
@@ -253,51 +261,63 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
             val outputFile = createOutputFile(1)
             tinyCapManager1?.newPath = outputFile.absolutePath
             val res = tinyCapManager1?.startRecording(getTempPath(1).absolutePath)
-            log("开始录制 $index $res ${outputFile.absolutePath}")
+            log("开始录制1 $index $res ${outputFile.absolutePath}")
         }
         if ((index == 2 || index == 0) && tinyCapManager2?.isRecording == false && card2 > 0) {
             val outputFile = createOutputFile(2)
             tinyCapManager2?.newPath = outputFile.absolutePath
             val res = tinyCapManager2?.startRecording(getTempPath(2).absolutePath)
-            log("开始录制 $index $res ${outputFile.absolutePath}")
+            log("开始录制2 $index $res ${outputFile.absolutePath}")
         }
-        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
-            isRecord1 = true
+        if ((index == 1 || index == 0) && tinyCapRecord1?.isRecording() == false/* && card1 > 0*/) {
             val outputFile = createOutputFile(1)
-            try {
-                outputStream1 = BufferedOutputStream(FileOutputStream(outputFile))
-            } catch (e: Exception) {
-                log("文件1创建失败: ${e.message}")
-                outputStream1 = null
-            }
-
-            log("开始录制 $index")
-//            pcmRecord1?.open(card1, 0, 16000, 1)
-            // 线程读取数据
-            Thread {
-                var read = -1
-                while (!isRecordEnd) {
-
-//                    read = pcmRecord1!!.read(recordBuffer1, recordBuffer1.size)
-//                    if (read > 0) {
-//                        outputStream1?.write(recordBuffer1, 0, read)
-//                    }
-                }
-                try {
-                    outputStream2?.flush()
-                    outputStream2?.close()
-                } catch (e: Exception) {
-                    log( "关闭文件1失败: ${e.message}")
-                }
-                onRecordEnd(true, outputFile.absolutePath)
-//                pcmRecord1?.close()
-                if (isRelease) {
-//                    pcmRecord1 = null
-                }
-                isRecord1 = false
-                log("录音1结束 $isRelease")
-            }.start()
+            tinyCapRecord1?.newPath = outputFile.absolutePath
+            val res = tinyCapRecord1?.startRecording(getTempPath(1).absolutePath)
+            log("开始录制3 $index $res ${outputFile.absolutePath}")
         }
+        if ((index == 2 || index == 0) && tinyCapRecord2?.isRecording() == false /*&& card2 > 0*/) {
+            val outputFile = createOutputFile(2)
+            tinyCapRecord1?.newPath = outputFile.absolutePath
+            val res = tinyCapRecord1?.startRecording(getTempPath(2).absolutePath)
+            log("开始录制4 $index $res ${outputFile.absolutePath}")
+        }
+//        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
+//            isRecord1 = true
+//            val outputFile = createOutputFile(1)
+//            try {
+//                outputStream1 = BufferedOutputStream(FileOutputStream(outputFile))
+//            } catch (e: Exception) {
+//                log("文件1创建失败: ${e.message}")
+//                outputStream1 = null
+//            }
+//
+//            log("开始录制 $index")
+////            pcmRecord1?.open(card1, 0, 16000, 1)
+//            // 线程读取数据
+//            Thread {
+//                var read = -1
+//                while (!isRecordEnd) {
+//
+////                    read = pcmRecord1!!.read(recordBuffer1, recordBuffer1.size)
+////                    if (read > 0) {
+////                        outputStream1?.write(recordBuffer1, 0, read)
+////                    }
+//                }
+//                try {
+//                    outputStream2?.flush()
+//                    outputStream2?.close()
+//                } catch (e: Exception) {
+//                    log( "关闭文件1失败: ${e.message}")
+//                }
+//                onRecordEnd(true, outputFile.absolutePath)
+////                pcmRecord1?.close()
+//                if (isRelease) {
+////                    pcmRecord1 = null
+//                }
+//                isRecord1 = false
+//                log("录音1结束 $isRelease")
+//            }.start()
+//        }
     }
 
     fun stop(index: Int = 0) {
@@ -338,6 +358,34 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 }
                 tinyCapManager2?.recordRunning = false
             }
+        }
+        if ((index == 1 || index == 0) && tinyCapRecord1?.isRecording() == true /*&& card1 > 0*/) {
+            tinyCapRecord1?.stopRecording()
+//            ffmpegDecode(tinyCapRecord1!!.outputPath, tinyCapRecord1!!.newPath) { res ,msg ->
+//                if (res != 0) {
+//                    log("1 转码失败 $msg")
+//                    onRecordEnd(true, null)
+//                } else {
+//                    log("1 转码成功")
+//                    // 调用翻译
+//                    onRecordEnd(true, tinyCapRecord1!!.newPath)
+//                }
+//                tinyCapRecord1?.recordRunning = false
+//            }
+        }
+        if ((index == 2 || index == 0) && tinyCapRecord2?.isRecording() == true && card2 > 0) {
+            tinyCapRecord2?.stopRecording()
+//            ffmpegDecode(tinyCapRecord2!!.outputPath, tinyCapRecord2!!.newPath) { res ,msg ->
+//                if (res != 0) {
+//                    log("2 转码失败 $msg")
+//                    onRecordEnd(false, null)
+//                } else {
+//                    log("2 转码成功")
+//                    // 调用翻译
+//                    onRecordEnd(false, tinyCapRecord2!!.newPath)
+//                }
+//                tinyCapRecord2?.recordRunning = false
+//            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.sc.common.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.sc.common.HomeActivity
 import com.sc.common.MainActivity
 
 /**
@@ -31,7 +32,7 @@ class StartReceiver : BroadcastReceiver() {
             SECRET_CODE, BOOT_COMPLETED -> {
                 println("接收到唤醒广播 ${p1?.action}")
 //                Toast.makeText(p0, "接收到唤醒广播！", Toast.LENGTH_LONG).show()
-                val intent = Intent(p0!!, MainActivity::class.java)
+                val intent = Intent(p0!!, HomeActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 p0.startActivity(intent)
 
