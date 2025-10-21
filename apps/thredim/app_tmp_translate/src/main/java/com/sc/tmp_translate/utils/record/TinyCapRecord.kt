@@ -32,6 +32,8 @@ class TinyCapRecord {
 
     var apm: Apm? = null
 
+    var cmd: String = ""
+
     constructor() {
         initWebRTC()
     }
@@ -50,7 +52,7 @@ class TinyCapRecord {
             Log.w(TAG, "Already recording")
             return false
         }
-        val cmd = String.format("tinycap %s -r %d -c %d -b %d -D %d -d %d",
+        cmd = String.format("tinycap %s -r %d -c %d -b %d -D %d -d %d",
                 outputPath, sampleRate, channels, bits, card, device)
         return try {
             Log.d(TAG, "Executing: $cmd")
@@ -58,14 +60,12 @@ class TinyCapRecord {
             recordRunning = true
 
             Thread(Runnable {
-                Timber.i("TinyCapRecord 解析线程开始")
+                Timber.i("TinyCapRecord 接收线程开始")
                 // 延迟1s
-//                while (recordRunning) {
-//
-//                    Thread.sleep(100)
-//                }
+
                 val outputFile = File(outputPath)
-                RandomAccessFile(outputFile, "r").use { raf ->
+                RandomAccessFile(outputFile, "rw").use { raf ->
+                    Thread.sleep(500)
                     while (recordRunning) {
                         val fileLen = outputFile.length()
                         if (fileLen > lastPosition) {
@@ -91,7 +91,13 @@ class TinyCapRecord {
 
                 Timber.i("TinyCapRecord 解析线程结束")
             }).start()
+            Thread({
+                Timber.i("TinyCapRecord 解析线程开始")
+                while (recordRunning) {
 
+                }
+                Timber.i("TinyCapRecord 解析线程结束")
+            }).start()
             true
         } catch (e: IOException) {
             e.printStackTrace()
@@ -121,6 +127,12 @@ class TinyCapRecord {
 
     private fun truncateFile(file: File, raf: RandomAccessFile) {
         // 将当前内容截断 (重新写header或清空)
+//        if (recordProcess != null) {
+//            recordProcess!!.destroy() // 终止录音进程
+//            recordProcess = null
+//            recordProcess = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+//        }
+//        raf.seek(0)
         raf.setLength(0)
         lastPosition = 0L
     }

@@ -97,6 +97,18 @@ android {
 //            path "src/main/jni/Android.mk"
 //        }
 //    }
+
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs = ['libs']
+//        }
+//    }
+
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
 }
 
 static def releaseTime(String formater) {
