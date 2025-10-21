@@ -174,7 +174,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun initData() {
         mScope.launch {
-            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+//            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+            fontSizeObf.set(0.5f) // TODO 还原
             val languages = getStringArray(R.array.lang_an_array)
             languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
             moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))
@@ -533,10 +534,12 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     private fun playText(tarnsText: String?) {
+        log("playText ${textPlayObb.get()} $tarnsText")
         if (!tarnsText.isNullOrEmpty() && textPlayObb.get()) {
             try {
                 ttsHelper?.speak(tarnsText)
             } catch (e: Exception) {
+                log("playText err ${e.message}")
                 e.printStackTrace()
             }
         }
