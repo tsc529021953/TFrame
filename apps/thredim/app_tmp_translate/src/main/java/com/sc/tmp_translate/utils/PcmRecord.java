@@ -8,4 +8,8 @@ public class PcmRecord {
 
     public native int init();
 
+    public native int open(int card, int device, int sampleRate, int channels);
+
+    public native int close();
+
 }

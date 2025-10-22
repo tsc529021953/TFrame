@@ -7,7 +7,6 @@ import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegSession
 import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
 import com.arthenica.ffmpegkit.ReturnCode
-import com.sc.lib_audio.utils.PcmDiffProcessor
 import com.sc.tmp_translate.inter.IRecord
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
@@ -109,7 +108,6 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 //        tinyCapRecord1 = TinyCapRecord()
 //        tinyCapRecord2 = TinyCapRecord()
         pcmRecord1 = PcmAudioRecord()
-        pcmRecord1?.init()
 //        pcmRecord2 = AEC()
         log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
 //        recorder1Ptr = DualRecorderJNI.initRecorder(device1, SAMPLE_RATE_IN_HZ, 1);
@@ -283,6 +281,12 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
             val res = tinyCapRecord1?.startRecording(getTempPath(2).absolutePath)
             log("开始录制4 $index $res ${outputFile.absolutePath}")
         }
+        if ((index == 1 || index == 0) && card1 >= 0) {
+            pcmRecord1?.open(card1)
+        }
+        if ((index == 2 || index == 0)) {
+//            pcmRecord2?.open()
+        }
 //        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
 //            isRecord1 = true
 //            val outputFile = createOutputFile(1)
@@ -388,6 +392,12 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 //                }
 //                tinyCapRecord2?.recordRunning = false
 //            }
+        }
+        if ((index == 1 || index == 0)) {
+            pcmRecord1?.close()
+        }
+        if ((index == 2 || index == 0)) {
+//            pcmRecord2?.open()
         }
     }
 

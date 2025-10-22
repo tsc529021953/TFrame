@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 #配置加载头文件
-#include_directories(${PROJECT_SOURCE_DIR}/alley/include)
+include_directories(${PROJECT_SOURCE_DIR}/pcm/include/pcm)
 
 add_library(
         PcmRecord
@@ -13,7 +13,7 @@ add_library(
 add_library(pcm SHARED IMPORTED )
 #add_library(ssl SHARED IMPORTED )
 #引入第三方.so库
-set_target_properties(pcm PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/libs/${ANDROID_ABI}/libpcm_jni.so)
+set_target_properties(pcm PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/pcm/libs/${ANDROID_ABI}/libpcm_jni.so)
 #set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/alley/lib/${ANDROID_ABI}/libssl.so)
 
 target_include_directories(

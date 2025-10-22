@@ -334,8 +334,8 @@ class TmpServiceImpl : ITmpService, Service() {
                     cb.invoke()
                     return
                 }
-                transRecognitionObb1.set(true)
-                transRecognitionObb2.set(true)
+//                transRecognitionObb1.set(true)
+//                transRecognitionObb2.set(true)
             }
             transStateObb1.set(play)
             transStateObb2.set(play)

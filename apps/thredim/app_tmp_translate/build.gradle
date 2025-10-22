@@ -98,11 +98,11 @@ android {
 //        }
 //    }
 
-//    sourceSets {
-//        main {
-//            jniLibs.srcDirs = ['libs']
-//        }
-//    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 
     externalNativeBuild {
         cmake {
@@ -117,7 +117,8 @@ static def releaseTime(String formater) {
 
 repositories {
     flatDir {
-        dirs project(':app_tmp_translate').file('libs'),'./libs'
+//        project(':app_tmp_translate').file('libs'),
+        dirs './libs'
     }
 }
 

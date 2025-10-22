@@ -32,4 +32,12 @@ class PcmAudioRecord: IRecord {
         Timber.tag(TAG).i("init res $res")
     }
 
+    override fun open(card: Int) {
+        pcmRecord?.open(card, 0, 16000, 1)
+    }
+
+    override fun close() {
+        pcmRecord?.close()
+    }
+
 }
