@@ -162,8 +162,10 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     private fun initSpeech() {
-        ttsHelper = HSTTSHelper(application)
-        ttsHelper?.init()
+        mScope.launch(Dispatchers.IO) {
+            ttsHelper = HSTTSHelper(application)
+            ttsHelper?.init()
+        }
 //        mScope.launch {
 //            delay(5000)
 //            ttsHelper?.speak("你好")
@@ -173,7 +175,7 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     private fun initData() {
-        mScope.launch {
+        mScope.launch(Dispatchers.IO) {
 //            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
             fontSizeObf.set(0.5f) // TODO 还原
             val languages = getStringArray(R.array.lang_an_array)
@@ -449,12 +451,13 @@ class TmpServiceImpl : ITmpService, Service() {
     }
 
     private fun initTrans() {
-        transAudioRecord = TransAudioRecord(this, object : ITransRecord{
-            override fun onRecordEnd(isMaster: Boolean, path: String?) {
-                // 录音完成
-                if (isMaster) transRecognitionObb1.set(false)
-                else transRecognitionObb2.set(false)
-                if (path == null) return
+        mScope.launch(Dispatchers.IO) {
+            transAudioRecord = TransAudioRecord(this@TmpServiceImpl, object : ITransRecord{
+                override fun onRecordEnd(isMaster: Boolean, path: String?) {
+                    // 录音完成
+                    if (isMaster) transRecognitionObb1.set(false)
+                    else transRecognitionObb2.set(false)
+                    if (path == null) return
 //                // 执行翻译
 //                if (isMaster) {
 //                    sourceSB1.clear()
@@ -473,54 +476,55 @@ class TmpServiceImpl : ITmpService, Service() {
 //                    curTransTextBean2.isMaster = false
 //                }
 
-                log("onRecordEnd2 $isMaster $path")
-                val ex = getExStr()
-                val source = if (isMaster) "zh" else ex
-                val target = if (!isMaster) "zh" else ex
-                hsTranslateUtil?.translate(path, source, target) { resList ->
-                    if (resList.isNotEmpty()) {
-                        try {
-                            val res = resList[0]
-                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
-                            val res2 = data?.Subtitle?.Text ?: MessageConstant.TIP_ANA_FAIL
-                            val res3 = data?.ResponseMetaData?.RequestId ?: MessageConstant.TIP_NO_REQUEST_ID
-                            if (res2 == MessageConstant.TIP_NO_REQUEST_ID) {
-                                tipError(res3)
-                                return@translate
-                            }
-                            if (res2 != MessageConstant.TIP_ANA_FAIL) {
-                                if (data.Subtitle?.Definite == true) {
-                                    // 可能是原文或者译文
-                                    val key = data.ResponseMetaData!!.RequestId
-                                    if (data.Subtitle?.Language == target) {
-                                        log("译文 $res2")
-                                        if (transTextMap.containsKey(key)) {
-                                            if (isMaster && !TextPinyinUtil.containsChinese(transTextMap[key]!!)) {
-                                                log("应该是串音了 ${transTextMap[key]}")
-                                                return@translate
+                    log("onRecordEnd2 $isMaster $path")
+                    val ex = getExStr()
+                    val source = if (isMaster) "zh" else ex
+                    val target = if (!isMaster) "zh" else ex
+                    hsTranslateUtil?.translate(path, source, target) { resList ->
+                        if (resList.isNotEmpty()) {
+                            try {
+                                val res = resList[0]
+                                val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                                val res2 = data?.Subtitle?.Text ?: MessageConstant.TIP_ANA_FAIL
+                                val res3 = data?.ResponseMetaData?.RequestId ?: MessageConstant.TIP_NO_REQUEST_ID
+                                if (res2 == MessageConstant.TIP_NO_REQUEST_ID) {
+                                    tipError(res3)
+                                    return@translate
+                                }
+                                if (res2 != MessageConstant.TIP_ANA_FAIL) {
+                                    if (data.Subtitle?.Definite == true) {
+                                        // 可能是原文或者译文
+                                        val key = data.ResponseMetaData!!.RequestId
+                                        if (data.Subtitle?.Language == target) {
+                                            log("译文 $res2")
+                                            if (transTextMap.containsKey(key)) {
+                                                if (isMaster && !TextPinyinUtil.containsChinese(transTextMap[key]!!)) {
+                                                    log("应该是串音了 ${transTextMap[key]}")
+                                                    return@translate
+                                                }
+                                                notifyInfo(res2, transTextMap[key]!!, isMaster, path)
+                                            } else {
+                                                log("未找到原文 $key")
                                             }
-                                            notifyInfo(res2, transTextMap[key]!!, isMaster, path)
                                         } else {
-                                            log("未找到原文 $key")
+                                            log("原文 $res2")
+                                            transTextMap[key] = res2
                                         }
                                     } else {
-                                        log("原文 $res2")
-                                        transTextMap[key] = res2
+                                        log("解析中 $res2")
                                     }
                                 } else {
-                                    log("解析中 $res2")
+                                    tipError()
                                 }
-                            } else {
-                                tipError()
-                            }
-                        } catch (e: Exception) {
+                            } catch (e: Exception) {
 
+                            }
                         }
                     }
                 }
-            }
-        })
-        transAudioRecord?.init()
+            })
+            transAudioRecord?.init()
+        }
     }
 
     private fun notifyInfo(transText: String, text: String, isMaster: Boolean, path: String) {

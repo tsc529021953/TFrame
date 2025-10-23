@@ -28,6 +28,17 @@ static jobject gAudioProcessorObj = nullptr;
 
 extern "C" {
 
+    struct RecordArgs {
+        unsigned int card;
+        unsigned int device;
+        jobject javaObj;
+    };
+
+    jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+        gJvm = vm;  // 保存全局引用
+        return JNI_VERSION_1_6;
+    }
+
     /**
      * 线性插值降采样
      * 输入: 44100Hz 单声道
@@ -104,15 +115,18 @@ extern "C" {
 
     void* threadFunc(void* arg) {
         const unsigned int periodSize = 1024;
+        RecordArgs* args = (RecordArgs*)arg;
+        unsigned int card = args->card;
+        unsigned int device = args->device;
 
-//        JNIEnv* env = nullptr;
-//        bool needDetach = false;
-//
-//        // 附加当前线程到 JVM
-//        if (gJvm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
-//            gJvm->AttachCurrentThread(&env, nullptr);
-//            needDetach = true;
-//        }
+        JNIEnv* env = nullptr;
+        bool needDetach = false;
+
+        // 附加当前线程到 JVM
+        if (gJvm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+            gJvm->AttachCurrentThread(&env, nullptr);
+            needDetach = true;
+        }
 
         int id = *(int*)arg;
         LOGD("线程 %d 开始", id);
@@ -129,8 +143,8 @@ extern "C" {
         config.start_threshold = 0;
         config.stop_threshold = 0;
         config.silence_threshold = 0;
-        LOGD("pcm_open card: %d device: %d rate: %d channels: %d", id, config_card, config_device, config.rate, config.channels);
-        pcm_handle = pcm_open(config_card, config_device, PCM_IN, &config);
+        LOGD("pcm_open card: %d device: %d rate: %d channels: %d", id, card, device, config.rate, config.channels);
+        pcm_handle = pcm_open(card, device, PCM_IN, &config);
         int res = pcm_is_ready(pcm_handle);
         if (!res) {
             LOGD("pcm device is not ready %d %s", res, pcm_get_error(pcm_handle));
@@ -144,31 +158,31 @@ extern "C" {
             size_t out_bytes_capacity = (size_t)(len * (16000.0 / config_rate));
             unsigned char* out_buf = (unsigned char*)malloc(out_bytes_capacity);
 
-//            jclass cls = env->GetObjectClass(gAudioProcessorObj);
-//            jmethodID onPcmData = env->GetMethodID(cls, "onPcmData", "([B)V");
+            jclass cls = env->GetObjectClass(gAudioProcessorObj);
+            jmethodID onPcmData = env->GetMethodID(cls, "onPcmData", "(I[B)V");
 
             capturing = true;
             while (capturing) {
                 int ret = pcm_read(pcm_handle, buffer, pcm_frames_to_bytes(pcm_handle, periodSize));
                 if (ret == 0) {
-                    LOGD("read ok %d %d", buffer[0], pcm_frames_to_bytes(pcm_handle, periodSize));
+//                    LOGD("read ok %d %d", buffer[0], pcm_frames_to_bytes(pcm_handle, periodSize));
 //                    fwrite(buffer, 1, pcm_frames_to_bytes(pcm_handle, periodSize), output_file);
 
                     // step1: 双声道混合成单声道
 //                    stereo_to_mono(buffer, mono_buffer, periodSize);
                     size_t out_bytes = convert_stereo44100_to_mono16000(buffer, len, out_buf, out_bytes_capacity);
-                    LOGD("out ok %d %d", out_bytes, out_buf[0]);
+//                    LOGD("out ok %d %d", out_bytes, out_buf[0]);
 
 
-//                    // 创建 Java ByteArray
-//                    jbyteArray byteArray = env->NewByteArray(out_bytes);
-//                    env->SetByteArrayRegion(byteArray, 0, out_bytes, (jbyte*)out_buf);
-//
-//                    // 调用 Java 回调
-//                    env->CallVoidMethod(gAudioProcessorObj, onPcmData, byteArray);
-//
-//                    // 释放局部引用，防止内存增长
-//                    env->DeleteLocalRef(byteArray);
+                    // 创建 Java ByteArray
+                    jbyteArray byteArray = env->NewByteArray(out_bytes);
+                    env->SetByteArrayRegion(byteArray, 0, out_bytes, (jbyte*)out_buf);
+
+                    // 调用 Java 回调
+                    env->CallVoidMethod(args->javaObj, onPcmData, args->card, byteArray);
+
+                    // 释放局部引用，防止内存增长
+                    env->DeleteLocalRef(byteArray);
                 } else {
                     LOGD("read fail");
                 }
@@ -178,17 +192,16 @@ extern "C" {
         }
 
         pcm_close(pcm_handle);
+        if (gAudioProcessorObj) {
+            env->DeleteGlobalRef(gAudioProcessorObj);
+            gAudioProcessorObj = nullptr;
+        }
         LOGD("线程 %d 结束", id);
 
-//    EXIT:
-//        printf("Recording thread exit\n");
-//
-//        if (needDetach)
-//            gJvm->DetachCurrentThread();
-//
-//        pthread_exit(nullptr);
-
-
+    EXIT:
+        if (needDetach)
+            gJvm->DetachCurrentThread();
+        pthread_exit(nullptr);
         LOGD("线程 %d EXIT", id);
         return nullptr;
     }
@@ -206,12 +219,22 @@ extern "C" {
         config_channels = channels;
 
         gAudioProcessorObj = env->NewGlobalRef(thiz);
+        RecordArgs* args = new RecordArgs();
+        args->card = card;
+        args->device = device;
+        args->javaObj = env->NewGlobalRef(thiz);
 
-        pthread_t tid;
-        int id = card + 10;
-        pthread_create(&tid, nullptr, threadFunc, &id);
-        pthread_detach(tid);  // 分离线程，不阻塞主线程
-//        pthread_create(&thread_id1, nullptr, recordThread1, NULL);
+        pthread_t gThread;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+        pthread_create(&gThread, &attr, threadFunc, args);
+        pthread_attr_destroy(&attr);
+
+//        pthread_t tid;
+//        int id = card + 10;
+//        pthread_create(&tid, nullptr, threadFunc, &id);
+//        pthread_detach(tid);  // 分离线程，不阻塞主线程
 
         return 0;
     }
@@ -219,10 +242,6 @@ extern "C" {
     JNIEXPORT jint JNICALL Java_com_sc_tmp_1translate_utils_PcmRecord_close(JNIEnv* env, jobject thiz) {
         LOGD("close jni");
         capturing = 0;
-        if (gAudioProcessorObj) {
-            env->DeleteGlobalRef(gAudioProcessorObj);
-            gAudioProcessorObj = nullptr;
-        }
         return 0;
     }
 

@@ -140,9 +140,9 @@ class TranslateOneDisplayActivity : BaseTransActivity<ActivityTranslateOneDispla
     }
 
     override fun initData() {
-        val devices =
-            (getSystemService(Context.AUDIO_SERVICE) as AudioManager).getDevices(AudioManager.GET_DEVICES_INPUTS)
-        log("initData devices size ${devices.size}")
+//        val devices =
+//            (getSystemService(Context.AUDIO_SERVICE) as AudioManager).getDevices(AudioManager.GET_DEVICES_INPUTS)
+//        log("initData devices size ${devices.size}")
     }
 
     override fun linkViewModel() {

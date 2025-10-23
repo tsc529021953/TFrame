@@ -10,6 +10,8 @@ import com.arthenica.ffmpegkit.ReturnCode
 import com.sc.tmp_translate.inter.IRecord
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
+import com.sc.tmp_translate.utils.IPcmRecord
+import com.sc.tmp_translate.utils.PcmRecord
 //import com.signway.aec.AEC
 import timber.log.Timber
 import java.io.BufferedOutputStream
@@ -64,7 +66,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
     private var tinyCapRecord2: TinyCapRecord? = null
 
     private var pcmRecord1: IRecord? = null
-//    private var pcmRecord2: AEC? = null
+    private var pcmRecord2: IRecord? = null
 
     private var minSize = 0
     private var minTrackSize = 0
@@ -107,8 +109,15 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 
 //        tinyCapRecord1 = TinyCapRecord()
 //        tinyCapRecord2 = TinyCapRecord()
-        pcmRecord1 = PcmAudioRecord()
+        pcmRecord1 = PcmAudioRecord(1)
+        pcmRecord2 = PcmAudioRecord(2)
 //        pcmRecord2 = AEC()
+        PcmRecord.iPcmRecord = object : IPcmRecord {
+            override fun onPcmData(card: Int, data: ByteArray?) {
+                if (card == pcmRecord1?.card) pcmRecord1?.onPcmData(data)
+                else pcmRecord2?.onPcmData(data)
+            }
+        }
         log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
 //        recorder1Ptr = DualRecorderJNI.initRecorder(device1, SAMPLE_RATE_IN_HZ, 1);
 //        recorder2Ptr = DualRecorderJNI.initRecorder(device2, SAMPLE_RATE_IN_HZ, 1);
@@ -149,7 +158,7 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
                 log("读取的USB麦克风数${usbCards.size} ${allCards.size}")
                 for (i in usbCards.indices) {
                     log(usbCards[i].toString())
-                    if (card1 == -1) { card1 = usbCards[i].index }
+                    if (card1 == -1 || card1 == 0) { card1 = usbCards[i].index }
                     else if (usbCards[i].index != card1) card2 = usbCards[i].index
                 }
                 if (card1 == -1) {
@@ -284,8 +293,8 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
         if ((index == 1 || index == 0) && card1 >= 0) {
             pcmRecord1?.open(card1)
         }
-        if ((index == 2 || index == 0)) {
-//            pcmRecord2?.open()
+        if ((index == 2 || index == 0) && card2 > 0) {
+            pcmRecord2?.open(card2)
         }
 //        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
 //            isRecord1 = true
@@ -393,11 +402,11 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 //                tinyCapRecord2?.recordRunning = false
 //            }
         }
-        if ((index == 1 || index == 0)) {
+        if ((index == 1 || index == 0) && card1 >= 0) {
             pcmRecord1?.close()
         }
-        if ((index == 2 || index == 0)) {
-//            pcmRecord2?.open()
+        if ((index == 2 || index == 0) && card2 > 0) {
+            pcmRecord2?.close()
         }
     }
 
