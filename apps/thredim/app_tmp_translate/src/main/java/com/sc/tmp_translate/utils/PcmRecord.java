@@ -12,4 +12,10 @@ public class PcmRecord {
 
     public native int close();
 
+    // 被 native 回调（实时PCM）
+    void onPcmData(byte[] data) {
+        // TODO: 这里可以推送给 AudioTrack、WebSocket、文件写入等
+        System.out.println("Received PCM chunk: " + data.length +  " bytes");
+    }
+
 }

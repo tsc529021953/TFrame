@@ -11,10 +11,10 @@ add_library(
 
 #动态方式加载
 add_library(pcm SHARED IMPORTED )
-#add_library(ssl SHARED IMPORTED )
+#add_library(speex SHARED IMPORTED )
 #引入第三方.so库
 set_target_properties(pcm PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/pcm/libs/${ANDROID_ABI}/libpcm_jni.so)
-#set_target_properties(ssl PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/alley/lib/${ANDROID_ABI}/libssl.so)
+#set_target_properties(speex PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/pcm/libs/${ANDROID_ABI}/libspeexdsp.so)
 
 target_include_directories(
         PcmRecord
