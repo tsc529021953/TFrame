@@ -13,7 +13,12 @@
 #define LOG_TAG "PcmRecord"
 #define LOGD(...) ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
 
-static struct pcm *pcm_handle = NULL;
+
+
+extern "C" {
+
+struct pcm *pcm_handle1 = NULL;
+struct pcm *pcm_handle2 = NULL;
 
 struct pcm_config config;
 jint config_card;
@@ -21,17 +26,16 @@ jint config_device;
 jint config_channels;
 jint config_rate;
 
-static int capturing = 0;
+ int capturing = 0;
 //static std::atomic<bool> gRunning(false);
-static JavaVM* gJvm = nullptr;
-static jobject gAudioProcessorObj = nullptr;
-
-extern "C" {
+ JavaVM* gJvm = nullptr;
+ jobject gAudioProcessorObj = nullptr;
 
     struct RecordArgs {
         unsigned int card;
         unsigned int device;
         jobject javaObj;
+        unsigned int index;
     };
 
     jint JNI_OnLoad(JavaVM* vm, void* reserved) {
@@ -117,6 +121,7 @@ extern "C" {
         const unsigned int periodSize = 1024;
         RecordArgs* args = (RecordArgs*)arg;
         unsigned int card = args->card;
+        unsigned int index = args->index;
         unsigned int device = args->device;
 
         JNIEnv* env = nullptr;
@@ -130,9 +135,9 @@ extern "C" {
 
         int id = *(int*)arg;
         LOGD("线程 %d 开始", id);
-        if (pcm_handle) {
-            return nullptr;
-        }
+//        if (pcm_handle1) {
+//            return nullptr;
+//        }
         memset(&config, 0, sizeof(config));
 
         config.channels = config_channels;
@@ -144,13 +149,23 @@ extern "C" {
         config.stop_threshold = 0;
         config.silence_threshold = 0;
         LOGD("pcm_open card: %d device: %d rate: %d channels: %d", id, card, device, config.rate, config.channels);
-        pcm_handle = pcm_open(card, device, PCM_IN, &config);
-        int res = pcm_is_ready(pcm_handle);
+        int res = 0;
+        if (index == 1) {
+            pcm_handle1 = pcm_open(card, device, PCM_IN, &config);
+            res = pcm_is_ready(pcm_handle1);
+        } else {
+            pcm_handle2 = pcm_open(card, device, PCM_IN, &config);
+            res = pcm_is_ready(pcm_handle2);
+        }
         if (!res) {
-            LOGD("pcm device is not ready %d %s", res, pcm_get_error(pcm_handle));
+            if (index == 1) LOGD("pcm device is not ready %d %s", res, pcm_get_error(pcm_handle1));
+            else LOGD("pcm device is not ready %d %s", res, pcm_get_error(pcm_handle2));
         } else {
             LOGD("pcm device is ready!");
-            int len = pcm_frames_to_bytes(pcm_handle, periodSize);
+            int len = 0;
+            if (index == 1) len = pcm_frames_to_bytes(pcm_handle1, periodSize);
+            else len = pcm_frames_to_bytes(pcm_handle2, periodSize);
+
             unsigned char* buffer = new unsigned char[len];
             unsigned char* mono_buffer = new unsigned char[len / 2];
 
@@ -163,10 +178,13 @@ extern "C" {
 
             capturing = true;
             while (capturing) {
-                int ret = pcm_read(pcm_handle, buffer, pcm_frames_to_bytes(pcm_handle, periodSize));
+                int ret = 0;
+                if (index == 1)
+                    ret = pcm_read(pcm_handle1, buffer, pcm_frames_to_bytes(pcm_handle1, periodSize));
+                else ret = pcm_read(pcm_handle2, buffer, pcm_frames_to_bytes(pcm_handle2, periodSize));
                 if (ret == 0) {
-//                    LOGD("read ok %d %d", buffer[0], pcm_frames_to_bytes(pcm_handle, periodSize));
-//                    fwrite(buffer, 1, pcm_frames_to_bytes(pcm_handle, periodSize), output_file);
+//                    LOGD("read ok %d %d", buffer[0], pcm_frames_to_bytes(pcm_handle1, periodSize));
+//                    fwrite(buffer, 1, pcm_frames_to_bytes(pcm_handle1, periodSize), output_file);
 
                     // step1: 双声道混合成单声道
 //                    stereo_to_mono(buffer, mono_buffer, periodSize);
@@ -190,8 +208,9 @@ extern "C" {
             delete[] buffer;
             free(out_buf);
         }
-
-        pcm_close(pcm_handle);
+        if (index == 1)
+            pcm_close(pcm_handle1);
+        else pcm_close(pcm_handle2);
         if (gAudioProcessorObj) {
             env->DeleteGlobalRef(gAudioProcessorObj);
             gAudioProcessorObj = nullptr;
@@ -211,7 +230,7 @@ extern "C" {
         return -1;
     }
 
-    JNIEXPORT jint JNICALL Java_com_sc_tmp_1translate_utils_PcmRecord_open(JNIEnv* env, jobject thiz, jint card, jint device, jint sampleRate, jint channels) {
+    JNIEXPORT jint JNICALL Java_com_sc_tmp_1translate_utils_PcmRecord_open(JNIEnv* env, jobject thiz, jint card, jint device, jint sampleRate, jint channels, jint index) {
         LOGD("open jni %d", card);
         config_card = card;
         config_rate = sampleRate;
@@ -223,6 +242,7 @@ extern "C" {
         args->card = card;
         args->device = device;
         args->javaObj = env->NewGlobalRef(thiz);
+        args->index = index;
 
         pthread_t gThread;
         pthread_attr_t attr;

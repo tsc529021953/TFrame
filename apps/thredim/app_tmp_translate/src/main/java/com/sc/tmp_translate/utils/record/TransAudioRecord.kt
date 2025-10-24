@@ -10,6 +10,7 @@ import com.arthenica.ffmpegkit.ReturnCode
 import com.sc.tmp_translate.inter.IRecord
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
+import com.sc.tmp_translate.service.TmpServiceImpl
 import com.sc.tmp_translate.utils.IPcmRecord
 import com.sc.tmp_translate.utils.PcmRecord
 //import com.signway.aec.AEC
@@ -26,7 +27,7 @@ import java.util.*
  *  * 2.打开并录音
  *  * 3.录音并播放
  */
-class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
+class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransRecord) {
 
     companion object {
         const val SAMPLE_RATE_IN_HZ = 16000
@@ -109,8 +110,8 @@ class TransAudioRecord(var context: Context, var iTransRecord: ITransRecord) {
 
 //        tinyCapRecord1 = TinyCapRecord()
 //        tinyCapRecord2 = TinyCapRecord()
-        pcmRecord1 = PcmAudioRecord(1)
-        pcmRecord2 = PcmAudioRecord(2)
+        pcmRecord1 = PcmAudioRecord(1,iTransRecord, context)
+        pcmRecord2 = PcmAudioRecord(2,iTransRecord, context)
 //        pcmRecord2 = AEC()
         PcmRecord.iPcmRecord = object : IPcmRecord {
             override fun onPcmData(card: Int, data: ByteArray?) {

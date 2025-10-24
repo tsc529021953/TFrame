@@ -108,7 +108,7 @@ class TmpServiceImpl : ITmpService, Service() {
     private var transAudioRecord: TransAudioRecord? = null
 
     /*trans*/
-    private var hsTranslateUtil: HSTranslateUtil? = null
+    var hsTranslateUtil: HSTranslateUtil? = null
     var curTransTextBean1 = TransTextBean()
     var curTransTextBean2 = TransTextBean()
 
@@ -519,6 +519,51 @@ class TmpServiceImpl : ITmpService, Service() {
                             } catch (e: Exception) {
 
                             }
+                        }
+                    }
+                }
+
+                override fun onReceiveRes(isMaster: Boolean, path: String?, resList: List<String>) {
+                    val ex = getExStr()
+                    val source = if (isMaster) "zh" else ex
+                    val target = if (!isMaster) "zh" else ex
+                    if (resList.isNotEmpty()) {
+                        try {
+                            val res = resList[0]
+                            val data = gson.fromJson<TranslateBean>(res, TranslateBean::class.java)
+                            val res2 = data?.Subtitle?.Text ?: MessageConstant.TIP_ANA_FAIL
+                            val res3 = data?.ResponseMetaData?.RequestId ?: MessageConstant.TIP_NO_REQUEST_ID
+                            if (res2 == MessageConstant.TIP_NO_REQUEST_ID) {
+                                tipError(res3)
+                                return
+                            }
+                            if (res2 != MessageConstant.TIP_ANA_FAIL) {
+                                if (data.Subtitle?.Definite == true) {
+                                    // 可能是原文或者译文
+                                    val key = data.ResponseMetaData!!.RequestId
+                                    if (data.Subtitle?.Language == target) {
+                                        log("译文 $res2")
+                                        if (transTextMap.containsKey(key)) {
+                                            if (isMaster && !TextPinyinUtil.containsChinese(transTextMap[key]!!)) {
+                                                log("应该是串音了 ${transTextMap[key]}")
+                                                return
+                                            }
+                                            notifyInfo(res2, transTextMap[key]!!, isMaster, path!!)
+                                        } else {
+                                            log("未找到原文 $key")
+                                        }
+                                    } else {
+                                        log("原文 $res2")
+                                        transTextMap[key] = res2
+                                    }
+                                } else {
+                                    log("解析中 $res2")
+                                }
+                            } else {
+                                tipError()
+                            }
+                        } catch (e: Exception) {
+
                         }
                     }
                 }
