@@ -62,6 +62,9 @@ class TransMainFragment : BaseTransFragment<FragmentTransMainBinding, TransMainV
                 TmpServiceDelegate.getInstance().getTransLangObs()?.addOnPropertyChangedCallback(languageObsListener)
                 refreshLanguage()
             }
+            MessageConstant.MIC_LOAD_ERROR -> {
+                binding.micBtn.setImageResource(R.drawable.ic_mic_fail)
+            }
         }
     }
 

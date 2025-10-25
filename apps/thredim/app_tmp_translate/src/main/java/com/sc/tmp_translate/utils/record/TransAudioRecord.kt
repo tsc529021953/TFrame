@@ -7,6 +7,10 @@ import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFmpegSession
 import com.arthenica.ffmpegkit.FFmpegSessionCompleteCallback
 import com.arthenica.ffmpegkit.ReturnCode
+import com.jeremyliao.liveeventbus.LiveEventBus
+import com.nbhope.lib_frame.event.RemoteMessageEvent
+import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.IRecord
 //import com.sc.audio.DualRecorderJNI
 import com.sc.tmp_translate.inter.ITransRecord
@@ -172,7 +176,10 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
                     log("麦克风1的Id为 $card1")
                     log("麦克风2的Id为 $card2")
                 }
-
+                if (card1 < 0 || card2 < 0) {
+                    // 有问题，通知变换图标
+                    LiveEBUtil.post(RemoteMessageEvent(MessageConstant.MIC_LOAD_ERROR, ""))
+                }
             }
 
             override fun onReadFailed(error: String) {

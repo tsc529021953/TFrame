@@ -16,4 +16,6 @@ object MessageConstant {
 
     const val TIP_ANA_FAIL = "解析失败"
     const val TIP_NO_REQUEST_ID = "未找到请求ID"
+
+    const val MIC_LOAD_ERROR = "MIC_LOAD_ERROR"
 }
