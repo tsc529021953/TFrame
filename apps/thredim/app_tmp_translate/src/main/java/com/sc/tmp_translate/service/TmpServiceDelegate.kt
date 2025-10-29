@@ -13,6 +13,7 @@ import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.ITmpService
+import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.utils.record.PcmAudioPlayer
 import timber.log.Timber
 
@@ -144,6 +145,14 @@ class TmpServiceDelegate: ITmpService {
 
     override fun showVolume() {
         mService?.showVolume()
+    }
+
+    override fun addITransRecord(iTransRecord: ITransRecord) {
+        mService?.addITransRecord(iTransRecord)
+    }
+
+    override fun removeITransRecord(iTransRecord: ITransRecord) {
+        mService?.removeITransRecord(iTransRecord)
     }
 
     private fun bindService(context: Context) {

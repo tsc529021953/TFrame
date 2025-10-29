@@ -1,5 +1,6 @@
 package com.sc.tmp_translate.view
 
+import android.view.View
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sc.tmp_translate.R
@@ -12,8 +13,10 @@ import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.FragmentTranslatingBinding
 import com.sc.tmp_translate.databinding.FragmentTranslatingOdBinding
+import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.vm.TranslatingViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -39,6 +42,49 @@ class TranslatingODFragment : BaseTransFragment<FragmentTranslatingOdBinding, Tr
         binding.dataRv2.post {
             binding.dataRv2.scrollToPosition(items.size - 1)
         }
+    }
+
+    private var iTransRecord = object : ITransRecord {
+
+        override fun onRecordEnd(isMaster: Boolean, path: String?) {
+
+        }
+
+        override fun onReceiveRes(isMaster: Boolean, path: String?, resList: List<String>) {
+
+        }
+
+        override fun onReceiveToView(isMaster: Boolean, pcm: ByteArray?, pcmList: List<ByteArray>?) {
+            val cb = { bytes: ByteArray? ->
+                if (bytes != null) {
+                    val amp = viewModel.calculateAmplitude(bytes) * 10
+//                    this@TranslatingODFragment.activity?.runOnUiThread {
+                        if (isMaster)
+                            binding.audioWaveView.addAmplitude(amp)
+                        else binding.audioWaveView2.addAmplitude(amp)
+//                    }
+                }
+            }
+            if (pcm != null) {
+                viewModel.mScope.launch {
+                    cb.invoke(pcm)
+                }
+            }
+        }
+
+        override fun onTransStateChange(isMaster: Boolean, isTrans: Boolean) {
+            this@TranslatingODFragment.activity?.runOnUiThread {
+                if (isMaster)
+                    binding.translate1Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+                else binding.translate2Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+            }
+//            this@TranslatingODFragment.activity?.runOnUiThread {
+//                if (isMaster)
+//                    binding.translate1Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+//                else binding.translate2Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+//            }
+        }
+
     }
 
     private var displayObsListener = object : Observable.OnPropertyChangedCallback() {
@@ -75,6 +121,7 @@ class TranslatingODFragment : BaseTransFragment<FragmentTranslatingOdBinding, Tr
         binding.dataRv.layoutManager = layoutManager
         binding.dataRv2.layoutManager = layoutManager2
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
+        TmpServiceDelegate.getInstance().addITransRecord(iTransRecord)
     }
 
     override fun onFontSizeChanged(fontSize: Float) {
@@ -105,6 +152,7 @@ class TranslatingODFragment : BaseTransFragment<FragmentTranslatingOdBinding, Tr
         TmpServiceDelegate.getInstance().setTranslating(false)
         TmpServiceDelegate.getInstance().setTransState(false, 0)
         TmpServiceDelegate.getInstance().setTransRecord(false)
+        TmpServiceDelegate.getInstance().removeITransRecord(iTransRecord)
     }
 
     override fun initData() {

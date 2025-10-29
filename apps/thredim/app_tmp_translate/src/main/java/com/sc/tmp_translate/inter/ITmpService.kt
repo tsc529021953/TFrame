@@ -57,4 +57,9 @@ interface ITmpService {
     fun setTransRecord(play: Boolean)
 
     fun showVolume()
+
+
+    fun addITransRecord(iTransRecord: ITransRecord)
+    fun removeITransRecord(iTransRecord: ITransRecord)
+
 }

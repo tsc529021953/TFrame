@@ -129,6 +129,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
     var ttsHelper: ITmpTTS? = null
 
+    var iTransRecordList: ArrayList<ITransRecord> = arrayListOf()
+
     override fun onCreate() {
         super.onCreate()
         initNotice()
@@ -407,6 +409,14 @@ class TmpServiceImpl : ITmpService, Service() {
         audioManager.adjustVolume(AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
     }
 
+    override fun addITransRecord(iTransRecord: ITransRecord) {
+        if (!iTransRecordList.contains(iTransRecord))iTransRecordList.add(iTransRecord)
+    }
+
+    override fun removeITransRecord(iTransRecord: ITransRecord) {
+        if (iTransRecordList.contains(iTransRecord))iTransRecordList.remove(iTransRecord)
+    }
+
     private val MSG_FLOAT_SHOW = 100
     private val MSG_FLOAT_UPDATE = 101
     private val MSG_FLOAT_HIDE = 102
@@ -445,9 +455,9 @@ class TmpServiceImpl : ITmpService, Service() {
 
     fun tipError(msg: String = MessageConstant.TIP_ANA_FAIL) {
         log(msg)
-//        try {
-//            ToastUtil.showS(msg)
-//        } catch (e: Exception) {}
+        try {
+            ToastUtil.showS(msg)
+        } catch (e: Exception) {}
     }
 
     private fun initTrans() {
@@ -565,6 +575,18 @@ class TmpServiceImpl : ITmpService, Service() {
                         } catch (e: Exception) {
 
                         }
+                    }
+                }
+
+                override fun onReceiveToView(isMaster: Boolean, pcm: ByteArray?, pcmList: List<ByteArray>?) {
+                    iTransRecordList?.forEach {
+                        it.onReceiveToView(isMaster, pcm, pcmList)
+                    }
+                }
+
+                override fun onTransStateChange(isMaster: Boolean, isTrans: Boolean) {
+                    iTransRecordList?.forEach {
+                        it.onTransStateChange(isMaster, isTrans)
                     }
                 }
             })

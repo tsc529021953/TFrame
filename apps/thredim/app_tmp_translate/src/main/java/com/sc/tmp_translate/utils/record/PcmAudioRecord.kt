@@ -87,6 +87,7 @@ class PcmAudioRecord(): IRecord {
                 if (queue.size > 0) {
                     val datas = queue.poll() // BLEUtils.mergeQueueBytes(queue) //
                     if (datas != null) {
+                        val isMaster = index == 1
 //                        fos?.write(datas)
                         val d4 = processWebRTC(datas) //
                         val hasVoice = apm?.VADHasVoice() ?: true
@@ -104,12 +105,15 @@ class PcmAudioRecord(): IRecord {
                                     Timber.i("触发翻译 $voiceCount ${voiceList.size}")
                                     val list = voiceList.toList()
                                     val ex = tmpServiceImpl!!.getExStr()
-                                    val isMaster = index == 1
+
                                     val source = if (isMaster) "zh" else ex
                                     val target = if (!isMaster) "zh" else ex
+                                    iTransRecord?.onTransStateChange(isMaster, true)
                                     tmpServiceImpl?.hsTranslateUtil?.translate(list, source, target) { resList ->
                                         iTransRecord?.onReceiveRes(isMaster, "", resList)
+                                        iTransRecord?.onTransStateChange(isMaster, false)
                                     }
+//                                    iTransRecord?.onReceiveToView(isMaster, list)
                                     for (b in list) {
                                         fos?.write(b)
                                     }
@@ -122,6 +126,7 @@ class PcmAudioRecord(): IRecord {
 
                             }
                         }
+                        iTransRecord?.onReceiveToView(isMaster, datas, null)
 //                        iHandset?.onReceiveVoice(d4) // BLEUtils.monoToStereoFast(d4)
                     }
                 }
