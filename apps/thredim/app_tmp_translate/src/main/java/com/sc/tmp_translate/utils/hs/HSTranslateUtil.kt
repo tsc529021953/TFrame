@@ -218,49 +218,41 @@ class HSTranslateUtil {
     }
 
     fun translate(list: List<ByteArray>, source: String, target: String, cb: (resList: List<String>) -> Unit) {
-        val signUrl = getSignUrl(TranslateConfig.api, null)
-        var urlStr = "wss://" + TranslateConfig.host + TranslateConfig.path + "?" + signUrl
-        println("urlStr $urlStr ${System.getenv(Const.ACCESS_KEY)}")
-//        urlStr = "wss://translate.volces.com/api/translate/speech/v1/?Action=SpeechTranslate&Version=2020-06-01&X-Date=20251013T150557Z&X-NotSignBody=&X-Credential=AKLTMmQ2YjI5MTJiZGI0NGVmZGI5MzM3NWM3MTdiZDRhMTE/20251013/cn-north-1/translate/request&X-Algorithm=HMAC-SHA256&X-SignedHeaders=&X-SignedQueries=Action;Version;X-Algorithm;X-Credential;X-Date;X-NotSignBody;X-SignedHeaders;X-SignedQueries&X-Signature=80ab01ee2c49a339251fcc26c8faac2ecf8202deaa3c1deb6c319261251aef7a"
-        val url = URI(urlStr)
-        println(url)
-        // open websocket
-        val client = Client(url)
-        client.setClientListener(object : IClientListener {
-            override fun onMessage(s: String?) {
-                print("onMessage ${s ?: "null"}")
-                cb.invoke(arrayListOf(s ?: ""))
-            }
-        })
-        client.connectBlocking()
-        client.send(Client.getConfig(source, target))
-        val buffer = ByteArray(200 * 32)
-        var bytesLeft = 100 * 1024 * 1024
         try {
-            for (b in list) {
-                client.send(Client.bytesToMessage(b))
-            }
-
-//            FileInputStream(input).use { fis ->
-//                while (bytesLeft > 0) {
-//                    val read: Int = fis.read(buffer, 0, Math.min(bytesLeft.toDouble(), buffer.size.toDouble()).toInt())
-//                    if (read == -1) {
-//                        break
-//                    }
-//                    client.send(Client.bytesToMessage(buffer))
-//                    Thread.sleep(200)
-//                    bytesLeft -= read
-//                }
-//            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
+            val signUrl = getSignUrl(TranslateConfig.api, null)
+            var urlStr = "wss://" + TranslateConfig.host + TranslateConfig.path + "?" + signUrl
+            println("urlStr $urlStr ${System.getenv(Const.ACCESS_KEY)}")
+//        urlStr = "wss://translate.volces.com/api/translate/speech/v1/?Action=SpeechTranslate&Version=2020-06-01&X-Date=20251013T150557Z&X-NotSignBody=&X-Credential=AKLTMmQ2YjI5MTJiZGI0NGVmZGI5MzM3NWM3MTdiZDRhMTE/20251013/cn-north-1/translate/request&X-Algorithm=HMAC-SHA256&X-SignedHeaders=&X-SignedQueries=Action;Version;X-Algorithm;X-Credential;X-Date;X-NotSignBody;X-SignedHeaders;X-SignedQueries&X-Signature=80ab01ee2c49a339251fcc26c8faac2ecf8202deaa3c1deb6c319261251aef7a"
+            val url = URI(urlStr)
+            println(url)
+            // open websocket
+            val client = Client(url)
+            client.setClientListener(object : IClientListener {
+                override fun onMessage(s: String?) {
+                    print("onMessage ${s ?: "null"}")
+                    cb.invoke(arrayListOf(s ?: ""))
+                }
+            })
+            client.connectBlocking()
+            client.send(Client.getConfig(source, target))
+            val buffer = ByteArray(200 * 32)
+            var bytesLeft = 100 * 1024 * 1024
             try {
-                client.send(Client.getEnd())
+                for (b in list) {
+                    client.send(Client.bytesToMessage(b))
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
+            } finally {
+                try {
+                    client.send(Client.getEnd())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
 
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

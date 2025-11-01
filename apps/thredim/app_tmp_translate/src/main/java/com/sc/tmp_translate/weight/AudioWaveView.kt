@@ -28,6 +28,7 @@ class AudioWaveView(context: Context, attrs: AttributeSet? = null) : View(contex
         val midY = height / 2f
         val stepX = width / maxPoints.toFloat()
         for (i in amplitudes.indices) {
+            if (i >= amplitudes.size) return
             val amp = amplitudes[i] * (height / 2f)
             canvas.drawLine(
                 i * stepX, midY - amp,
