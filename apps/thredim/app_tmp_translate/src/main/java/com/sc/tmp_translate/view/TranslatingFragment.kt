@@ -15,6 +15,7 @@ import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.vm.TranslatingViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 /**
  *
@@ -67,9 +68,6 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
                 viewModel.mScope.launch {
                     cb.invoke(pcm)
                 }
-//                viewModel.mScope.launch {
-                    cb.invoke(pcm)
-//                }
             }
         }
 
@@ -172,13 +170,13 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
             adapter.notifyDataSetChanged()
         }
         if (res) {
-            binding.lineV.visibility = View.VISIBLE
-            binding.audioWaveView2.visibility = View.VISIBLE
-            binding.translate2Iv.visibility = View.VISIBLE
-        } else {
             binding.lineV.visibility = View.GONE
-            binding.audioWaveView2.visibility = View.GONE
+//            binding.audioWaveView2.visibility = View.GONE
             binding.translate2Iv.visibility = View.GONE
+        } else {
+            binding.lineV.visibility = View.VISIBLE
+//            binding.audioWaveView2.visibility = View.VISIBLE
+            binding.translate2Iv.visibility = View.VISIBLE
         }
     }
 }
