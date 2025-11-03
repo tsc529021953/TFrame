@@ -109,9 +109,16 @@ class PcmAudioRecord(): IRecord {
                                     val source = if (isMaster) "zh" else ex
                                     val target = if (!isMaster) "zh" else ex
                                     iTransRecord?.onTransStateChange(isMaster, true)
-                                    tmpServiceImpl?.hsTranslateUtil?.translate(list, source, target) { resList ->
-                                        iTransRecord?.onReceiveRes(isMaster, "", resList)
-                                        iTransRecord?.onTransStateChange(isMaster, false)
+                                    if (isMaster) {
+                                        tmpServiceImpl?.hsTranslateUtil1?.translate(list, source, target) { resList ->
+                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
+                                            iTransRecord?.onTransStateChange(isMaster, false)
+                                        }
+                                    } else {
+                                        tmpServiceImpl?.hsTranslateUtil2?.translate(list, source, target) { resList ->
+                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
+                                            iTransRecord?.onTransStateChange(isMaster, false)
+                                        }
                                     }
 //                                    iTransRecord?.onReceiveToView(isMaster, list)
                                     for (b in list) {

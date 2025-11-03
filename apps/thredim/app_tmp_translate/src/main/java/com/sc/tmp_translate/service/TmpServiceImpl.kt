@@ -108,7 +108,8 @@ class TmpServiceImpl : ITmpService, Service() {
     private var transAudioRecord: TransAudioRecord? = null
 
     /*trans*/
-    var hsTranslateUtil: HSTranslateUtil? = null
+    var hsTranslateUtil1: HSTranslateUtil? = null
+    var hsTranslateUtil2: HSTranslateUtil? = null
     var curTransTextBean1 = TransTextBean()
     var curTransTextBean2 = TransTextBean()
 
@@ -153,10 +154,15 @@ class TmpServiceImpl : ITmpService, Service() {
         initTrans()
 
         // 初始化翻译组件
-        hsTranslateUtil = HSTranslateUtil()
-        hsTranslateUtil?.init(
+        hsTranslateUtil1 = HSTranslateUtil()
+        hsTranslateUtil1?.init(
             TranslateConfig.accessKey,
             TranslateConfig.secretKey
+        )
+        hsTranslateUtil2 = HSTranslateUtil()
+        hsTranslateUtil2?.init(
+            TranslateConfig.accessKey2,
+            TranslateConfig.secretKey2
         )
 
         // pcm 初始化
@@ -178,8 +184,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun initData() {
         mScope.launch(Dispatchers.IO) {
-//            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
-            fontSizeObf.set(0.5f) // TODO 还原
+            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+//            fontSizeObf.set(0.5f) // TODO 还原
             val languages = getStringArray(R.array.lang_an_array)
             languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
             moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))
@@ -204,7 +210,8 @@ class TmpServiceImpl : ITmpService, Service() {
         pcmAudioPlayer?.release()
         timerHandler?.stop()
         transAudioRecord?.release()
-        hsTranslateUtil?.release()
+        hsTranslateUtil1?.release()
+        hsTranslateUtil2?.release()
     }
 
     private fun initNotice() {
@@ -490,7 +497,7 @@ class TmpServiceImpl : ITmpService, Service() {
                     val ex = getExStr()
                     val source = if (isMaster) "zh" else ex
                     val target = if (!isMaster) "zh" else ex
-                    hsTranslateUtil?.translate(path, source, target) { resList ->
+                    hsTranslateUtil1?.translate(path, source, target) { resList ->
                         if (resList.isNotEmpty()) {
                             try {
                                 val res = resList[0]

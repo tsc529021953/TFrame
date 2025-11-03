@@ -85,7 +85,34 @@
                     android:visibility="@{tmp.textPlayObs ? View.VISIBLE: View.GONE}"
                     />
 
-            <View style="@style/horizontal_space_style"/>
+<!--            <View style="@style/horizontal_space_style"/>-->
+            <com.sc.tmp_translate.weight.AudioWaveView
+                    android:id="@+id/audioWaveView"
+                    style="@style/horizontal_space_style"
+                    android:background="#101010"/>
+            <ImageView
+                    style="@style/bottom_trans_img_style"
+                    android:id="@+id/translate1_iv"
+                    android:src="@drawable/ic_translating"
+                    android:layout_marginTop="0dp"
+                    android:visibility="invisible"
+                    />
+            <View android:layout_width="20dp"
+                  android:layout_height="match_parent"
+                  android:id="@+id/line_v"
+                    />
+            <com.sc.tmp_translate.weight.AudioWaveView
+                    android:id="@+id/audioWaveView2"
+                    style="@style/horizontal_space_style"
+                    android:background="#101010"/>
+
+            <ImageView
+                    style="@style/bottom_trans_img_style"
+                    android:id="@+id/translate2_iv"
+                    android:src="@drawable/ic_translating"
+                    android:layout_marginTop="0dp"
+                    android:visibility="invisible"
+                    />
 
             <ImageView
                     style="@style/bottom_trans_img_style"

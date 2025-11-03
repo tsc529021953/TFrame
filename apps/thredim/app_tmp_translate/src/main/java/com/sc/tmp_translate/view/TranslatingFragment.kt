@@ -1,5 +1,6 @@
 package com.sc.tmp_translate.view
 
+import android.view.View
 import androidx.databinding.Observable
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sc.tmp_translate.R
@@ -10,6 +11,7 @@ import com.sc.tmp_translate.bean.TransTextBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.FragmentTranslatingBinding
+import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceDelegate
 import com.sc.tmp_translate.vm.TranslatingViewModel
 import javax.inject.Inject
@@ -32,6 +34,59 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         binding.dataRv.post {
             binding.dataRv.scrollToPosition(items.size - 1)
         }
+    }
+
+    private var iTransRecord = object : ITransRecord {
+
+        override fun onRecordEnd(isMaster: Boolean, path: String?) {
+
+        }
+
+        override fun onReceiveRes(isMaster: Boolean, path: String?, resList: List<String>) {
+
+        }
+
+        override fun onReceiveToView(isMaster: Boolean, pcm: ByteArray?, pcmList: List<ByteArray>?) {
+            val cb = { bytes: ByteArray? ->
+                if (bytes != null) {
+                    val amp = viewModel!!.calculateAmplitude(bytes) * 5
+//                    this@TranslatingODFragment.activity?.runOnUiThread {
+                    if (isMaster)
+                        binding.audioWaveView.addAmplitude(amp)
+                    else {
+                        if (TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() == false)
+                            binding.audioWaveView2.addAmplitude(amp)
+                        else{
+                            // TODO 显示到另一边
+                        }
+                    }
+//                    }
+                }
+            }
+            if (pcm != null) {
+                viewModel.mScope.launch {
+                    cb.invoke(pcm)
+                }
+//                viewModel.mScope.launch {
+                    cb.invoke(pcm)
+//                }
+            }
+        }
+
+        override fun onTransStateChange(isMaster: Boolean, isTrans: Boolean) {
+            this@TranslatingFragment.activity?.runOnUiThread {
+                if (isMaster)
+                    binding.translate1Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+                else {
+                    if (TmpServiceDelegate.getInstance().getMoreDisplayObs()?.get() == false)
+                        binding.translate2Iv.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+                    else {
+                        // TODO 显示到另一边
+                    }
+                }
+            }
+        }
+
     }
 
     private var displayObsListener = object : Observable.OnPropertyChangedCallback() {
@@ -72,6 +127,7 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         val layoutManager = LinearLayoutManager(activity!!)
         binding.dataRv.layoutManager = layoutManager
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
+        TmpServiceDelegate.getInstance().addITransRecord(iTransRecord)
     }
 
     override fun onFontSizeChanged(fontSize: Float) {
@@ -101,6 +157,7 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         TmpServiceDelegate.getInstance().setTranslating(false)
         TmpServiceDelegate.getInstance().setTransState(false, 0)
         TmpServiceDelegate.getInstance().setTransRecord(false)
+        TmpServiceDelegate.getInstance().removeITransRecord(iTransRecord)
     }
 
     override fun initData() {
@@ -113,6 +170,15 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         if (res != adapter.isMore) {
             adapter.isMore = res
             adapter.notifyDataSetChanged()
+        }
+        if (res) {
+            binding.lineV.visibility = View.VISIBLE
+            binding.audioWaveView2.visibility = View.VISIBLE
+            binding.translate2Iv.visibility = View.VISIBLE
+        } else {
+            binding.lineV.visibility = View.GONE
+            binding.audioWaveView2.visibility = View.GONE
+            binding.translate2Iv.visibility = View.GONE
         }
     }
 }
