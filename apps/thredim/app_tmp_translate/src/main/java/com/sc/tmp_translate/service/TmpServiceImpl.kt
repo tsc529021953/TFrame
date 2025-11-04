@@ -30,6 +30,7 @@ import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_translate.R
 import com.sc.tmp_translate.bean.TransRecordBean
 import com.sc.tmp_translate.bean.TransTextBean
+import com.sc.tmp_translate.bean.TransThreadBean
 import com.sc.tmp_translate.bean.TranslateBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.RecordRepository
@@ -577,7 +578,7 @@ class TmpServiceImpl : ITmpService, Service() {
                                     log("解析中 $res2")
                                 }
                             } else {
-                                tipError()
+                                tipError(res) // 解析失败
                             }
                         } catch (e: Exception) {
 
@@ -595,6 +596,11 @@ class TmpServiceImpl : ITmpService, Service() {
                     iTransRecordList?.forEach {
                         it.onTransStateChange(isMaster, isTrans)
                     }
+                }
+
+                override fun onTransThreadGet(bean: TransThreadBean?) {
+                    // 添加到线程中
+                    transAudioRecord?.queueTrans?.add(bean)
                 }
             })
             transAudioRecord?.init()

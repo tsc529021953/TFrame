@@ -10,6 +10,7 @@ import com.arthenica.ffmpegkit.ReturnCode
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.utils.LiveEBUtil
+import com.sc.tmp_translate.bean.TransThreadBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.inter.IRecord
 //import com.sc.audio.DualRecorderJNI
@@ -75,6 +76,8 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 
     private var minSize = 0
     private var minTrackSize = 0
+
+    val queueTrans: Queue<TransThreadBean> = LinkedList()
 
     fun init() {
         // 此处通过系统API来读取设备数据
@@ -341,7 +344,26 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 //                log("录音1结束 $isRelease")
 //            }.start()
 //        }
+        Thread {
+            log("录音翻译线程开始 $isRelease")
+            while (!isRecordEnd) {
+                if (queueTrans.size > 0) {
+                    val bean = queueTrans.poll()
+                    if (bean != null) {
+                        context?.hsTranslateUtil1?.translate(bean.voiceList, bean.source, bean.target) { resList ->
+                            iTransRecord.onReceiveRes(bean.isMaster, "", resList)
+                            iTransRecord.onTransStateChange(bean.isMaster, false)
+                        }
+                    }
+                }
+                Thread.sleep(200)
+            }
+            queueTrans.clear()
+            log("录音翻译线程结束 $isRelease")
+        }.start()
     }
+
+
 
     fun stop(index: Int = 0) {
         if (index == 1 || index == 0) {

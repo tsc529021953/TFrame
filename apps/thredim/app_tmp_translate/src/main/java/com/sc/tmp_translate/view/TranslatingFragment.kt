@@ -8,6 +8,7 @@ import com.sc.tmp_translate.adapter.TransTextAdapter
 import com.sc.tmp_translate.base.BaseTransFragment
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
+import com.sc.tmp_translate.bean.TransThreadBean
 import com.sc.tmp_translate.constant.MessageConstant
 import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.FragmentTranslatingBinding
@@ -83,6 +84,10 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
                     }
                 }
             }
+        }
+
+        override fun onTransThreadGet(bean: TransThreadBean?) {
+
         }
 
     }

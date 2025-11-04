@@ -2,6 +2,7 @@ package com.sc.tmp_translate.utils.record
 
 import android.os.Environment
 import com.bk.webrtc.Apm
+import com.sc.tmp_translate.bean.TransThreadBean
 import com.sc.tmp_translate.inter.IRecord
 import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceImpl
@@ -81,6 +82,10 @@ class PcmAudioRecord(): IRecord {
     override fun open(card: Int) {
         isEnd = false
         Thread {
+            Timber.i("翻译线程开始")
+
+        }
+        Thread {
             Timber.i("线程开始")
 
             while (!isEnd) {
@@ -102,24 +107,32 @@ class PcmAudioRecord(): IRecord {
                             if (noVoiceCount > 10) {
                                 if (voiceCount > 10) {
                                     // 触发翻译
-                                    Timber.i("触发翻译 $voiceCount ${voiceList.size}")
+                                    Timber.i("触发翻译 $isMaster $voiceCount ${voiceList.size}")
                                     val list = voiceList.toList()
                                     val ex = tmpServiceImpl!!.getExStr()
 
                                     val source = if (isMaster) "zh" else ex
                                     val target = if (!isMaster) "zh" else ex
                                     iTransRecord?.onTransStateChange(isMaster, true)
-                                    if (isMaster) {
-                                        tmpServiceImpl?.hsTranslateUtil1?.translate(list, source, target) { resList ->
-                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
-                                            iTransRecord?.onTransStateChange(isMaster, false)
-                                        }
-                                    } else {
-                                        tmpServiceImpl?.hsTranslateUtil2?.translate(list, source, target) { resList ->
-                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
-                                            iTransRecord?.onTransStateChange(isMaster, false)
-                                        }
-                                    }
+
+                                    val bean = TransThreadBean()
+                                    bean.source = source
+                                    bean.target = target
+                                    bean.isMaster = isMaster
+                                    bean.voiceList = list
+                                    iTransRecord?.onTransThreadGet(bean)
+//                                    /*直接翻译*/
+//                                    if (isMaster) {
+//                                        tmpServiceImpl?.hsTranslateUtil1?.translate(list, source, target) { resList ->
+//                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
+//                                            iTransRecord?.onTransStateChange(isMaster, false)
+//                                        }
+//                                    } else {
+//                                        tmpServiceImpl?.hsTranslateUtil2?.translate(list, source, target) { resList ->
+//                                            iTransRecord?.onReceiveRes(isMaster, "", resList)
+//                                            iTransRecord?.onTransStateChange(isMaster, false)
+//                                        }
+//                                    }
 //                                    iTransRecord?.onReceiveToView(isMaster, list)
                                     for (b in list) {
                                         fos?.write(b)
