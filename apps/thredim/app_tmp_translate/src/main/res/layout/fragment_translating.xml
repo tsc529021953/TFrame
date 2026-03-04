@@ -32,6 +32,15 @@
                 />
 
         <ImageView
+                style="@style/back_btn_style"
+                android:id="@+id/log_btn"
+                android:src="@drawable/ic_log"
+                app:layout_constraintEnd_toStartOf="@+id/left_lang_tv"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{() -> vm.exportLog()}"
+                />
+
+        <ImageView
                 style="@style/bottom_trans_img_style"
                 android:id="@+id/trans_iv"
                 app:layout_constraintTop_toTopOf="parent"

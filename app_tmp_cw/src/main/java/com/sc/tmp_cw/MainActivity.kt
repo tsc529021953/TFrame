@@ -200,10 +200,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             }
         }
         binding.jhBtn.setOnClickListener {
-//            TmpServiceDelegate.service()?.test("")
-            layoutClick(binding.jhBtn, true) {
-                navController.navigate(R.id.navigation_interactive, null)
-            }
+            TmpServiceDelegate.service()?.test("")
+//            layoutClick(binding.jhBtn, true) {
+//                navController.navigate(R.id.navigation_interactive, null)
+//            }
         }
 //        ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
 

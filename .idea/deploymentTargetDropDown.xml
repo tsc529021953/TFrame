@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="Plugins.TFrame.app">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
@@ -24,20 +27,7 @@
         <State />
       </entry>
       <entry key="app_tmp_translate">
-        <State>
-          <runningDeviceTargetSelectedWithDropDown>
-            <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="2E62433000944226" />
-                </Key>
-              </deviceKey>
-            </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2025-11-03T14:43:11.948661Z" />
-        </State>
+        <State />
       </entry>
       <entry key="app_xs_by">
         <State />

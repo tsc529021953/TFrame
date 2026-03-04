@@ -185,8 +185,8 @@ class TmpServiceImpl : ITmpService, Service() {
 
     private fun initData() {
         mScope.launch(Dispatchers.IO) {
-            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
-//            fontSizeObf.set(0.5f) // TODO 还原
+//            fontSizeObf.set(spManager.getFloat(MessageConstant.SP_RECORD_TEXT_SIZE, 1f))
+            fontSizeObf.set(0.5f) // TODO 还原
             val languages = getStringArray(R.array.lang_an_array)
             languageObs.set(spManager.getString(MessageConstant.SP_RECORD_LANGUAGE, languages[0]))
             moreDisplayObb.set(spManager.getBoolean(MessageConstant.SP_MORE_DISPLAY, false))

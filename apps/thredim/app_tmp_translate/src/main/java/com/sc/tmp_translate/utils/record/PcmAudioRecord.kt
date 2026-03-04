@@ -82,10 +82,6 @@ class PcmAudioRecord(): IRecord {
     override fun open(card: Int) {
         isEnd = false
         Thread {
-            Timber.i("翻译线程开始")
-
-        }
-        Thread {
             Timber.i("线程开始")
 
             while (!isEnd) {

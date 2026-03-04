@@ -18,9 +18,16 @@ import com.sc.tmp_translate.R
 import com.sc.tmp_translate.adapter.TransTextAdapter
 import com.sc.tmp_translate.da.TransRepository
 import com.sc.tmp_translate.bean.TransTextBean
+import com.sc.tmp_translate.bean.TransThreadBean
 import com.sc.tmp_translate.da.TransRecordRepository
 import com.sc.tmp_translate.databinding.DisplayTransMoreBinding
+import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceDelegate
+import com.sc.tmp_translate.weight.AudioWaveView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.*
 
 //, display
@@ -32,12 +39,52 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
 
     lateinit var adapter2: TransTextAdapter
 
+    var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     private val observer: (List<TransTextBean>) -> Unit = { items ->
         adapter2.submitList(items)
         // 滚动到底部（需要 post 保证更新后执行）
         binding?.dataRv?.post {
             binding?.dataRv?.scrollToPosition(items.size - 1)
         }
+    }
+
+    private var iTransRecord = object : ITransRecord {
+
+        override fun onRecordEnd(isMaster: Boolean, path: String?) {
+
+        }
+
+        override fun onReceiveRes(isMaster: Boolean, path: String?, resList: List<String>) {
+
+        }
+
+        override fun onReceiveToView(isMaster: Boolean, pcm: ByteArray?, pcmList: List<ByteArray>?) {
+            val cb = { bytes: ByteArray? ->
+                if (bytes != null) {
+                    val amp = AudioWaveView.calculateAmplitude(bytes) * 5
+                    if (!isMaster)
+                        binding?.audioWaveView?.addAmplitude(amp)
+                }
+            }
+            if (pcm != null) {
+                mScope.launch {
+                    cb.invoke(pcm)
+                }
+            }
+        }
+
+        override fun onTransStateChange(isMaster: Boolean, isTrans: Boolean) {
+            mScope.launch(Dispatchers.Main) {
+                if (!isMaster)
+                    binding?.translate1Iv?.visibility = if (isTrans) View.VISIBLE else View.INVISIBLE
+            }
+        }
+
+        override fun onTransThreadGet(bean: TransThreadBean?) {
+
+        }
+
     }
 
     var isUserInitiated = false
@@ -60,12 +107,14 @@ class TransMoreDisplay(context: Context , display: Display , var fontSizeCB: ((v
         initTranslating()
 //        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true)
             TransRepository.addObserver(observer)
+        TmpServiceDelegate.getInstance().addITransRecord(iTransRecord)
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
 //        if (TmpServiceDelegate.getInstance().getTransRecordObs()?.get() != true)
             TransRepository.removeObserver(observer)
+        TmpServiceDelegate.getInstance().removeITransRecord(iTransRecord)
     }
 
     fun onFontSizeChanged() {

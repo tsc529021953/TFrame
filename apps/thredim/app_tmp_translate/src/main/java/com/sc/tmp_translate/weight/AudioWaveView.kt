@@ -9,6 +9,19 @@ import android.view.View
 
 class AudioWaveView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
 
+    companion object {
+        fun calculateAmplitude(pcm: ByteArray): Float {
+            var max = 0
+            var i = 0
+            while (i < pcm.size) {
+                val value = ((pcm[i + 1].toInt() shl 8) or (pcm[i].toInt() and 0xFF)).toShort().toInt()
+                max = kotlin.math.max(max, kotlin.math.abs(value))
+                i += 2
+            }
+            return max / 32768f  // 归一化到 [0, 1]
+        }
+    }
+
     private val amplitudes = mutableListOf<Float>()  // 保存波形数据
     private val maxPoints = 200                      // 控制绘制点数量
     private val paint = Paint().apply {
@@ -28,7 +41,7 @@ class AudioWaveView(context: Context, attrs: AttributeSet? = null) : View(contex
         val midY = height / 2f
         val stepX = width / maxPoints.toFloat()
         for (i in amplitudes.indices) {
-            if (i >= amplitudes.size) return
+            if (i >= amplitudes.size || amplitudes[i] == null) return
             val amp = amplitudes[i] * (height / 2f)
             canvas.drawLine(
                 i * stepX, midY - amp,

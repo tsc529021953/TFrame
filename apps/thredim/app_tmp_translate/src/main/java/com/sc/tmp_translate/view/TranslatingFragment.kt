@@ -131,6 +131,7 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         binding.dataRv.layoutManager = layoutManager
         TmpServiceDelegate.getInstance().getMoreDisplayObs()?.addOnPropertyChangedCallback(displayObsListener)
         TmpServiceDelegate.getInstance().addITransRecord(iTransRecord)
+        refreshDisplay()
     }
 
     override fun onFontSizeChanged(fontSize: Float) {
@@ -176,11 +177,11 @@ class TranslatingFragment : BaseTransFragment<FragmentTranslatingBinding, Transl
         }
         if (res) {
             binding.lineV.visibility = View.GONE
-//            binding.audioWaveView2.visibility = View.GONE
+            binding.audioWaveView2.visibility = View.GONE
             binding.translate2Iv.visibility = View.GONE
         } else {
             binding.lineV.visibility = View.VISIBLE
-//            binding.audioWaveView2.visibility = View.VISIBLE
+            binding.audioWaveView2.visibility = View.VISIBLE
             binding.translate2Iv.visibility = View.VISIBLE
         }
     }
