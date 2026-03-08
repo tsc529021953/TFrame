@@ -38,7 +38,7 @@
             >
 
         <activity
-                android:name="com.sc.tmp_translate.TranslateOneDisplayActivity"
+                android:name="com.sc.tmp_translate.TranslateActivity"
                 android:screenOrientation="landscape" android:exported="true">
                         <intent-filter>
                             <action android:name="android.intent.action.MAIN" />

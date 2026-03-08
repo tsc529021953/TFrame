@@ -1,5 +1,6 @@
 package com.sc.tmp_translate.utils.record
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.*
 import android.os.Environment
@@ -18,6 +19,9 @@ import com.sc.tmp_translate.inter.ITransRecord
 import com.sc.tmp_translate.service.TmpServiceImpl
 import com.sc.tmp_translate.utils.IPcmRecord
 import com.sc.tmp_translate.utils.PcmRecord
+import com.sc.tmp_translate.utils.record.DualChannelAudioRecord.Companion
+import com.sc.tmp_translate.utils.record.DualChannelAudioRecord.Companion.RATE
+import com.sc.tmp_translate.utils.record.DualChannelAudioRecord.Companion.RECORD_CHANNEL_CONFIG_STEREO
 //import com.signway.aec.AEC
 import timber.log.Timber
 import java.io.BufferedOutputStream
@@ -28,7 +32,7 @@ import java.util.*
 
 
 /**
- *  * 1.读取两个摄像头
+ *  * 1.读取两个麦克风
  *  * 2.打开并录音
  *  * 3.录音并播放
  */
@@ -71,14 +75,21 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
     private var tinyCapRecord1: TinyCapRecord? = null
     private var tinyCapRecord2: TinyCapRecord? = null
 
+    // 底层双麦法
     private var pcmRecord1: IRecord? = null
     private var pcmRecord2: IRecord? = null
+
+    // 双麦方案
+    private var dualChannelMicAR: AudioRecord? = null
+    private var dualChannelMicAR1: DualChannelAudioRecord? = null
+    private var dualChannelMicAR2: DualChannelAudioRecord? = null
 
     private var minSize = 0
     private var minTrackSize = 0
 
     val queueTrans: Queue<TransThreadBean> = LinkedList()
 
+    @SuppressLint("MissingPermission")
     fun init() {
         // 此处通过系统API来读取设备数据
 //        val devices = am.getDevices(AudioManager.GET_DEVICES_INPUTS)
@@ -104,9 +115,6 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
             RECORD_CHANNEL_CONFIG,
             AUDIO_FORMAT
         )
-        recordBuffer1 = ByteArray(minSize)
-        recordBuffer2 = ByteArray(minSize)
-        log("minSize $minSize")
 
         val device1 = "/dev/snd/pcmC4D0c" // 第一个USB声卡
         val device2 = "/dev/snd/pcmC5D0c" // 第二个USB声卡
@@ -117,15 +125,16 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 
 //        tinyCapRecord1 = TinyCapRecord()
 //        tinyCapRecord2 = TinyCapRecord()
-        pcmRecord1 = PcmAudioRecord(1,iTransRecord, context)
-        pcmRecord2 = PcmAudioRecord(2,iTransRecord, context)
-//        pcmRecord2 = AEC()
-        PcmRecord.iPcmRecord = object : IPcmRecord {
-            override fun onPcmData(card: Int, data: ByteArray?) {
-                if (card == pcmRecord1?.card) pcmRecord1?.onPcmData(data)
-                else pcmRecord2?.onPcmData(data)
-            }
-        }
+        // 通过底层读取双麦的方法
+//        pcmRecord1 = PcmAudioRecord(1,iTransRecord, context)
+//        pcmRecord2 = PcmAudioRecord(2,iTransRecord, context)
+////        pcmRecord2 = AEC()
+//        PcmRecord.iPcmRecord = object : IPcmRecord {
+//            override fun onPcmData(card: Int, data: ByteArray?) {
+//                if (card == pcmRecord1?.card) pcmRecord1?.onPcmData(data)
+//                else pcmRecord2?.onPcmData(data)
+//            }
+//        }
         log("初始化结果 tinyCapManager ${TinyCapManager.isTinyCapAvailable()}")
 //        recorder1Ptr = DualRecorderJNI.initRecorder(device1, SAMPLE_RATE_IN_HZ, 1);
 //        recorder2Ptr = DualRecorderJNI.initRecorder(device2, SAMPLE_RATE_IN_HZ, 1);
@@ -145,8 +154,29 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 //            AUDIO_FORMAT,
 //            minSize
 //        )
+        minSize = AudioRecord.getMinBufferSize(
+            RATE,
+            RECORD_CHANNEL_CONFIG_STEREO,
+            AUDIO_FORMAT
+        )
+        dualChannelMicAR = AudioRecord(
+            AUDIO_SOURCE,
+            RATE,
+            RECORD_CHANNEL_CONFIG_STEREO,
+            AUDIO_FORMAT,
+            minSize
+        )
+        dualChannelMicAR1 = DualChannelAudioRecord(1, iTransRecord, context)
+        dualChannelMicAR2 = DualChannelAudioRecord(2, iTransRecord, context)
+//        PcmRecord.iPcmRecord = object : IPcmRecord {
+//            override fun onPcmData(card: Int, data: ByteArray?) {
+//                if (card == pcmRecord1?.card) pcmRecord1?.onPcmData(data)
+//                else pcmRecord2?.onPcmData(data)
+//            }
+//        }
         log("audioRecord1 初始化 ${if (audioRecord1?.state == AudioRecord.STATE_INITIALIZED) "成功" else "失败" } ")
         log("audioRecord2 初始化 ${if (audioRecord2?.state == AudioRecord.STATE_INITIALIZED) "成功" else "失败" } ")
+
 //        minTrackSize = AudioTrack.getMinBufferSize(SAMPLE_RATE_IN_HZ,
 //            RECORD_CHANNEL_CONFIG,
 //            AUDIO_FORMAT);
@@ -158,6 +188,17 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 //                , AudioTrack.MODE_STREAM)
         log("audioTrack1 初始化 ${if (audioTrack1?.state == AudioTrack.STATE_INITIALIZED) "成功" else "失败" } ")
         log("audioTrack2 初始化 ${if (audioTrack2?.state == AudioTrack.STATE_INITIALIZED) "成功" else "失败" } ")
+
+        recordBuffer1 = ByteArray(minSize)
+        recordBuffer2 = ByteArray(minSize)
+        log("minSize $minSize")
+        if (dualChannelMicAR != null) {
+            log("dualChannelMicAR 初始化 ${if (dualChannelMicAR?.state == AudioRecord.STATE_INITIALIZED) "成功" else "失败" } ")
+            if (dualChannelMicAR?.state != AudioRecord.STATE_INITIALIZED) {
+                LiveEBUtil.post(RemoteMessageEvent(MessageConstant.MIC_LOAD_ERROR, ""))
+            }
+            return
+        }
         AudioCardUtils.readSoundCards(object : AudioCardUtils.OnCardInfoReadListener{
             override fun onReadCompleted(
                 allCards: List<AudioCardUtils.SoundCardInfo>,
@@ -193,8 +234,67 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
     }
 
     fun start(index: Int = 0) {
+        log("点击开始录制")
         isRecordEnd = false
         recordState = 0
+        if (dualChannelMicAR?.state == AudioRecord.STATE_INITIALIZED && !isRecord1) {
+            isRecord1 = true
+            val outputFile1 = createOutputFile(1)
+            val outputFile2 = createOutputFile(2)
+            try {
+//                outputStream1 = BufferedOutputStream(FileOutputStream(outputFile1))
+//                outputStream2 = BufferedOutputStream(FileOutputStream(outputFile2))
+            } catch (e: Exception) {
+                log("文件1创建失败: ${e.message}")
+                outputStream1 = null
+                outputStream2 = null
+            }
+            log("双通道开始录制")
+            dualChannelMicAR?.startRecording()
+            //发数据的线程
+            Thread {
+                var read = -1
+                while (!isRecordEnd) {
+                    read = dualChannelMicAR!!.read(recordBuffer1, 0, recordBuffer1.size)
+//                    println("read size $read ${recordBuffer1.size}")
+//                    val channel1Data = extractChannel(recordBuffer1, read, 0)
+//                    val channel2Data = extractChannel(recordBuffer1, read, 1)
+                    if (read > 0) {
+                        val (channel1Data, channel2Data) = splitStereoToMono(recordBuffer1, read)
+                        if (channel1Data != null) {
+                            dualChannelMicAR1?.onPcmData(channel1Data)
+                        }
+                        if (channel2Data != null) {
+                            dualChannelMicAR2?.onPcmData(channel2Data)
+                        }
+
+//                        outputStream1?.write(channel1Data, 0, channel1Data.size)
+//                        outputStream2?.write(channel2Data, 0, channel2Data.size)
+                    }
+
+//                    if (read > 0) {
+//
+//                    }
+                }
+                try {
+                    outputStream1?.flush()
+                    outputStream1?.close()
+                    outputStream2?.flush()
+                    outputStream2?.close()
+                } catch (e: Exception) {
+                    log( "关闭文件1失败: ${e.message}")
+                }
+                dualChannelMicAR?.stop()
+                dualChannelMicAR1?.close()
+                dualChannelMicAR2?.close()
+                if (isRelease) {
+                    dualChannelMicAR?.release()
+                    dualChannelMicAR = null
+                }
+                isRecord1 = false
+                log("双通道录音结束 $isRelease")
+            }.start()
+        }
         if ((index == 1 || index == 0) && !isRecord1 && audioRecord1?.state == AudioRecord.STATE_INITIALIZED) {
             isRecord1 = true
             val outputFile = createOutputFile(1)
@@ -307,6 +407,16 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
         if ((index == 2 || index == 0) && card2 > 0) {
             pcmRecord2?.open(card2)
         }
+        if (dualChannelMicAR?.state == AudioRecord.STATE_INITIALIZED) {
+            if ((index == 1 || index == 0)) {
+                dualChannelMicAR1?.open(0)
+            }
+            if ((index == 2 || index == 0)) {
+                dualChannelMicAR2?.open(0)
+            }
+        }
+
+
 //        if ((index == 1 || index == 0) && !isRecord1 /*&& pcmRecord1 != null && card1 > 0*/) {
 //            isRecord1 = true
 //            val outputFile = createOutputFile(1)
@@ -363,9 +473,63 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
         }.start()
     }
 
+    private fun splitStereoToMono(stereoData: ByteArray, readLength: Int): Pair<ByteArray, ByteArray> {
+        if (readLength <= 0) return Pair(ByteArray(0), ByteArray(0))
+
+        // 每个采样点 4 字节（双通道各 2 字节）
+        val sampleCount = readLength / 4
+        // 单通道数据大小为采样点数 * 2 字节
+        val monoSize = sampleCount * 2
+
+        // 创建两个单通道缓冲区
+        val leftChannel = ByteArray(monoSize)
+        val rightChannel = ByteArray(monoSize)
+
+        // 立体声数据结构：[L0_L, L0_H, R0_L, R0_H, L1_L, L1_H, R1_L, R1_H, ...]
+        // 拆分左右通道数据
+        for (i in 0 until sampleCount) {
+            val stereoIndex = i * 4
+            // 左通道数据
+            leftChannel[i * 2] = stereoData[stereoIndex]           // L低字节
+            leftChannel[i * 2 + 1] = stereoData[stereoIndex + 1]   // L高字节
+            // 右通道数据
+            rightChannel[i * 2] = stereoData[stereoIndex + 2]      // R低字节
+            rightChannel[i * 2 + 1] = stereoData[stereoIndex + 3]  // R高字节
+        }
+
+        return Pair(leftChannel, rightChannel)
+    }
+
+    /**
+     * 从立体声 PCM 数据中提取单通道数据
+     * @param stereoData 双通道 PCM 数据（16bit，交错存储）
+     * @param readLength 实际读取的字节数
+     * @param channel 要提取的通道（0=左通道，1=右通道）
+     * @return 单通道 PCM 数据
+     */
+    private fun extractChannel(stereoData: ByteArray, readLength: Int, channel: Int): ByteArray {
+        if (readLength <= 0) return ByteArray(0)
+
+        // 每个采样点 4 字节（双通道各 2 字节）
+        val sampleCount = readLength / 4
+        // 单通道数据大小为采样点数 * 2 字节
+        val monoSize = sampleCount * 2
+        val monoBuffer = ByteArray(monoSize)
+
+        // 提取指定通道的数据
+        // 立体声数据结构：[L0_L, L0_H, R0_L, R0_H, L1_L, L1_H, R1_L, R1_H, ...]
+        for (i in 0 until sampleCount) {
+            val stereoIndex = i * 4 + channel * 2
+            monoBuffer[i * 2] = stereoData[stereoIndex]      // 低字节
+            monoBuffer[i * 2 + 1] = stereoData[stereoIndex + 1]  // 高字节
+        }
+
+        return monoBuffer
+    }
 
 
     fun stop(index: Int = 0) {
+        log("停止录制 $index $isRecordEnd")
         if (index == 1 || index == 0) {
             if (isRecordEnd) {
                 audioRecord1?.release()
@@ -373,6 +537,11 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
 
                 audioRecord2?.release()
                 audioRecord2 = null
+
+                dualChannelMicAR?.release()
+                dualChannelMicAR = null
+                dualChannelMicAR1?.close()
+                dualChannelMicAR2?.close()
             }
             isRecordEnd = true
         }
