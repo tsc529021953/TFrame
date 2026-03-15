@@ -629,7 +629,6 @@ class Device {
 //                break
 //        }
 
-
         println this.toString()
 
         return this

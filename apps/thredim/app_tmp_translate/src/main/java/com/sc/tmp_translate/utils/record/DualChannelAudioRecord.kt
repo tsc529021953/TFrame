@@ -225,7 +225,7 @@ class DualChannelAudioRecord(): IRecord {
         apm = Apm(false, true, true, false, false, false, false)
         apm?.AEC(false)
         apm?.AECM(false)
-        apm?.NSSetLevel(Apm.NS_Level.Moderate);
+        apm?.NSSetLevel(Apm.NS_Level.VeryHigh); // Moderate
         apm?.NS(true);
         apm?.AGC(true)
         apm?.AGCSetMode(Apm.AGC_Mode.AdaptiveAnalog)

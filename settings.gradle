@@ -25,6 +25,8 @@ include ':app_tmp_translate' /*视睿迪透明屏翻译软件*/
 project(':app_tmp_translate').projectDir = new File('./apps/thredim/app_tmp_translate')
 include ':app_td_common' /*视睿迪普通需求*/
 project(':app_td_common').projectDir = new File('./apps/thredim/app_td_common')
+include ':app_tpm_player' /*视睿迪透明屏播放器*/
+project(':app_tpm_player').projectDir = new File('./apps/thredim/app_tpm_player')
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'
