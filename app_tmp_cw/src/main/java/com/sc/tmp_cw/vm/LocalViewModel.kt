@@ -72,7 +72,7 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         if (check) {
             val record = spManager.getString(MessageConstant.SP_PLAYLIST_CHECK, "")
             if (record == lastStr) {
-                System.out.println("相同数据，无需校验！ $checkPlay")
+               Timber.i("相同数据，无需校验！ $checkPlay")
                 if (checkPlay) {
                     try {
 //                        player?.start()

@@ -42,7 +42,7 @@ class TransAudioRecord(var context: TmpServiceImpl, var iTransRecord: ITransReco
         const val SAMPLE_RATE_IN_HZ = 16000
         const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
         const val RECORD_CHANNEL_CONFIG: Int = AudioFormat.CHANNEL_IN_MONO
-        const val AUDIO_SOURCE = MediaRecorder.AudioSource.MIC
+        const val AUDIO_SOURCE = MediaRecorder.AudioSource.VOICE_COMMUNICATION //MIC
     }
 
     private val am: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager

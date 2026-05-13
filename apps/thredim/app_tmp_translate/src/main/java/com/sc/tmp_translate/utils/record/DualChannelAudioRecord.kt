@@ -17,6 +17,10 @@ import com.sc.tmp_translate.utils.record.TransAudioRecord.Companion
 import com.sc.tmp_translate.utils.record.TransAudioRecord.Companion.RECORD_CHANNEL_CONFIG
 import com.sc.tmp_translate.utils.record.TransAudioRecord.Companion.SAMPLE_RATE_IN_HZ
 import com.signway.aec.AEC
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -63,6 +67,8 @@ class DualChannelAudioRecord(): IRecord {
 
     var tmpServiceImpl: TmpServiceImpl? = null
 
+    private var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     constructor(index: Int, iTransRecord: ITransRecord, tmpServiceImpl: TmpServiceImpl?) : this() {
         this.index = index
         this.iTransRecord = iTransRecord
@@ -100,7 +106,7 @@ class DualChannelAudioRecord(): IRecord {
                     val datas = queue.poll() // BLEUtils.mergeQueueBytes(queue) //
                     if (datas != null) {
                         val isMaster = index == 1
-                        fosOrigin?.write(datas)
+//                        fosOrigin?.write(datas)
                         val d4 = processWebRTC(datas) //
                         val hasVoice = apm?.VADHasVoice() ?: true
 
@@ -108,35 +114,29 @@ class DualChannelAudioRecord(): IRecord {
 //                        val hasVoice = isValidVoice(d4)
 
 //                        System.out.println("VAD $card $hasVoice")
-                        if (hasVoice) {
-                            System.out.println("VAD $card 有声音")
-                            noVoiceCount = 0
-                            voiceCount++
-                            voiceList.add(d4)
-                        } else {
-                            noVoiceCount++
-                            if (noVoiceCount > 10) {
-                                if (voiceCount > 10) {
-                                    // 触发翻译
-//                                    Timber.i("触发翻译 $isMaster $voiceCount ${voiceList.size}")
-                                    val list = voiceList.toList()
-                                    val ex = tmpServiceImpl!!.getExStr()
+                        val voiceCallback = {
+                            if (voiceCount > 10) {
+                                // 触发翻译
+                                Timber.i("触发翻译 $isMaster $voiceCount ${voiceList.size}")
+                                val list = voiceList.toList()
+                                val ex = tmpServiceImpl!!.getExStr()
 
-                                    val source = if (isMaster) "zh" else ex
-                                    val target = if (!isMaster) "zh" else ex
-                                    iTransRecord?.onTransStateChange(isMaster, true)
+                                val source = if (isMaster) "zh" else ex
+                                val target = if (!isMaster) "zh" else ex
+                                iTransRecord?.onTransStateChange(isMaster, true)
 
-                                    val bean = TransThreadBean()
-                                    bean.source = source
-                                    bean.target = target
-                                    bean.isMaster = isMaster
-                                    bean.voiceList = list
+                                val bean = TransThreadBean()
+                                bean.source = source
+                                bean.target = target
+                                bean.isMaster = isMaster
+                                bean.voiceList = list
 //                                    iTransRecord?.onTransThreadGet(bean)
 //                                    /*直接翻译*/
-                                    var isValidVoice = isValidVoiceList(list)
+                                var isValidVoice = isValidVoiceList(list)
 
-                                    Timber.i("触发翻译 $isMaster $voiceCount ${voiceList.size} $isValidVoice")
-                                    if (isValidVoice) {
+                                Timber.i("触发翻译 $isMaster $voiceCount ${voiceList.size} $isValidVoice")
+                                if (isValidVoice) {
+                                    mScope.launch {
                                         if (isMaster) {
                                             tmpServiceImpl?.hsTranslateUtil1?.translate(list, source, target) { resList ->
                                                 iTransRecord?.onReceiveRes(isMaster, "", resList)
@@ -150,14 +150,31 @@ class DualChannelAudioRecord(): IRecord {
                                         }
 //                                    iTransRecord?.onReceiveToView(isMaster, list)
                                     }
-                                    for (b in list) {
-                                        fos?.write(b)
-                                    }
-                                } else {
-                                    // 声音太短，无效数据
                                 }
-                                voiceCount = 0
-                                voiceList.clear()
+                                for (b in list) {
+                                    fos?.write(b)
+                                }
+                            } else {
+                                // 声音太短，无效数据
+                            }
+                            voiceCount = 0
+                            noVoiceCount = 0
+                            voiceList.clear()
+                        }
+
+
+                        if (hasVoice) {
+                            System.out.println("VAD $card 有声音 $voiceCount")
+                            noVoiceCount = 0
+                            voiceCount++
+                            voiceList.add(d4)
+                            if (voiceCount > 250) {
+                                voiceCallback.invoke()
+                            }
+                        } else {
+                            noVoiceCount++
+                            if (noVoiceCount > 10) { // 10
+                                voiceCallback.invoke()
                             } else {
 
                             }

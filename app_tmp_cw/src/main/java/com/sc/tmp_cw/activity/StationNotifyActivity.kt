@@ -71,7 +71,6 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
 //            finish()
 //        }
 //        timerHandler?.start()
-
     }
 
     override fun onResume() {

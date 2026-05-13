@@ -213,6 +213,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         viewModel.videoListObs.observe(this) {
             if (it == null) return@observe
             adapter?.setNewInstance(it)
+            Timber.i("local initData ${it.size}")
             if (it.size > 0) {
                 viewModel.play(it[0])
             } else viewModel.stop()

@@ -23,6 +23,7 @@ object MessageConstant {
     const val PATH_CATE = "/TMP/Cate/"
     const val PATH_VIDEO = "/TMP/Video/"
     const val PATH_STATION = "/TMP/Station/"
+    const val PATH_LINE = "/TMP/line.png"
 
     const val SP_FINISH_TIME = "SP_FINISH_TIME" // 定时结束时间
     const val SP_MARQUEE_SPEED = "SP_MARQUEE_SPEED" // 走马灯速度

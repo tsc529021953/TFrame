@@ -156,13 +156,13 @@
     },
     {
       "id": 27,
-      "cn": "雅安道",
-      "en": "YAANDAO"
+      "cn": "乐山道",
+      "en": "LESHANDAO"
     },
     {
       "id": 28,
-      "cn": "延安路",
-      "en": "YAN＇ANLU"
+      "cn": "南泥湾路",
+      "en": "NANNIWANLU"
     },
     {
       "id": 29,
@@ -171,8 +171,8 @@
     },
     {
       "id": 30,
-      "cn": "中北镇",
-      "en": "ZHONGBEIZHEN"
+      "cn": "中北",
+      "en": "ZHONGBEI"
     }
   ],
   "urgentNotify": [

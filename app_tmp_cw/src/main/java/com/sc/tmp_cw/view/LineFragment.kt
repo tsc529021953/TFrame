@@ -1,5 +1,6 @@
 package com.sc.tmp_cw.view
 
+import android.os.Environment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -9,8 +10,10 @@ import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.view.ZoomView
 import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentLineBinding
 import com.sc.tmp_cw.databinding.FragmentTravelBinding
+import java.io.File
 
 /**
  * @author  tsc
@@ -40,9 +43,22 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 //        .format(DecodeFormat.PREFER_RGB_565)　　//设置为这种格式去掉透明度通道，可以减少内存占有
 //        .placeholder(R.drawable.img_error)
 //            .error(R.drawable.img_error)
-        Glide.with(requireContext() )
+
+        var path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_LINE
+                
+        // 判断路径下的图片是否存在
+        val imageFile = File(path)
+        val loadImage = if (imageFile.exists() && imageFile.isFile) {
+            // 文件存在，加载外部存储的图片
+            path
+        } else {
+            // 文件不存在，使用本地图片
+            R.mipmap.ic_line_ly
+        }
+        
+        Glide.with(requireContext())
             .setDefaultRequestOptions(requestOptions)
-            .load(R.mipmap.ic_line_ly)
+            .load(loadImage)
             .into(binding!!.lineIv)
         binding.zoom.setOnTouchListener { view, motionEvent ->
             InteractiveFragment.iFragment?.clicked()
