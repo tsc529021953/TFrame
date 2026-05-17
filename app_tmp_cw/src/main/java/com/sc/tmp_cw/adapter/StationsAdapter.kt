@@ -51,7 +51,7 @@ class StationsAdapter(items: MutableList<CWInfo.StationBean>, var callback: File
             // 上面
 //            binding?.bottomTv?.visibility = View.GONE
 //            binding?.topTv?.visibility = View.VISIBLE
-            binding?.topTv?.text = item.cn.reversed()
+            binding?.topTv?.text = item.cn // .reversed()
             (binding?.topTv?.layoutParams as ConstraintLayout.LayoutParams).bottomToTop = R.id.iv
             (binding?.topTv?.layoutParams as ConstraintLayout.LayoutParams).topToBottom = -1
 

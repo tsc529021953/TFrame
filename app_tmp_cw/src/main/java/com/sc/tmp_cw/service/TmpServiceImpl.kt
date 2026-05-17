@@ -466,7 +466,7 @@ class TmpServiceImpl : ITmpService, Service() {
         Timber.i("iconIV initView")
         if (rootView == null) {
             rootView = FloatingX.control().getView()
-            iconIV = rootView!!.findViewById<ImageView>(R.id.icon_iv)
+            iconIV = rootView?.findViewById<ImageView>(R.id.icon_iv)
 //            rootView!!.setOnTouchListener { view, motionEvent ->
 ////                hideTimer = 0
 //                return@setOnTouchListener false

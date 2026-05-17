@@ -102,10 +102,17 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        })
 //        viewModel.player?.setSpeed(2f)
 
-        viewModel.player = ExoPlayer.Builder(requireContext()).build()
-        viewModel.player!!.playWhenReady = true
+        // 使用viewModel中的initPlayer方法来初始化播放器
+        viewModel.initPlayer()
+        
+        // 将播放器绑定到视图
         binding.videoView.player = viewModel.player
 
+        // 添加播放器监听器
+        addPlayerListener()
+    }
+    
+    private fun addPlayerListener() {
         viewModel.player!!.addListener(object : Player.Listener {
 
 //            override fun onPlaybackStateChanged(playbackState: Int) {
@@ -129,29 +136,62 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 //
-                Timber.i("onPlayerError %s", error.message)
+                Timber.e("onPlayerError %s", error.message)
                 error.printStackTrace()
-                try {
-                    viewModel.stop()
-                    viewModel.next()
-                } catch (e: Exception) {
-                    Timber.i("错误播放失败${e.message}")
+                
+                // 检查是否是MediaCodec相关错误
+                val isMediaCodecError = error.message?.contains("MediaCodec") == true ||
+                                      error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ||
+                                      error.errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED ||
+                                      error.errorCode == PlaybackException.ERROR_CODE_DECODING_FORMAT_EXCEEDS_CAPABILITIES ||
+                                      error.errorCode == PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED ||
+                                      error.errorCode == PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED
+                
+                if (isMediaCodecError) {
+                    Timber.w("检测到MediaCodec错误，尝试重新初始化播放器")
+                    try {
+                        // 释放当前播放器
+                        viewModel.player?.release()
+                        // 重新初始化播放器
+                        viewModel.initPlayer()
+                        // 重新绑定到视图
+                        binding.videoView.player = viewModel.player
+                        // 添加监听器
+                        addPlayerListener()
+                        // 尝试播放下一个视频
+                        viewModel.next()
+                    } catch (e: Exception) {
+                        Timber.e("重新初始化播放器失败: ${e.message}")
+                        e.printStackTrace()
+                    }
+                } else {
+                    // 非MediaCodec错误，按原有逻辑处理
+                    try {
+                        viewModel.stop()
+                        viewModel.next()
+                    } catch (e: Exception) {
+                        Timber.i("错误播放失败${e.message}")
+                    }
                 }
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-//                Timber.d("onPlayerStateChanged $playWhenReady, $playbackState")
                 when (playbackState){
                     Player.STATE_BUFFERING-> {
-//                        Timber.i("onPlayerStateChanged加载中")
+                        Timber.d("播放器状态: 缓冲中...")
+                        // 可以在这里显示加载指示器
                     }
                     Player.STATE_READY-> {
-//                        Timber.i("onPlayerStateChanged准备完成")
+                        Timber.d("播放器状态: 准备就绪，开始播放")
+                        // 隐藏加载指示器
                     }
                     Player.STATE_ENDED-> {
                         Timber.i("onPlayerStateChanged播放完成")
                         viewModel.playStatusObs.set(false)
                         viewModel.next()
+                    }
+                    Player.STATE_IDLE-> {
+                        Timber.d("播放器状态: 空闲")
                     }
                 }
             }
