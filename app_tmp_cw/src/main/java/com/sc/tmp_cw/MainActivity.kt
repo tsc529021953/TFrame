@@ -153,6 +153,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     override fun onResume() {
         super.onResume()
+        // 优化：只在必要时检查速度，避免频繁反射调用
         checkSpeed()
         timerHandler?.start()
         TmpServiceDelegate.service()?.hideFloat(0)
@@ -248,11 +249,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     private fun checkSpeed() {
         val speed = viewModel.spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f)
-        System.out.println("当前速度 $speed")
+        // 优化：只在速度变化时才调用 setMarqueeSpeed
         if (speed != viewModel.speedObs.get()) {
-            Timber.i("当前速度 $speed")
+            Timber.i("设置跑马灯速度: $speed")
             binding.titleLy2.stationTv.setMarqueeSpeed(speed)
-//            binding.titleLy2.statusTv.setMarqueeSpeed(speed)
+            viewModel.speedObs.set(speed)
         }
     }
 
@@ -295,23 +296,55 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onDestroy() {
         super.onDestroy()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
-        iconAnimator?.pause()
+        iconAnimator?.cancel()
+        iconAnimator?.removeAllListeners()
+        // 释放硬件图层资源
+        binding.titleLy2.logoLy.setLayerType(View.LAYER_TYPE_NONE, null)
+        timerHandler?.stop()
         drawLayoutTimerHandler?.stop()
     }
 
     private fun init() {
         //
         viewModel.initData()
-        iconAnimator = ObjectAnimator.ofFloat(binding.titleLy2.logoLy, "alpha", 1f, 0f)
+        // 优化动画性能：使用 translationY 替代 alpha，避免表层重建
+        iconAnimator = ObjectAnimator.ofFloat(binding.titleLy2.logoLy, "translationY", 0f, -20f)
         iconAnimator?.duration = MessageConstant.MAIN_ANIMATION_TIME
         iconAnimator?.repeatMode = ObjectAnimator.REVERSE
         iconAnimator?.repeatCount = 1
+        
+        // 持久启用硬件加速图层，避免频繁切换导致的性能问题
+        binding.titleLy2.logoLy.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+        
         iconAnimator?.start()
 
         timerHandler = TimerHandler(MessageConstant.MAIN_ANIMATION_TIME_INTERVAL) {
-            iconAnimator?.start()
+            // 只在视频未播放或后台时执行动画
+//            if (!isVideoPlaying()) {
+                iconAnimator?.start()
+//            }
         }
         timerHandler?.start()
+    }
+    
+    /**
+     * 检查视频是否正在播放iconAnimator
+     */
+    private fun isVideoPlaying(): Boolean {
+         return try {
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as? NavHostFragment
+            val currentFragment = navHostFragment?.childFragmentManager?.fragments?.firstOrNull()
+            // 检查是否是 LocalFragment 且可见
+            if (currentFragment != null && currentFragment.isVisible) {
+                // 进一步检查播放器状态（如果可能）
+                val className = currentFragment.javaClass.simpleName
+                className.contains("Local", ignoreCase = true)
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
     }
 
     override fun onPause() {

@@ -34,25 +34,35 @@
                     android:layout_margin="@dimen/introduce_margin"
                     />
 
-            <ScrollView
+<!--            <View style="@style/vertical_space_style"/>-->
+
+            <FrameLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
+                    android:layout_margin="@dimen/introduce_margin"
                     >
-                <TextView
+                <ScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:id="@+id/text_view"
-                        android:textColor="@color/text_color"
-                        android:textSize="@dimen/introduce_text_size"
-                        android:layout_margin="@dimen/introduce_margin"
-                        android:gravity="start |center_vertical"
-                        android:text="@{vm.textObs}"
-                        tools:text="1123"
-                        />
-            </ScrollView>
+                        android:fillViewport="true"
+                        android:layout_marginEnd="@dimen/introduce_margin"
+                        >
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/text_view"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/introduce_text_size"
+                            android:layout_margin="@dimen/introduce_margin"
+                            android:gravity="center_vertical"
+                            android:text="@{vm.textObs}"
+                            tools:text="1123"
+                            />
+                </ScrollView>
+            </FrameLayout>
 
-
+<!--            <View style="@style/vertical_space_style"/>-->
 
         </LinearLayout>
 

@@ -14,6 +14,11 @@ import java.lang.reflect.Field
 
 class MarqueeTextView : AppCompatTextView {
 
+    // 优化：缓存反射字段，避免重复查找
+    private var marqueeFieldCache: Field? = null
+    private var speedFieldCache: Field? = null
+    private var lastSpeed: Float = -1f
+
     constructor(context: Context) : this(context, null)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
@@ -23,6 +28,8 @@ class MarqueeTextView : AppCompatTextView {
         ellipsize = TextUtils.TruncateAt.MARQUEE
         marqueeRepeatLimit = -1
         setDelay(1000)
+        // 优化：启用硬件加速图层以提升性能，减少与视频播放的冲突
+        setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
     }
 
     constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle) {
@@ -32,6 +39,8 @@ class MarqueeTextView : AppCompatTextView {
         ellipsize = TextUtils.TruncateAt.MARQUEE
         marqueeRepeatLimit = -1
         setDelay(1000)
+        // 优化：启用硬件加速图层以提升性能
+        setLayerType(android.view.View.LAYER_TYPE_HARDWARE, null)
     }
 
     private fun setDelay(delay: Int) {
@@ -74,33 +83,47 @@ class MarqueeTextView : AppCompatTextView {
      */
     @SuppressLint("PrivateApi")
     fun setMarqueeSpeed(newSpeed: Float) {
-        System.out.println("SpanTextView setMarqueeSpeed $newSpeed")
+        // 优化：如果速度没有变化，直接返回
+        if (Math.abs(newSpeed - lastSpeed) < 0.01f) {
+            return
+        }
+        
         try {
             // 获取走马灯配置对象
             val tvClass = Class.forName("android.widget.TextView")
-            val marqueeField = tvClass.getDeclaredField("mMarquee")
-            marqueeField.isAccessible = true
-            val marquee = marqueeField[this] ?: return
+            
+            // 优化：缓存 marquee 字段
+            if (marqueeFieldCache == null) {
+                marqueeFieldCache = tvClass.getDeclaredField("mMarquee")
+                marqueeFieldCache?.isAccessible = true
+            }
+            
+            val marquee = marqueeFieldCache?.get(this) ?: return
+            
             // 设置新的速度
             val marqueeClass: Class<*> = marquee.javaClass
-            // 速度变量的名称可能与此示例的不相同 可自行打印查看
-            for (field in marqueeClass.declaredFields) {
-                Timber.i("SpanTextView ${field.name}")
+            
+            // 优化：缓存 speed 字段
+            if (speedFieldCache == null) {
+                try {
+                    speedFieldCache = marqueeClass.getDeclaredField("mPixelsPerSecond")
+                } catch (e: NoSuchFieldException) {
+                    // 尝试其他可能的字段名
+                    try {
+                        speedFieldCache = marqueeClass.getDeclaredField("mScrollUnit")
+                    } catch (e2: NoSuchFieldException) {
+                        Timber.e("找不到速度字段")
+                        return
+                    }
+                }
+                speedFieldCache?.isAccessible = true
             }
-            // SDK中的是mPixelsPerMs，但我的开发机是下面的名称
-            val speedField = marqueeClass.getDeclaredField("mPixelsPerSecond") //低版本：mScrollUnit
-            speedField.isAccessible = true
-            val orgSpeed = speedField[marquee] as Float
-            // 这里设置了相对于原来的20倍
-            speedField[marquee] = newSpeed
-            // Log.i("SpanTextView", "setMarqueeSpeed: " + orgSpeed);
-            //  Log.i("SpanTextView", "setMarqueeSpeed: " + newSpeed);
-        } catch (e: ClassNotFoundException) {
-            Timber.e("SpanTextView setMarqueeSpeed: 设置跑马灯速度失败 ${e.message}")
-        } catch (e: NoSuchFieldException) {
-            Timber.e("SpanTextView setMarqueeSpeed: 设置跑马灯速度失败 ${e.message}")
-        } catch (e: IllegalAccessException) {
-            Timber.e("SpanTextView setMarqueeSpeed: 设置跑马灯速度失败 ${e.message}")
+            
+            speedFieldCache?.setFloat(marquee, newSpeed)
+            lastSpeed = newSpeed
+            
+        } catch (e: Exception) {
+            Timber.e("设置跑马灯速度失败: ${e.message}")
         }
     }
 
