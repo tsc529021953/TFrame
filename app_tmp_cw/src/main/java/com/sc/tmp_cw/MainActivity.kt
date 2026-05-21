@@ -13,6 +13,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.Gravity
 import android.view.View
+import androidx.databinding.Observable
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -160,8 +161,20 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     }
 
     override fun subscribeUi() {
-        if (TmpServiceDelegate.service() != null)
+        if (TmpServiceDelegate.service() != null) {
             binding.service = TmpServiceDelegate.service()!!
+//            val marqueeFactory: SimpleMF<String?> = SimpleMF<String?>(this)
+//            marqueeFactory.setData(datas)
+//            binding.titleLy2.stationTv.setMarqueeFactory(marqueeFactory)
+//            binding.titleLy2.stationTv.startFlipping()
+            TmpServiceDelegate.service()!!.stationObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
+                override fun onPropertyChanged(p0: Observable?, p1: Int) {
+                    Timber.i("stationObs ${TmpServiceDelegate.service()!!.stationObs.get()}")
+                    binding.titleLy2.stationTv.setText(TmpServiceDelegate.service()!!.stationObs.get())
+                }
+
+            })
+        }
         binding.vm = viewModel
         initParam()
         if (checkPermissions(true)) {
@@ -251,9 +264,12 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         val speed = viewModel.spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f)
         // 优化：只在速度变化时才调用 setMarqueeSpeed
         if (speed != viewModel.speedObs.get()) {
-            Timber.i("设置跑马灯速度: $speed")
-            binding.titleLy2.stationTv.setMarqueeSpeed(speed)
             viewModel.speedObs.set(speed)
+        }
+        if (speed.toInt() != binding.titleLy2.stationTv.speed) {
+            Timber.i("设置跑马灯速度: $speed")
+//            binding.titleLy2.stationTv.setMarqueeSpeed(speed)
+            binding.titleLy2.stationTv.speed = speed.toInt()
         }
     }
 
@@ -415,8 +431,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             // 显示
             if (binding.titleLy2.logoLy.visibility == View.VISIBLE) {
                 viewModel.mScope?.cancel()
-            } else
+            } else {
+                binding.titleLy2.stationTv.show()
+                binding.titleLy2.stationTv.resume()
                 binding.titleLy2.logoLy.visibility = View.VISIBLE
+            }
             viewModel.mScope.launch {
                 delay(MessageConstant.MAIN_TITLE_SHOW_TIME)
                 this@MainActivity.runOnUiThread {
@@ -424,8 +443,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
                 }
             }
         } else {
-            if (binding.titleLy2.logoLy.visibility != View.GONE)
+            if (binding.titleLy2.logoLy.visibility != View.GONE){
+                binding.titleLy2.stationTv.pause()
+                binding.titleLy2.stationTv.hide()
                 binding.titleLy2.logoLy.visibility = View.GONE
+            }
         }
     }
 

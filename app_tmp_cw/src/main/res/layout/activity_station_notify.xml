@@ -25,13 +25,6 @@
 <!--                />-->
 
 <!--        service.stationStatusObs + "：" +-->
-        <TextView
-                style="@style/main_notify_station"
-                tools:text="@string/arrive"
-                android:text='@{service.stationObs}'
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
 
         <ImageView
                 android:layout_width="match_parent"
@@ -53,6 +46,13 @@
                 android:scaleType="fitXY"
                 />
 
+        <TextView
+                style="@style/main_notify_station"
+                tools:text="@string/arrive"
+                android:text='@{service.stationObs}'
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

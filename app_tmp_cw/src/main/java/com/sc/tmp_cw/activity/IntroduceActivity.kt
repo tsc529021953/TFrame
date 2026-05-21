@@ -22,6 +22,7 @@ import com.sc.tmp_cw.databinding.ActivityIntroduceBinding
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.IntroduceViewModel
 import com.sc.tmp_cw.vm.SceneryViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -65,14 +66,17 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
         // 判断大图有没有
         val callback = { item: FileBean ->
             val path = "file://" + item.path
-            Glide.with(binding!!.imageView)
+            this.runOnUiThread {
+                Glide.with(binding!!.imageView)
                     .load(path)
                     .into(binding!!.imageView)
+            }
+
             val item3 = IntroduceViewModel.textList?.find { it.name.startsWith(IntroduceViewModel.fileBean!!.name) }
-            val msg = resources.getString(R.string.no_introduce)
+            var msg = resources.getString(R.string.no_introduce)
             if (item3 != null) {
-                viewModel.mScope.launch {
-                    viewModel.textObs.set(FileUtil.readFile(item3.path) ?: msg)
+                viewModel.mScope.launch(Dispatchers.IO) {
+                    viewModel.textObs.set(FileUtil.readFile(item.path) ?: msg)
                 }
             } else {
                 viewModel.textObs.set(msg)
@@ -93,7 +97,6 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
             // 显示大图
             callback.invoke(item)
         }
-
 
         // 显示小图 + 文字
     }

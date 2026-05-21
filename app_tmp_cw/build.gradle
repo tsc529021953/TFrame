@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 44
-        versionName "0.0.44"
+        versionCode 45
+        versionName "0.0.45"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -128,4 +128,6 @@ dependencies {
     implementation deps.shimmer
     /*悬浮窗*/
     implementation deps.floatx
+    implementation deps.marqueeview
+    implementation deps.marqueelibrary
 }

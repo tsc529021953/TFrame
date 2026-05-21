@@ -125,7 +125,8 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
             0 -> {
                 viewModel.isAnimationEnd = false
                 // 移动到中间
-                AnimationUtil.setInitPoint(binding.carIv, 0f)
+//                AnimationUtil.setInitPoint(binding.carIv, -(binding.carIv.width * 0.8f))
+                binding.carIv.translationX = -(binding.carIv.width * 0.8f)
                 // 开始动画移动到最右边
                 AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
 //                    finish() // 离站动画结束后
@@ -144,7 +145,7 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 AnimationUtil.setInitPoint(binding.carIv, -1f, false)
 
                 // 开始动画移动到中间
-                AnimationUtil.showSlidingView(binding.carIv, false, ANIMATION_TIME, -1) {
+                AnimationUtil.showSlidingView(binding.carIv, false, ANIMATION_TIME, -1, percent = 0.2f) {
                     val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
                     if (m != null && (m!! < 0 || m!! > 10 || m!! == 1)) {
                         finish()

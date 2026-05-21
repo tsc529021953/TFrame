@@ -28,7 +28,7 @@ object AnimationUtil {
             slidingView: View,
             isRight: Boolean = true,
             aTime: Long = ANIMATION_TIMER,
-            hideTime: Long = HIDE_TIMER, runEndCB: (() -> Unit)? = null
+            hideTime: Long = HIDE_TIMER, percent: Float = 1f, runEndCB: (() -> Unit)? = null
     ) {
         // 启动从左侧滑出的动画
         var w = slidingView.width.toFloat()
@@ -40,7 +40,7 @@ object AnimationUtil {
         // 设置 View 为可见
         slidingView.visibility = View.VISIBLE
         slidingView.animate()
-                .translationX(0f)
+                .translationX(w * percent - w)
                 .setDuration(aTime)  // 1秒钟滑动到屏幕中
                 .withEndAction {
                     runEndCB?.invoke()
@@ -49,15 +49,15 @@ object AnimationUtil {
                         GlobalScope.launch {
                             delay(hideTime)
                             GlobalScope.launch(Dispatchers.Main) {
-                                slideOutAndHide(slidingView, isRight)
+                                slideOutAndHide(slidingView, isRight, percent = percent)
                             }
                         }
                     }
                 }
     }
 
-    fun slideToEnd(slidingView: View, aTime: Long = ANIMATION_TIMER, runEndCB: (() -> Unit)? = null) {
-        var width = DisplayUtil.getScreenWidth(HopeBaseApp.getContext()).toFloat()
+    fun slideToEnd(slidingView: View, aTime: Long = ANIMATION_TIMER, percent: Float = 1f, runEndCB: (() -> Unit)? = null) {
+        var width = DisplayUtil.getScreenWidth(HopeBaseApp.getContext()).toFloat() * percent
         slidingView.animate()
                 .translationX(width)  // 滑出屏幕
                 .setDuration(aTime)  // 1秒钟滑出
@@ -68,8 +68,8 @@ object AnimationUtil {
                 }
     }
 
-    fun slideOutAndHide(slidingView: View, isRight: Boolean = true, aTime: Long = ANIMATION_TIMER) {
-        var w = slidingView.width.toFloat()
+    fun slideOutAndHide(slidingView: View, isRight: Boolean = true, aTime: Long = ANIMATION_TIMER, percent: Float = 1f) {
+        var w = slidingView.width.toFloat() * percent
         slidingView.animate()
                 .translationX(if (isRight) w else -w)  // 滑出屏幕
                 .setDuration(aTime)  // 1秒钟滑出

@@ -212,6 +212,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
     override fun onResume() {
         super.onResume()
         System.out.println("local onResume ${this.isVisible}")
+        if ((viewModel.videoListObs.value?.size ?: 0) > 0)
+            viewModel.player?.play()
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.play()
 //        }
@@ -241,6 +243,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
 //        if (adapter != null && adapter!!.data.size > 0) {
 //            viewModel.player?.pause()
 //        }
+        if ((viewModel.videoListObs.value?.size ?: 0) > 0)
+            viewModel.player?.pause()
         viewModel.mute(true)
     }
 

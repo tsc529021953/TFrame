@@ -63,10 +63,10 @@
                         tools:text="天津地铁8号线欢迎你"
                         />
 
-<!--                <View style="@style/horizontal_space_style"/>-->
+                <!--                <View style="@style/horizontal_space_style"/>-->
 
                 <!-- 优化：启用硬件加速的跑马灯 -->
-                <com.nbhope.lib_frame.widget.MarqueeTextView
+                <com.sc.tmp_cw.weight.OptimizedMarqueeView
                         style="@style/main_title_station"
                         android:layout_weight="2.9"
                         android:paddingStart="20dp"
@@ -74,9 +74,36 @@
                         android:id="@+id/station_tv"
                         android:text="@{service.stationObs}"
                         android:layerType="hardware"
-                        />
 
-<!--                <View style="@style/horizontal_space_style"/>-->
+                        app:startPoint="end"
+                        app:isRepeat="true"
+                        app:direction="left"
+                        app:speed="30"
+                        app:textcolor="#fff"
+                        app:textSize="18sp"
+
+
+                        />
+                <!--                android:flipInterval="2500"-->
+                <!--                android:inAnimation="@anim/in_right"-->
+                <!--                android:outAnimation="@anim/out_left"-->
+                <!--                app:marqueeAnimDuration="2000"-->
+                <!--                app:smvTextColor="@color/white"-->
+                <!--                app:smvTextEllipsize="end"-->
+                <!--                app:smvTextGravity="center_vertical"-->
+                <!--                app:smvTextSingleLine="true"-->
+                <!--                app:smvTextSize="18sp"-->
+
+                <!--                app:startPoint="end"-->
+                <!--                app:isRepeat="true"-->
+                <!--                app:direction="left"-->
+                <!--                app:speed="50"-->
+                <!--                app:textcolor="#fff"-->
+                <!--                app:textSize="18sp"-->
+                <!--                app:marqueebackground="#ff00ff"-->
+
+
+                <!--                <View style="@style/horizontal_space_style"/>-->
 
                 <TextView
                         style="@style/main_title_station"
@@ -89,57 +116,55 @@
 
             </LinearLayout>
 
-<!--            android:background="@drawable/icon_title_station_tv_bg"-->
+            <!--            android:background="@drawable/icon_title_station_tv_bg"-->
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--        <com.facebook.shimmer.ShimmerFrameLayout-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/home_sf"-->
-<!--                app:shimmer_base_alpha="1"-->
-<!--                app:shimmer_duration="3000"-->
-<!--                app:shimmer_highlight_alpha="0.4"-->
-<!--                app:shimmer_tilt="180"-->
-<!--                >-->
+        <!--        <com.facebook.shimmer.ShimmerFrameLayout-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:id="@+id/home_sf"-->
+        <!--                app:shimmer_base_alpha="1"-->
+        <!--                app:shimmer_duration="3000"-->
+        <!--                app:shimmer_highlight_alpha="0.4"-->
+        <!--                app:shimmer_tilt="180"-->
+        <!--                >-->
 
-<!--            <LinearLayout-->
-<!--                    style="@style/main_title_station_ly"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    >-->
+        <!--            <LinearLayout-->
+        <!--                    style="@style/main_title_station_ly"-->
+        <!--                    app:layout_constraintTop_toTopOf="parent"-->
+        <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent"-->
+        <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                    >-->
 
-<!--                <com.nbhope.lib_frame.widget.MarqueeTextView-->
-<!--                        style="@style/main_title_station"-->
-<!--                        android:id="@+id/status_tv"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:text="@{service.stationStatusObs}"-->
-<!--                        android:gravity="start |center_vertical"-->
-<!--                        />-->
+        <!--                <com.nbhope.lib_frame.widget.MarqueeTextView-->
+        <!--                        style="@style/main_title_station"-->
+        <!--                        android:id="@+id/status_tv"-->
+        <!--                        android:layout_weight="1"-->
+        <!--                        android:text="@{service.stationStatusObs}"-->
+        <!--                        android:gravity="start |center_vertical"-->
+        <!--                        />-->
 
-<!--                <ImageView-->
-<!--                        android:layout_width="@dimen/main_title_station_icon_height"-->
-<!--                        android:layout_height="@dimen/main_title_station_icon_height"-->
-<!--                        android:src="@drawable/icon_title_station"-->
-<!--                        android:layout_gravity="center_vertical"-->
-<!--                        android:layout_marginStart="@dimen/main_title_station_margin"-->
-<!--                        android:layout_marginEnd="@dimen/main_title_station_margin"-->
-<!--                        />-->
+        <!--                <ImageView-->
+        <!--                        android:layout_width="@dimen/main_title_station_icon_height"-->
+        <!--                        android:layout_height="@dimen/main_title_station_icon_height"-->
+        <!--                        android:src="@drawable/icon_title_station"-->
+        <!--                        android:layout_gravity="center_vertical"-->
+        <!--                        android:layout_marginStart="@dimen/main_title_station_margin"-->
+        <!--                        android:layout_marginEnd="@dimen/main_title_station_margin"-->
+        <!--                        />-->
 
-<!--               -->
+        <!--               -->
 
-<!--            </LinearLayout>-->
+        <!--            </LinearLayout>-->
 
-<!--        </com.facebook.shimmer.ShimmerFrameLayout>-->
-
-
+        <!--        </com.facebook.shimmer.ShimmerFrameLayout>-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

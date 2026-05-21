@@ -13,6 +13,7 @@ import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentLineBinding
 import com.sc.tmp_cw.databinding.FragmentTravelBinding
+import timber.log.Timber
 import java.io.File
 
 /**
@@ -48,7 +49,9 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
                 
         // 判断路径下的图片是否存在
         val imageFile = File(path)
+        Timber.i("imageFile: ${imageFile.path} ${imageFile.exists()} ${imageFile.isFile}")
         val loadImage = if (imageFile.exists() && imageFile.isFile) {
+            Timber.i("文件加载")
             // 文件存在，加载外部存储的图片
             path
         } else {
@@ -57,7 +60,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
         }
         
         Glide.with(requireContext())
-            .setDefaultRequestOptions(requestOptions)
+//            .setDefaultRequestOptions(requestOptions)
             .load(loadImage)
             .into(binding!!.lineIv)
         binding.zoom.setOnTouchListener { view, motionEvent ->
