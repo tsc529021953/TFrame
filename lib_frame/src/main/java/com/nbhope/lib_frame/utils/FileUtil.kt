@@ -67,7 +67,23 @@ object FileUtil {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return sb.toString()
+        
+        // 如果所有编码都失败，返回 UTF-8 的结果
+        return try {
+            val sb = StringBuilder()
+            InputStreamReader(FileInputStream(file), "UTF-8").use { reader ->
+                BufferedReader(reader).use { br ->
+                    var line: String?
+                    while (br.readLine().also { line = it } != null) {
+                        sb.append(line).append("\n")
+                    }
+                }
+            }
+            sb.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     @JvmStatic

@@ -137,24 +137,38 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
         this.mTextPaint.getFontMetrics(fontMetricsCache);
         this.textHeight = (int)fontMetricsCache.bottom;
         
-        // 延迟计算位置，确保 View 已经布局
-        post(new Runnable() {
-            @Override
-            public void run() {
-                int width = getWidth();
-                if (width > 0) {
-                    int contentWidth = width - getPaddingLeft() - getPaddingRight();
-                    // 文字从中间位置开始，然后向左滚动
-                    if (mStartPoint == 0) {
-                        // 从屏幕中间开始（50% 宽度处）
-                        currentX = contentWidth / 2;
-                    } else {
-                        // 从屏幕右侧开始
-                        currentX = contentWidth;
+        // 立即计算位置，避免异步导致的闪烁问题
+        int width = getWidth();
+        if (width > 0) {
+            // View 已经布局完成，直接计算位置
+            setContentWidth(width);
+        } else {
+            // View 还未布局，等待布局完成后设置位置
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    int w = getWidth();
+                    if (w > 0) {
+                        setContentWidth(w);
                     }
                 }
-            }
-        });
+            });
+        }
+    }
+
+    /**
+     * 根据宽度计算起始位置
+     */
+    private void setContentWidth(int width) {
+        int contentWidth = width - getPaddingLeft() - getPaddingRight();
+        // 文字从中间位置开始，然后向左滚动
+        if (mStartPoint == 0) {
+            // 从屏幕中间开始（50% 宽度处）
+            currentX = contentWidth / 2;
+        } else {
+            // 从屏幕右侧开始
+            currentX = contentWidth;
+        }
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
@@ -182,34 +196,60 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
         
         // 如果 Surface 还未准备好，等待它准备好
         if (!isSurfaceValid || holder == null) {
-            // 等待 Surface 创建，每 30ms 重试一次
+            // 等待 Surface 创建，每 50ms 重试一次，最多重试 10 次
             postDelayed(new Runnable() {
+                int retryCount = 0;
                 @Override
                 public void run() {
                     if (isVisible && !isPaused) {
-                        startScroll();
+                        if (isSurfaceValid && holder != null) {
+                            doStartScroll();
+                        } else if (retryCount < 10) {
+                            retryCount++;
+                            postDelayed(this, 50);
+                        }
                     }
                 }
-            }, 30);
+            }, 50);
             return;
         }
         
+        doStartScroll();
+    }
+
+    /**
+     * 实际启动滚动线程
+     */
+    private void doStartScroll() {
         synchronized (this) {
-            if (this.mThread == null || !this.mThread.isRun) {
-                this.mThread = new MarqueeViewThread(this.holder);
-                this.mThread.start();
+            if (this.mThread != null && this.mThread.isRun) {
+                return; // 已经在运行
             }
+            
+            // 确保 currentX 已经正确设置
+            if (currentX == 0 && textWidth > 0) {
+                int width = getWidth();
+                if (width > 0) {
+                    setContentWidth(width);
+                }
+            }
+            
+            this.mThread = new MarqueeViewThread(this.holder);
+            this.mThread.start();
         }
     }
 
     public void stopScroll() {
+        MarqueeViewThread thread;
         synchronized (this) {
-            if (this.mThread != null) {
-                MarqueeViewThread thread = this.mThread;
-                this.mThread = null;
-                thread.isRun = false;
-                // 不立即 interrupt，让线程自然退出
-            }
+            thread = this.mThread;
+            this.mThread = null;
+        }
+        
+        if (thread != null) {
+            thread.isRun = false;
+            // 中断线程，避免阻塞
+            thread.interrupt();
         }
     }
 
@@ -421,14 +461,12 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
             }
 
             Canvas canvas = null;
-            boolean shouldSleep = true;
             try {
-                // 尝试锁定 Canvas，如果 Surface 无效会快速失败
+                // 尝试锁定 Canvas，使用带超时的版本避免阻塞
                 canvas = this.holder.lockCanvas(null);
                 if (canvas == null || !isRun) {
                     // Canvas 不可用，短暂等待后重试
                     Thread.sleep(16);
-                    shouldSleep = false; // 已经 sleep 过了
                     return;
                 }
                 
@@ -488,26 +526,25 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
             }
             
             // 计算合适的睡眠时间
-            if (shouldSleep) {
-                try {
-                    String text = OptimizedMarqueeView.this.marqueeString;
-                    if (text != null && !text.isEmpty()) {
-                        int charWidth = OptimizedMarqueeView.this.textWidth / 
-                            Math.max(1, text.trim().length());
-                        int stepRatio = Math.max(1, charWidth / OptimizedMarqueeView.this.sepX);
-                        
-                        // 速度映射：0-100 映射到睡眠时间 50ms-2ms
-                        // 速度 0 = 最慢 (50ms), 速度 100 = 最快 (2ms)
-                        int sleepTime = 50 - (OptimizedMarqueeView.this.mSpeed * 48 / 100);
-                        sleepTime = Math.max(2, Math.min(50, sleepTime));
-                        
-                        Thread.sleep(sleepTime);
-                    } else {
-                        Thread.sleep(16);
-                    }
-                } catch (InterruptedException e) {
-                    isRun = false;
+            try {
+                String text = OptimizedMarqueeView.this.marqueeString;
+                if (text != null && !text.isEmpty()) {
+                    int charWidth = OptimizedMarqueeView.this.textWidth / 
+                        Math.max(1, text.trim().length());
+                    int stepRatio = Math.max(1, charWidth / OptimizedMarqueeView.this.sepX);
+                    
+                    // 速度映射：0-100 映射到睡眠时间 50ms-2ms
+                    // 速度 0 = 最慢 (50ms), 速度 100 = 最快 (2ms)
+                    int sleepTime = 50 - (OptimizedMarqueeView.this.mSpeed * 48 / 100);
+                    sleepTime = Math.max(2, Math.min(50, sleepTime));
+                    
+                    Thread.sleep(sleepTime);
+                } else {
+                    Thread.sleep(16);
                 }
+            } catch (InterruptedException e) {
+                // 线程被中断，正常退出
+                isRun = false;
             }
         }
 

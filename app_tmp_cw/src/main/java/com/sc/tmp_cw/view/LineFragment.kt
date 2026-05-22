@@ -62,6 +62,8 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
         Glide.with(requireContext())
 //            .setDefaultRequestOptions(requestOptions)
             .load(loadImage)
+            .override(3840, 2160) // 限制最大尺寸，避免加载过大的图片
+            .centerInside() // 保持比例居中显示
             .into(binding!!.lineIv)
         binding.zoom.setOnTouchListener { view, motionEvent ->
             InteractiveFragment.iFragment?.clicked()

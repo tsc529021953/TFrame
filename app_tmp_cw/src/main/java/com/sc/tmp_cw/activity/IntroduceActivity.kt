@@ -66,11 +66,14 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
         // 判断大图有没有
         val callback = { item: FileBean ->
             val path = "file://" + item.path
-            this.runOnUiThread {
-                Glide.with(binding!!.imageView)
-                    .load(path)
-                    .into(binding!!.imageView)
-            }
+            // Glide 会自动在后台线程加载，不需要 runOnUiThread
+            Glide.with(binding!!.imageView)
+                .load(path)
+                .override(1920, 1080) // 限制最大尺寸，避免加载过大的图片
+                .centerInside() // 保持比例居中显示
+//                .placeholder(R.drawable.ic_placeholder) // 设置占位图
+//                .error(R.drawable.ic_error) // 加载失败显示
+                .into(binding!!.imageView)
 
             val item3 = IntroduceViewModel.textList?.find { it.name.startsWith(IntroduceViewModel.fileBean!!.name) }
             var msg = resources.getString(R.string.no_introduce)
