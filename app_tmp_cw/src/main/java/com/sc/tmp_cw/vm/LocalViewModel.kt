@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -74,6 +75,9 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
     var isFragmentVisible = false
     private var shouldResumePlay = false
 
+    // 内部播放器监听器，用于重建播放器后重新绑定
+    private var internalPlayerListener: Player.Listener? = null
+
     /**
      * 初始化播放器，使用 ConcatenatingMediaSource 实现无缝播放
      */
@@ -85,23 +89,21 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             .setInitialBitrateEstimate(10_000_000)
             .build()
         
-        // 轨道选择器优化 - 禁用硬件解码以降低Surface错误风险
+        // 轨道选择器优化
         val trackSelector = DefaultTrackSelector(HopeBaseApp.getContext()).apply {
             setParameters(buildUponParameters().apply {
                 setAllowAudioMixedChannelCountAdaptiveness(true)
                 setAllowVideoMixedMimeTypeAdaptiveness(true)
-                // 优先使用软件解码，避免Surface问题
-                // setRendererDisabled(C.TRACK_TYPE_VIDEO, false)  // 如果需要强制软解可以开启
             })
         }
         
         // 4G内存设备优化的缓冲策略 - 针对本地视频优化
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                2000,  // 最小缓冲：2秒（本地视频可以适当增加）
-                10000, // 最大缓冲：10秒（减少频繁缓冲）
-                1000,  // 播放前缓冲：1秒（确保快速启动）
-                2000   // 重新缓冲阈值：2秒（避免频繁重新缓冲）
+                2000,  // 最小缓冲：2秒
+                10000, // 最大缓冲：10秒
+                1000,  // 播放前缓冲：1秒
+                2000   // 重新缓冲阈值：2秒
             )
             .setPrioritizeTimeOverSizeThresholds(true)
             .build()
@@ -114,7 +116,39 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             .build()
         player?.playWhenReady = false
         
+        // 如果有外部监听器，重新绑定
+        rebindPlayerListener()
+        
         Timber.tag("LocalPlayer").i("ExoPlayer初始化完成，使用ConcatenatingMediaSource实现无缝播放")
+    }
+    
+    /**
+     * 设置播放器监听器（由Fragment调用），保存引用以便重建播放器后恢复
+     */
+    fun setPlayerListener(listener: Player.Listener) {
+        internalPlayerListener = listener
+        player?.addListener(listener)
+    }
+    
+    /**
+     * 重新绑定播放器监听器（initPlayer后自动调用）
+     */
+    private fun rebindPlayerListener() {
+        internalPlayerListener?.let { listener ->
+            player?.addListener(listener)
+            Timber.tag("LocalPlayer").d("已重新绑定播放器监听器")
+        }
+    }
+    
+    /**
+     * 同步playIndex为播放器当前实际索引
+     */
+    fun syncPlayIndex() {
+        val currentIndex = player?.currentMediaItemIndex ?: 0
+        if (currentIndex != playIndex) {
+            Timber.tag("LocalPlayer").d("playIndex同步: $playIndex -> $currentIndex")
+            playIndex = currentIndex
+        }
     }
 
     fun initData() {
@@ -130,11 +164,22 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             if (record == lastStr) {
                Timber.i("相同数据，无需校验！ $checkPlay")
                 if (checkPlay) {
-                    try {
-                        player?.play()
-                    } catch (e: Exception) {
-                        Timber.i("checkVideo replay ${e.message}")
-                        e.printStackTrace()
+                    // 根据播放器状态恢复播放，而非简单调play()
+                    val state = player?.playbackState
+                    if (state == Player.STATE_IDLE) {
+                        // IDLE状态play()无效，需要重新加载视频列表
+                        val currentList = videoListObs.value
+                        if (currentList != null && currentList.isNotEmpty()) {
+                            Timber.tag("LocalPlayer").w("checkVideo: 播放器IDLE，重新加载视频列表")
+                            playVideoList(currentList)
+                        }
+                    } else {
+                        try {
+                            player?.play()
+                        } catch (e: Exception) {
+                            Timber.i("checkVideo replay ${e.message}")
+                            e.printStackTrace()
+                        }
                     }
                 }
                 return
@@ -180,6 +225,9 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             return
         }
         
+        // 先同步playIndex为播放器实际位置
+        syncPlayIndex()
+        
         // 计算下一个索引（自动循环）
         val nextIndex = (playIndex + 1) % currentSize
         
@@ -188,31 +236,39 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         Timber.tag("LocalPlayer").d("next() 调用: 当前索引=$playIndex, 目标索引=$nextIndex, 播放器状态=$currentPlayerState")
         
         when (currentPlayerState) {
-            com.google.android.exoplayer2.Player.STATE_IDLE -> {
+            Player.STATE_IDLE -> {
                 // 播放器未准备，需要重新加载
                 Timber.tag("LocalPlayer").w("播放器未准备(IDLE状态)，重新加载视频列表")
                 playIndex = nextIndex
                 playVideoList(videoListObs.value!!)
             }
-            com.google.android.exoplayer2.Player.STATE_BUFFERING -> {
+            Player.STATE_BUFFERING -> {
                 // 缓冲中，先停止再切换
                 Timber.tag("LocalPlayer").w("播放器缓冲中，先停止再切换")
                 player?.stop()
                 playIndex = nextIndex
-                // 使用协程延迟后重新加载
+                // 使用协程延迟后重新加载，等待READY状态后再seek
                 mScope.launch(Dispatchers.Main) {
                     delay(300)
                     playVideoList(videoListObs.value!!)
-                    delay(500)
-                    player?.seekToDefaultPosition(nextIndex)
-                    player?.play()
-                    Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $playIndex")
+                    // 等待播放器进入READY状态后再seek，避免在BUFFERING时seek无效
+                    var retryCount = 0
+                    while (player?.playbackState != Player.STATE_READY && retryCount < 20) {
+                        delay(200)
+                        retryCount++
+                    }
+                    if (player?.playbackState == Player.STATE_READY) {
+                        player?.seekToDefaultPosition(nextIndex)
+                        player?.play()
+                        Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $nextIndex")
+                    } else {
+                        Timber.tag("LocalPlayer").e("缓冲状态下切换超时，播放器未进入READY")
+                    }
                 }
             }
             else -> {
                 // READY 或 ENDED 状态，直接切换
                 player?.seekToDefaultPosition(nextIndex)
-                // 确保播放
                 player?.playWhenReady = true
                 player?.play()
                 playIndex = nextIndex
@@ -237,6 +293,9 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             return
         }
         
+        // 先同步playIndex为播放器实际位置
+        syncPlayIndex()
+        
         // 计算上一个索引（自动循环）
         val prevIndex = if (playIndex - 1 < 0) currentSize - 1 else playIndex - 1
         
@@ -245,28 +304,33 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         Timber.tag("LocalPlayer").d("pre() 调用: 当前索引=$playIndex, 目标索引=$prevIndex, 播放器状态=$currentPlayerState")
         
         when (currentPlayerState) {
-            com.google.android.exoplayer2.Player.STATE_IDLE -> {
-                // 播放器未准备，需要重新加载
+            Player.STATE_IDLE -> {
                 Timber.tag("LocalPlayer").w("播放器未准备(IDLE状态)，重新加载视频列表")
                 playIndex = prevIndex
                 playVideoList(videoListObs.value!!)
             }
-            com.google.android.exoplayer2.Player.STATE_BUFFERING -> {
-                // 缓冲中，先停止再切换
+            Player.STATE_BUFFERING -> {
                 Timber.tag("LocalPlayer").w("播放器缓冲中，先停止再切换")
                 player?.stop()
                 playIndex = prevIndex
                 mScope.launch(Dispatchers.Main) {
                     delay(300)
                     playVideoList(videoListObs.value!!)
-                    delay(500)
-                    player?.seekToDefaultPosition(prevIndex)
-                    player?.play()
-                    Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $playIndex")
+                    var retryCount = 0
+                    while (player?.playbackState != Player.STATE_READY && retryCount < 20) {
+                        delay(200)
+                        retryCount++
+                    }
+                    if (player?.playbackState == Player.STATE_READY) {
+                        player?.seekToDefaultPosition(prevIndex)
+                        player?.play()
+                        Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $prevIndex")
+                    } else {
+                        Timber.tag("LocalPlayer").e("缓冲状态下切换超时，播放器未进入READY")
+                    }
                 }
             }
             else -> {
-                // READY 或 ENDED 状态，直接切换
                 player?.seekToDefaultPosition(prevIndex)
                 player?.playWhenReady = true
                 player?.play()
@@ -337,8 +401,7 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                 Timber.tag("LocalPlayer").d("Fragment不可见，准备但不播放")
             }
             
-            // 重置缓冲计数器
-            resetBufferTimeoutCounter()
+            // 重置缓冲计时（不重置consecutiveBufferTimeouts，保留熔断计数）
             bufferStartTime = System.currentTimeMillis()
             
             Timber.tag("LocalPlayer").i("视频列表加载完成，开始播放")
@@ -349,11 +412,13 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
     }
     
     /**
-     * 播放单个视频（兼容旧接口）
+     * 播放指定视频（通过seekTo在ConcatenatingMediaSource中切换，不破坏列表）
      */
     fun play(item: FileBean) {
         if (videoListObs.value == null) return
-        playIndex = videoListObs.value!!.indexOf(item)
+        val targetIndex = videoListObs.value!!.indexOf(item)
+        if (targetIndex < 0) return
+        playIndex = targetIndex
         
         if (!File(item.path).exists()) {
             mScope.launch(Dispatchers.Main) {
@@ -374,24 +439,32 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         try {
             Timber.tag("LocalPlayer").d("开始播放视频: ${item.name}, 索引: $playIndex")
             
-            val uri = Uri.fromFile(File(item.path))
-            val mediaItem = MediaItem.fromUri(uri)
+            val currentPlayerState = player?.playbackState
             
-            player?.setMediaItem(mediaItem)
-            player?.prepare()
-            
-            // 根据Fragment可见性决定是否播放
-            if (isFragmentVisible) {
-                player?.playWhenReady = true
-                Timber.tag("LocalPlayer").d("Fragment可见，立即播放")
+            if (currentPlayerState == Player.STATE_IDLE || concatenatingMediaSource == null) {
+                // 播放器未初始化或没有ConcatenatingMediaSource，加载整个列表
+                playVideoList(videoListObs.value!!)
+                // 延迟seek到目标位置
+                mScope.launch(Dispatchers.Main) {
+                    delay(500)
+                    player?.seekToDefaultPosition(targetIndex)
+                    if (isFragmentVisible) {
+                        player?.playWhenReady = true
+                    }
+                }
             } else {
-                player?.playWhenReady = false
-                shouldResumePlay = true
-                Timber.tag("LocalPlayer").d("Fragment不可见，准备但不播放")
+                // 播放器已有列表，直接seek到目标位置
+                player?.seekToDefaultPosition(targetIndex)
+                if (isFragmentVisible) {
+                    player?.playWhenReady = true
+                    player?.play()
+                } else {
+                    player?.playWhenReady = false
+                    shouldResumePlay = true
+                }
             }
             
-            // 重置缓冲计数器
-            resetBufferTimeoutCounter()
+            // 重置缓冲计时
             bufferStartTime = System.currentTimeMillis()
             
             Timber.tag("LocalPlayer").i("播放 ${item.name} - 路径: ${item.path}")
@@ -429,6 +502,7 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
      * 释放播放器资源
      */
     private fun releasePlayer() {
+        internalPlayerListener?.let { player?.removeListener(it) }
         player?.release()
         player = null
         concatenatingMediaSource = null
@@ -474,14 +548,12 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                         Timber.tag("LocalPlayer").d("Fragment显示，缓冲中等待就绪")
                     }
                 }
-                com.google.android.exoplayer2.Player.STATE_IDLE -> {
+                Player.STATE_IDLE -> {
                     // 空闲状态，重新加载视频列表
                     val currentList = videoListObs.value
                     if (currentList != null && currentList.isNotEmpty()) {
-                        if (playIndex >= 0 && playIndex < currentList.size) {
-                            Timber.tag("LocalPlayer").w("Fragment显示且播放器空闲，重新加载视频列表")
-                            playVideoList(currentList)
-                        }
+                        Timber.tag("LocalPlayer").w("Fragment显示且播放器空闲，重新加载视频列表")
+                        playVideoList(currentList)
                     }
                 }
                 com.google.android.exoplayer2.Player.STATE_ENDED -> {

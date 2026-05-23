@@ -87,7 +87,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
     }
     
     private fun addPlayerListener() {
-        viewModel.player?.addListener(object : Player.Listener {
+        // 通过ViewModel注册监听器，重建播放器时会自动重新绑定
+        viewModel.setPlayerListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
                 Timber.tag("LocalPlayer").e("onPlayerError: %s", error.message)
@@ -175,8 +176,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                         val videoList = viewModel.videoListObs.value
                         if (videoList != null && videoList.isNotEmpty() && viewModel.isFragmentVisible) {
                             Timber.tag("LocalPlayer").w("检测到空闲状态，重新加载视频列表")
-                            val currentIndex = viewModel.playIndex.coerceIn(0, videoList.size - 1)
-                            viewModel.play(videoList[currentIndex])
+                            viewModel.playVideoList(videoList)
                         }
                     }
                 }
@@ -196,7 +196,7 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                 viewModel.player?.stop()
                 delay(300)
                 
-                // 2. 重新初始化播放器
+                // 2. 重新初始化播放器（内部会自动rebind监听器）
                 Timber.tag("LocalPlayer").d("重新初始化播放器")
                 viewModel.initPlayer()
                 delay(200)
@@ -211,18 +211,22 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                     Timber.tag("LocalPlayer").d("重新加载视频列表")
                     viewModel.playVideoList(currentList)
                     
-                    // 5. 跳转到之前的位置（如果可能）
-                    delay(500)
-                    viewModel.player?.seekToDefaultPosition(viewModel.playIndex)
+                    // 5. 等待播放器READY后再seek到之前的位置
+                    var retryCount = 0
+                    while (viewModel.player?.playbackState != Player.STATE_READY && retryCount < 20) {
+                        delay(200)
+                        retryCount++
+                    }
+                    val savedIndex = viewModel.playIndex.coerceIn(0, currentList.size - 1)
+                    viewModel.player?.seekToDefaultPosition(savedIndex)
                     viewModel.player?.play()
                     
-                    Timber.tag("LocalPlayer").i("Surface错误恢复成功")
+                    Timber.tag("LocalPlayer").i("Surface错误恢复成功，seek到索引: $savedIndex")
                 } else {
                     Timber.tag("LocalPlayer").e("恢复失败：视频列表为空")
                 }
             } catch (e: Exception) {
                 Timber.tag("LocalPlayer").e(e, "Surface错误恢复失败")
-                // 最后的备选方案：跳过当前视频
                 try {
                     viewModel.next()
                 } catch (e2: Exception) {
