@@ -163,6 +163,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun subscribeUi() {
         if (TmpServiceDelegate.service() != null) {
             binding.service = TmpServiceDelegate.service()!!
+
+//            TmpServiceDelegate.service()!!.stationObs.set("大数据法拉克司法局阿里上飞机啊生发剂拉萨")
+//            binding.titleLy2.stationTv.startMarquee()
 //            val marqueeFactory: SimpleMF<String?> = SimpleMF<String?>(this)
 //            marqueeFactory.setData(datas)
 //            binding.titleLy2.stationTv.setMarqueeFactory(marqueeFactory)
@@ -261,16 +264,19 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     }
 
     private fun checkSpeed() {
-        val speed = viewModel.spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f)
+        val speed = viewModel.spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 3f)
         // 优化：只在速度变化时才调用 setMarqueeSpeed
         if (speed != viewModel.speedObs.get()) {
             viewModel.speedObs.set(speed)
-        }
-        if (speed.toInt() != binding.titleLy2.stationTv.speed) {
+
             Timber.i("设置跑马灯速度: $speed")
-//            binding.titleLy2.stationTv.setMarqueeSpeed(speed)
-            binding.titleLy2.stationTv.speed = speed.toInt()
+            binding.titleLy2.stationTv.setMarqueeSpeed(speed * 10)
         }
+//        if (speed.toInt()  != binding.titleLy2.stationTv.getSpeed()) {
+//            Timber.i("设置跑马灯速度: $speed")
+////            binding.titleLy2.stationTv.setMarqueeSpeed(speed)
+//            binding.titleLy2.stationTv.setSpeed(speed.toInt() )
+//        }
     }
 
     private fun layoutClick(view: View, hideDL: Boolean = false, callback: (() -> Unit)? = null) {
@@ -366,6 +372,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onPause() {
         super.onPause()
         timerHandler?.stop()
+        viewModel.mJob?.cancel()
+        viewModel.mJob = null
+        showHideTitle(false)
     }
 
     private fun checkPermissions(request: Boolean = false): Boolean {
@@ -430,22 +439,24 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         if (isShow) {
             // 显示
             if (binding.titleLy2.logoLy.visibility == View.VISIBLE) {
-                viewModel.mScope?.cancel()
+//                viewModel.mScope?.cancel()
+                viewModel.mJob?.cancel()
+                viewModel.mJob = null
             } else {
-                binding.titleLy2.stationTv.show()
-                binding.titleLy2.stationTv.resume()
+//                binding.titleLy2.stationTv.startMarquee()
                 binding.titleLy2.logoLy.visibility = View.VISIBLE
             }
-            viewModel.mScope.launch {
+            viewModel.mJob = viewModel.mScope.launch {
+                System.out.println("showHideTitle delay start HideTitle")
                 delay(MessageConstant.MAIN_TITLE_SHOW_TIME)
                 this@MainActivity.runOnUiThread {
+                    System.out.println("showHideTitle delay end HideTitle")
                     showHideTitle(false)
                 }
             }
         } else {
             if (binding.titleLy2.logoLy.visibility != View.GONE){
-                binding.titleLy2.stationTv.pause()
-                binding.titleLy2.stationTv.hide()
+//                binding.titleLy2.stationTv.stopMarquee()
                 binding.titleLy2.logoLy.visibility = View.GONE
             }
         }

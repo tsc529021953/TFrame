@@ -25,6 +25,10 @@ import java.io.File
 class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
     override var layoutId: Int = R.layout.fragment_line
+    
+    // 保存加载参数，用于重新显示时重新加载
+    private var loadImageSource: Any? = null
+    private lateinit var requestOptions: RequestOptions
 
     override fun linkViewModel() {
 
@@ -36,12 +40,12 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
             InteractiveFragment.iFragment?.back()
         }
 
-        val requestOptions = RequestOptions()
+        requestOptions = RequestOptions()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .override(com.bumptech.glide.request.target.Target.SIZE_ORIGINAL, com.bumptech.glide.request.target.Target.SIZE_ORIGINAL)
-            .format(DecodeFormat.PREFER_ARGB_8888)
+            .skipMemoryCache(false) // 启用内存缓存
+            .format(DecodeFormat.PREFER_RGB_565) // 使用 RGB_565 减少内存占用（不需要透明度）
 //            .placeholder(R.drawable.ic_launcher_foreground)
-//        .format(DecodeFormat.PREFER_RGB_565)　　//设置为这种格式去掉透明度通道，可以减少内存占有
+//        .format(DecodeFormat.PREFER_RGB_565)  //设置为这种格式去掉透明度通道，可以减少内存占有
 //        .placeholder(R.drawable.img_error)
 //            .error(R.drawable.img_error)
 
@@ -50,7 +54,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
         // 判断路径下的图片是否存在
         val imageFile = File(path)
         Timber.i("imageFile: ${imageFile.path} ${imageFile.exists()} ${imageFile.isFile}")
-        val loadImage = if (imageFile.exists() && imageFile.isFile) {
+        loadImageSource = if (imageFile.exists() && imageFile.isFile) {
             Timber.i("文件加载")
             // 文件存在，加载外部存储的图片
             path
@@ -59,15 +63,34 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
             R.mipmap.ic_line_ly
         }
         
-        Glide.with(requireContext())
-//            .setDefaultRequestOptions(requestOptions)
-            .load(loadImage)
-            .override(3840, 2160) // 限制最大尺寸，避免加载过大的图片
-            .centerInside() // 保持比例居中显示
-            .into(binding!!.lineIv)
+        // 加载图片
+        loadGlideImage()
+        
         binding.zoom.setOnTouchListener { view, motionEvent ->
             InteractiveFragment.iFragment?.clicked()
             return@setOnTouchListener false
+        }
+    }
+    
+    /**
+     * 加载 Glide 图片
+     */
+    private fun loadGlideImage() {
+        loadImageSource?.let { source ->
+            // 延迟加载，确保视图已准备好
+            view?.post {
+                if (!isDetached && isAdded) {
+                    Glide.with(this)
+                        .load(source)
+                        .apply(requestOptions)
+                        .override(3840, 2160) // 根据实际显示尺寸调整，避免加载过大的图片
+                        .centerInside() // 保持比例居中显示
+                        .placeholder(android.R.color.transparent) // 透明占位，避免闪烁
+                        .skipMemoryCache(true) // 跳过内存缓存
+                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
+                        .into(binding!!.lineIv)
+                }
+            }
         }
     }
 
@@ -78,8 +101,17 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
+            // Fragment 重新显示时，重置缩放并重新加载图片
             (binding.zoom as ZoomView).reset()
+            // 由于使用了缓存，重新加载会很快从缓存读取
+            loadGlideImage()
         }
+    }
+    
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Fragment 销毁时清理图片资源
+        Glide.with(this).clear(binding.lineIv)
     }
 
 }

@@ -10,6 +10,7 @@ import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import java.io.File
 import javax.inject.Inject
@@ -30,6 +31,8 @@ class MainViewModel @Inject constructor(val spManager: SharedPreferencesManager)
     }
 
     var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    var mJob: Job? = null
 
     var gson = Gson()
 

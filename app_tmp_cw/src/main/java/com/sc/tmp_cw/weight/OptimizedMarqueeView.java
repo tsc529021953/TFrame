@@ -47,6 +47,10 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
     
     // 性能优化：缓存字段
     private Paint.FontMetrics fontMetricsCache;
+    
+    // 用于检测是否有视频播放，降低跑马灯帧率
+    // 由于视频是持续播放的，默认设置为 true
+    private volatile boolean videoPlaying = true;
 
     public OptimizedMarqueeView(Context context) {
         this(context, (AttributeSet)null);
@@ -235,6 +239,8 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
             }
             
             this.mThread = new MarqueeViewThread(this.holder);
+            // 设置为较低优先级，避免与视频播放竞争 CPU/GPU 资源
+            this.mThread.setPriority(Thread.MIN_PRIORITY);
             this.mThread.start();
         }
     }
@@ -326,6 +332,52 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
      */
     public boolean isPaused() {
         return isPaused;
+    }
+    
+    /**
+     * 检查是否应该降低帧率（当视频播放时）
+     */
+    private boolean shouldReduceFrameRate() {
+        // 如果标记为视频正在播放，则降低帧率
+        if (videoPlaying) {
+            return true;
+        }
+        
+        // 尝试检测父视图中是否有 PlayerView 或 SurfaceView（视频播放器）
+        try {
+            android.view.ViewParent parent = getParent();
+            while (parent != null) {
+                if (parent instanceof android.view.ViewGroup) {
+                    android.view.ViewGroup viewGroup = (android.view.ViewGroup) parent;
+                    // 检查兄弟视图是否有视频播放器
+                    for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                        android.view.View child = viewGroup.getChildAt(i);
+                        String className = child.getClass().getName();
+                        // 检测 ExoPlayer 的 PlayerView 或其他视频播放器
+                        if (className.contains("PlayerView") || 
+                            className.contains("VideoView") ||
+                            (child instanceof android.view.SurfaceView && child != this)) {
+                            return true;
+                        }
+                    }
+                    parent = viewGroup.getParent();
+                } else {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            // 忽略异常
+        }
+        
+        return false;
+    }
+    
+    /**
+     * 设置视频播放状态，用于优化跑马灯性能
+     * @param playing 视频是否正在播放
+     */
+    public void setVideoPlaying(boolean playing) {
+        this.videoPlaying = playing;
     }
 
     /**
@@ -537,6 +589,11 @@ public class OptimizedMarqueeView extends SurfaceView implements SurfaceHolder.C
                     // 速度 0 = 最慢 (50ms), 速度 100 = 最快 (2ms)
                     int sleepTime = 50 - (OptimizedMarqueeView.this.mSpeed * 48 / 100);
                     sleepTime = Math.max(2, Math.min(50, sleepTime));
+                    
+                    // 优化：如果正在播放视频，增加睡眠时间以减少资源竞争
+                    if (shouldReduceFrameRate()) {
+                        sleepTime = Math.max(sleepTime * 2, 33); // 至少 33ms，降低帧率到 ~30fps
+                    }
                     
                     Thread.sleep(sleepTime);
                 } else {

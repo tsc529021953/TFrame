@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 47
-        versionName "0.0.47"
+        versionCode 48
+        versionName "0.0.48"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {

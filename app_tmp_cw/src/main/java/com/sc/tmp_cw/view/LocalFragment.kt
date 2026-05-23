@@ -1,54 +1,31 @@
 package com.sc.tmp_cw.view
 
-import android.net.Uri
-import android.media.MediaPlayer
 import android.view.Gravity
-import android.view.Surface
-import android.view.SurfaceHolder
-//import androidx.media3.common.Player
-//import androidx.media3.exoplayer.ExoPlayer
-//import androidx.media3.exoplayer.SimpleExoPlayer
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.alibaba.android.arouter.launcher.ARouter
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-//import com.google.android.exoplayer2.MediaItem
-//import com.google.android.exoplayer2.Player
-//import com.google.android.exoplayer2.SimpleExoPlayer
 import com.nbhope.lib_frame.base.BaseBindingFragment
-import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.bean.FileBean
-import com.nbhope.lib_frame.utils.HopeUtils
-import com.nbhope.lib_frame.view.SpaceItemDecoration
-import com.nbhope.lib_frame.widget.WrapGridLayoutManager
 import com.nbhope.lib_frame.widget.WrapLinearLayoutManager
 import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
-import com.sc.tmp_cw.adapter.FileImgAdapter
 import com.sc.tmp_cw.adapter.FileVideoAdapter
-import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentLocalVideoBinding
-import com.sc.tmp_cw.vm.IntroduceViewModel
 import com.sc.tmp_cw.vm.LocalViewModel
-import com.sc.tmp_cw.vm.TravelViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import timber.log.Timber
-//import tv.danmaku.ijk.media.player.IMediaPlayer
-//import tv.danmaku.ijk.media.player.IjkMediaPlayer
-import java.io.File
 import javax.inject.Inject
 
 /**
  * @author  tsc
  * @date  2025/1/6 19:38
- * @version 0.0.0-1
- * @description
+ * @version 0.0.0-2
+ * @description 本地视频播放Fragment - 使用ConcatenatingMediaSource实现无缝播放
  */
-class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewModel>(), FileVideoAdapter.FileImgCallback, SurfaceHolder.Callback {
+class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewModel>(), FileVideoAdapter.FileImgCallback {
 
     override var layoutId: Int = R.layout.fragment_local_video
 
@@ -68,109 +45,82 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         }
         adapter = FileVideoAdapter(viewModel.videoListObs.value ?: arrayListOf(), this)
         val ly = WrapLinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-//        val line = resources.getDimension(R.dimen.travel_btn_ly_space).toInt()
-//        binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line, 0, line, line)))
         binding.rv.adapter = adapter
         binding.rv.layoutManager = ly
         MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
+        
+        // 启动缓冲监控任务
+        startBufferMonitor()
+    }
+    
+    /**
+     * 启动缓冲监控，检测长时间缓冲并尝试恢复
+     */
+    private fun startBufferMonitor() {
+        viewModel.mScope.launch(Dispatchers.Main) {
+            while (isActive) {
+                delay(3000)
+                
+                val player = viewModel.player
+                val currentState = player?.playbackState
+                
+                if (currentState == Player.STATE_BUFFERING) {
+                    if (viewModel.checkBufferTimeout()) {
+                        Timber.tag("LocalPlayer").w("检测到缓冲超时，跳过当前视频")
+                        try {
+                            viewModel.next()
+                        } catch (e: Exception) {
+                            Timber.tag("LocalPlayer").e(e, "缓冲超时处理失败")
+                        }
+                    }
+                } else {
+                    viewModel.resetBufferTimeoutCounter()
+                }
+            }
+        }
     }
 
     private fun initPlayer() {
-//    /*mediaplay*/
-//        viewModel.surfaceHolder = binding.videoView.holder
-//        viewModel.surfaceHolder?.addCallback(this)
-//        viewModel.player = MediaPlayer()
-//        viewModel.player?.setOnPreparedListener(MediaPlayer.OnPreparedListener { mp -> mp.start() })
-
-//        viewModel.player = IjkMediaPlayer()
-//        binding.videoView.holder.addCallback(this)
-//        viewModel.player?.setOnCompletionListener {
-//            viewModel.playStatusObs.set(false)
-//            try {
-//                viewModel.player?.reset()
-//                viewModel.player?.setDisplay(viewModel.surfaceHolder)
-//            } catch (e: Exception) {}
-//
-//            viewModel.next()
-//            if (!this.isVisible) viewModel.mute(true)
-//        }
-//        viewModel.player?.setOnErrorListener(object : IMediaPlayer.OnErrorListener{
-//            override fun onError(p0: IMediaPlayer?, p1: Int, p2: Int): Boolean {
-//                Timber.i("player error $p1 $p2")
-//                return true
-//            }
-//        })
-//        viewModel.player?.setSpeed(2f)
-
-        // 使用viewModel中的initPlayer方法来初始化播放器
         viewModel.initPlayer()
-        
-        // 将播放器绑定到视图
         binding.videoView.player = viewModel.player
-
-        // 添加播放器监听器
         addPlayerListener()
     }
     
     private fun addPlayerListener() {
-        viewModel.player!!.addListener(object : Player.Listener {
-
-//            override fun onPlaybackStateChanged(playbackState: Int) {
-//                super.onPlaybackStateChanged(playbackState)
-//                when (playbackState) {
-//                    Player.STATE_BUFFERING -> {
-////                        Timber.i("onPlayerStateChanged加载中")
-//                    }
-//
-//                    Player.STATE_READY -> {
-////                        Timber.i("onPlayerStateChanged准备完成")
-//                    }
-//
-//                    Player.STATE_ENDED -> {
-//                        Timber.i("onPlayerStateChanged播放完成")
-//                        viewModel.playStatusObs.set(false)
-//                        viewModel.next()
-//                    }
-//                }
-//            }
+        viewModel.player?.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
                 super.onPlayerError(error)
-                //
-                Timber.e("onPlayerError %s", error.message)
+                Timber.tag("LocalPlayer").e("onPlayerError: %s", error.message)
                 error.printStackTrace()
                 
-                // 检查是否是MediaCodec相关错误
+                // 检测Surface/MediaCodec相关错误
+                val isSurfaceError = error.message?.contains("dequeueBuffer") == true ||
+                                   error.message?.contains("storeMetaDataInBuffers") == true ||
+                                   error.errorCode == PlaybackException.ERROR_CODE_IO_UNSPECIFIED ||
+                                   error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ||
+                                   error.errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED
+                
                 val isMediaCodecError = error.message?.contains("MediaCodec") == true ||
-                                      error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ||
-                                      error.errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED ||
                                       error.errorCode == PlaybackException.ERROR_CODE_DECODING_FORMAT_EXCEEDS_CAPABILITIES ||
                                       error.errorCode == PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED ||
                                       error.errorCode == PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED
                 
-                if (isMediaCodecError) {
-                    Timber.w("检测到MediaCodec错误，尝试重新初始化播放器")
+                if (isSurfaceError) {
+                    Timber.tag("LocalPlayer").e("检测到Surface/MediaCodec错误，尝试恢复播放")
+                    handleSurfaceError()
+                } else if (isMediaCodecError) {
+                    Timber.tag("LocalPlayer").w("检测到MediaCodec错误，快速跳过当前视频")
                     try {
-                        // 释放当前播放器
-                        viewModel.player?.release()
-                        // 重新初始化播放器
-                        viewModel.initPlayer()
-                        // 重新绑定到视图
-                        binding.videoView.player = viewModel.player
-                        // 添加监听器
-                        addPlayerListener()
-                        // 尝试播放下一个视频
                         viewModel.next()
                     } catch (e: Exception) {
-                        Timber.e("重新初始化播放器失败: ${e.message}")
-                        e.printStackTrace()
+                        Timber.tag("LocalPlayer").e("跳过视频失败: ${e.message}")
                     }
                 } else {
-                    // 非MediaCodec错误，按原有逻辑处理
                     try {
-                        viewModel.stop()
+                        Timber.tag("LocalPlayer").w("播放错误，尝试跳过当前视频")
                         viewModel.next()
                     } catch (e: Exception) {
-                        Timber.i("错误播放失败${e.message}")
+                        Timber.tag("LocalPlayer").i("错误播放失败${e.message}")
                     }
                 }
             }
@@ -178,45 +128,134 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState){
                     Player.STATE_BUFFERING-> {
-                        Timber.d("播放器状态: 缓冲中...")
-                        // 可以在这里显示加载指示器
+                        val bufferedPercentage = viewModel.player?.bufferedPercentage ?: 0
+                        val currentPosition = viewModel.player?.currentPosition ?: 0
+                        Timber.tag("LocalPlayer").d("缓冲中... playWhenReady=$playWhenReady, 已缓冲=${bufferedPercentage}%, 位置=${currentPosition}ms")
+                        
+                        if (viewModel.bufferStartTime == 0L) {
+                            viewModel.bufferStartTime = System.currentTimeMillis()
+                        }
+                        viewModel.recordBufferEvent()
                     }
                     Player.STATE_READY-> {
-                        Timber.d("播放器状态: 准备就绪，开始播放")
-                        // 隐藏加载指示器
+                        val bufferDuration = if (viewModel.bufferStartTime > 0) {
+                            System.currentTimeMillis() - viewModel.bufferStartTime
+                        } else 0
+                        val duration = viewModel.player?.duration ?: 0
+                        val currentPosition = viewModel.player?.currentPosition ?: 0
+                        Timber.tag("LocalPlayer").i("准备就绪 (playWhenReady=$playWhenReady, 缓冲耗时: ${bufferDuration}ms, 位置: ${currentPosition}ms/${duration}ms)")
+                        
+                        viewModel.resetBufferTimeoutCounter()
+                        viewModel.bufferStartTime = 0
+                        
+                        if (bufferDuration > 2000) {
+                            Timber.tag("LocalPlayer").w("警告: 初始缓冲时间过长 (${bufferDuration}ms)")
+                        }
+                        
+                        // 关键修复：只要Fragment可见且播放器READY，就确保播放
+                        if (viewModel.isFragmentVisible) {
+                            if (!playWhenReady) {
+                                Timber.tag("LocalPlayer").w("READY状态但playWhenReady=false，强制启动播放")
+                                viewModel.player?.play()
+                            } else {
+                                Timber.tag("LocalPlayer").d("播放器正常播放中")
+                            }
+                        } else {
+                            Timber.tag("LocalPlayer").d("Fragment不可见，暂停播放")
+                        }
                     }
                     Player.STATE_ENDED-> {
-                        Timber.i("onPlayerStateChanged播放完成")
+                        Timber.tag("LocalPlayer").i("播放完成，repeatMode=${viewModel.player?.repeatMode}")
                         viewModel.playStatusObs.set(false)
-                        viewModel.next()
+                        viewModel.resetBufferTimeoutCounter()
+                        // ConcatenatingMediaSource + REPEAT_MODE_ALL 会自动循环到第一个视频
                     }
                     Player.STATE_IDLE-> {
-                        Timber.d("播放器状态: 空闲")
+                        Timber.tag("LocalPlayer").w("播放器状态: 空闲 (playWhenReady=$playWhenReady)")
+                        val videoList = viewModel.videoListObs.value
+                        if (videoList != null && videoList.isNotEmpty() && viewModel.isFragmentVisible) {
+                            Timber.tag("LocalPlayer").w("检测到空闲状态，重新加载视频列表")
+                            val currentIndex = viewModel.playIndex.coerceIn(0, videoList.size - 1)
+                            viewModel.play(videoList[currentIndex])
+                        }
                     }
                 }
             }
         })
-//        viewModel.player!!.setPlaybackSpeed(2f)
+    }
+    
+    /**
+     * 处理Surface错误，尝试恢复播放
+     */
+    private fun handleSurfaceError() {
+        viewModel.mScope.launch(Dispatchers.Main) {
+            try {
+                Timber.tag("LocalPlayer").w("开始Surface错误恢复流程")
+                
+                // 1. 停止当前播放
+                viewModel.player?.stop()
+                delay(300)
+                
+                // 2. 重新初始化播放器
+                Timber.tag("LocalPlayer").d("重新初始化播放器")
+                viewModel.initPlayer()
+                delay(200)
+                
+                // 3. 重新设置Surface
+                binding.videoView.player = viewModel.player
+                delay(200)
+                
+                // 4. 重新加载视频列表并播放
+                val currentList = viewModel.videoListObs.value
+                if (currentList != null && currentList.isNotEmpty()) {
+                    Timber.tag("LocalPlayer").d("重新加载视频列表")
+                    viewModel.playVideoList(currentList)
+                    
+                    // 5. 跳转到之前的位置（如果可能）
+                    delay(500)
+                    viewModel.player?.seekToDefaultPosition(viewModel.playIndex)
+                    viewModel.player?.play()
+                    
+                    Timber.tag("LocalPlayer").i("Surface错误恢复成功")
+                } else {
+                    Timber.tag("LocalPlayer").e("恢复失败：视频列表为空")
+                }
+            } catch (e: Exception) {
+                Timber.tag("LocalPlayer").e(e, "Surface错误恢复失败")
+                // 最后的备选方案：跳过当前视频
+                try {
+                    viewModel.next()
+                } catch (e2: Exception) {
+                    Timber.tag("LocalPlayer").e(e2, "最终恢复也失败")
+                }
+            }
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        System.out.println("local onHiddenChanged $hidden")
+        Timber.tag("LocalPlayer").d("onHiddenChanged hidden=$hidden")
         if (!hidden) {
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
             viewModel.mute(false)
-            viewModel.checkVideo()
-        } else viewModel.mute(true)
+            viewModel.setFragmentVisibility(true)
+        } else {
+            viewModel.mute(true)
+            viewModel.setFragmentVisibility(false)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        System.out.println("local onResume ${this.isVisible}")
-        if ((viewModel.videoListObs.value?.size ?: 0) > 0)
-            viewModel.player?.play()
-//        if (adapter != null && adapter!!.data.size > 0) {
-//            viewModel.player?.play()
-//        }
+        Timber.tag("LocalPlayer").d("onResume, isVisible=${this.isVisible}")
+        
+        // 打印播放器状态用于调试
+        val playerState = viewModel.player?.playbackState
+        val playWhenReady = viewModel.player?.playWhenReady
+        Timber.tag("LocalPlayer").d("onResume时播放器状态: state=$playerState, playWhenReady=$playWhenReady")
+        
+        viewModel.setFragmentVisibility(true)
+        
         val cb = {
             viewModel.mute(false)
             MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_LIST))
@@ -236,15 +275,11 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         viewModel.checkVideo(true, true)
     }
 
-
     override fun onPause() {
         super.onPause()
-        System.out.println("local onPause ")
-//        if (adapter != null && adapter!!.data.size > 0) {
-//            viewModel.player?.pause()
-//        }
-        if ((viewModel.videoListObs.value?.size ?: 0) > 0)
-            viewModel.player?.pause()
+        Timber.tag("LocalPlayer").d("onPause")
+        
+        viewModel.setFragmentVisibility(false)
         viewModel.mute(true)
     }
 
@@ -257,10 +292,19 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         viewModel.videoListObs.observe(this) {
             if (it == null) return@observe
             adapter?.setNewInstance(it)
-            Timber.i("local initData ${it.size}")
+            Timber.tag("LocalPlayer").i("initData 视频列表大小: ${it.size}")
             if (it.size > 0) {
-                viewModel.play(it[0])
-            } else viewModel.stop()
+                val playerState = viewModel.player?.playbackState
+                if (playerState == Player.STATE_IDLE || playerState == null) {
+                    Timber.tag("LocalPlayer").d("initData: 开始加载视频列表")
+                    viewModel.playVideoList(it)
+                } else {
+                    Timber.tag("LocalPlayer").d("initData: 播放器已处于状态 $playerState")
+                }
+            } else {
+                Timber.tag("LocalPlayer").w("initData: 视频列表为空")
+                viewModel.stop()
+            }
         }
         viewModel.initData()
         initPlayer()
@@ -269,21 +313,5 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
     override fun onItemClick(item: FileBean) {
         viewModel.play(item)
     }
-
-    override fun surfaceCreated(p0: SurfaceHolder) {
-//        val surface: Surface = p0.surface
-//        viewModel.player?.setSurface(surface)
-//        viewModel.surfaceHolder = p0
-//        viewModel.player?.setDisplay(p0)
-    }
-
-    override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
-
-    }
-
-    override fun surfaceDestroyed(p0: SurfaceHolder) {
-
-    }
-
 
 }

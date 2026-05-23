@@ -1,8 +1,10 @@
 package com.sc.tmp_cw.activity
 
 import android.net.Uri
+import androidx.lifecycle.viewModelScope
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -63,23 +65,40 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
         binding.vm = viewModel
         LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
         if (IntroduceViewModel.fileBean == null) return
+        
+        // 使用 post 确保视图已经准备好
+        binding.root.post {
+            loadContent()
+        }
+    }
+    
+    private fun loadContent() {
         // 判断大图有没有
         val callback = { item: FileBean ->
             val path = "file://" + item.path
-            // Glide 会自动在后台线程加载，不需要 runOnUiThread
+            // Glide 会自动在后台线程加载,不需要 runOnUiThread
             Glide.with(binding!!.imageView)
                 .load(path)
-                .override(1920, 1080) // 限制最大尺寸，避免加载过大的图片
+                .override(960, 540) // 限制最大尺寸,避免加载过大的图片
                 .centerInside() // 保持比例居中显示
-//                .placeholder(R.drawable.ic_placeholder) // 设置占位图
-//                .error(R.drawable.ic_error) // 加载失败显示
+//                .skipMemoryCache(false) // 启用内存缓存
+                .skipMemoryCache(true) // 跳过内存缓存
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL) // 启用磁盘缓存
+                .placeholder(android.R.color.transparent) // 设置透明占位,避免闪烁
                 .into(binding!!.imageView)
 
             val item3 = IntroduceViewModel.textList?.find { it.name.startsWith(IntroduceViewModel.fileBean!!.name) }
             var msg = resources.getString(R.string.no_introduce)
             if (item3 != null) {
-                viewModel.mScope.launch(Dispatchers.IO) {
-                    viewModel.textObs.set(FileUtil.readFile(item.path) ?: msg)
+                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        val content = FileUtil.readFile(item3.path)
+                        viewModel.textObs.set(content ?: msg)
+                    } catch (e: Exception) {
+                        Timber.e(e, "读取文件失败: ${item3.path}")
+                        viewModel.textObs.set(msg)
+                    }
                 }
             } else {
                 viewModel.textObs.set(msg)
@@ -100,8 +119,6 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
             // 显示大图
             callback.invoke(item)
         }
-
-        // 显示小图 + 文字
     }
 
     private fun initPlayer() {
@@ -123,6 +140,9 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
                         Timber.i("onPlayerStateChanged播放完成")
 //                        viewModel.playStatusObs.set(false)
 //                        viewModel.next { onIndexChanged() }
+                    }
+                    Player.STATE_IDLE-> {
+                        Timber.i("onPlayerStateChanged空闲状态")
                     }
                 }
             }

@@ -41,9 +41,9 @@ object MessageHandler {
 //        }
         service.mScope.launch {
             handleMessage(testData2.replace(" ", ""), service)
-            delay(4000)
-            handleMessage(testData3.replace(" ", ""), service)
-            delay(4000)
+//            delay(4000)
+//            handleMessage(testData3.replace(" ", ""), service)
+            delay(1000)
             handleMessage(testData1.replace(" ", ""), service)
 //            delay(1000)
 //            handleMessage(testData1.replace(" ", ""), service)

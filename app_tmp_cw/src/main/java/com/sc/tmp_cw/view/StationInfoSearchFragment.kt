@@ -5,6 +5,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.alibaba.android.arouter.launcher.ARouter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.FileUtil
@@ -123,6 +124,8 @@ class StationInfoSearchFragment: BaseBindingFragment<FragmentStationInfoSearchBi
         } else binding.zoom.reset()
         Glide.with(binding!!.lineIv)
                 .load(path)
+            .skipMemoryCache(true) // 跳过内存缓存
+            .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
                 .into(binding!!.lineIv)
     }
 }

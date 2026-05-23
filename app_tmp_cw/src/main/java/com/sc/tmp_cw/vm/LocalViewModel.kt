@@ -1,20 +1,18 @@
 package com.sc.tmp_cw.vm
 
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
 import android.view.Surface
 import android.view.SurfaceHolder
 import androidx.databinding.ObservableBoolean
-import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.LoadControl
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.RenderersFactory
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -23,91 +21,100 @@ import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.bean.FileBean
 import com.nbhope.lib_frame.utils.FileUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
-import com.nbhope.lib_frame.utils.TimerHandler
 import com.nbhope.lib_frame.utils.toast.ToastUtil
 import com.sc.tmp_cw.constant.MessageConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.io.EOFException
 import java.io.File
 import javax.inject.Inject
-
 
 /**
  * @author  tsc
  * @date  2024/4/26 14:43
  * @version 0.0.0-1
- * @description
+ * @description 本地视频播放ViewModel - 双播放器无缝切换优化版
  */
 class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager) : BaseViewModel() {
 
-    companion object {
-
-
-    }
-
     var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
     var gson = Gson()
 
-//    var player: IjkMediaPlayer? = null
+    // 使用 ConcatenatingMediaSource 实现无缝播放
     var player: ExoPlayer? = null
-//    var player: MediaPlayer? = null
+    private var concatenatingMediaSource: ConcatenatingMediaSource? = null
+    
     var surfaceHolder: SurfaceHolder? = null
     var surface: Surface? = null
 
     var videoListObs = MutableLiveData<ArrayList<FileBean>>()
-
     var list: List<FileBean>? = null
 
     var playStatusObs = ObservableBoolean(false)
     var playIndex = 0
 
     var lastStr = ""
+    
+    // 缓冲性能诊断
+    var bufferStartTime: Long = 0
+    
+    // 防止缓冲死循环
+    private var consecutiveBufferTimeouts = 0
+    private val MAX_BUFFER_TIMEOUTS = 2
+    
+    // 频繁缓冲检测
+    private var recentBufferCount = 0
+    private var lastBufferTime = 0L
+    private val BUFFER_WINDOW_MS = 30000
+    
+    // Fragment可见性状态管理
+    var isFragmentVisible = false
+    private var shouldResumePlay = false
 
+    /**
+     * 初始化播放器，使用 ConcatenatingMediaSource 实现无缝播放
+     */
     fun initPlayer() {
-        // 释放旧的播放器实例（如果存在）
-        player?.release()
+        releasePlayer()
         
-        // 创建带宽计量器
-        val bandwidthMeter = DefaultBandwidthMeter.Builder(HopeBaseApp.getContext()).build()
+        // 带宽计量器优化
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(HopeBaseApp.getContext())
+            .setInitialBitrateEstimate(10_000_000)
+            .build()
         
-        // 创建轨道选择器，优化视频播放
+        // 轨道选择器优化 - 禁用硬件解码以降低Surface错误风险
         val trackSelector = DefaultTrackSelector(HopeBaseApp.getContext()).apply {
             setParameters(buildUponParameters().apply {
-                // 允许自适应选择
                 setAllowAudioMixedChannelCountAdaptiveness(true)
                 setAllowVideoMixedMimeTypeAdaptiveness(true)
-                // 优先选择标准清晰度视频以减少解码压力
-                setMaxVideoSizeSd()
+                // 优先使用软件解码，避免Surface问题
+                // setRendererDisabled(C.TRACK_TYPE_VIDEO, false)  // 如果需要强制软解可以开启
             })
         }
         
-        // 自定义加载控制，优化缓冲策略以减少卡顿
+        // 4G内存设备优化的缓冲策略 - 针对本地视频优化
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(
-                10000, // 最小缓冲时间(ms) - 增加到10秒以减少卡顿
-                30000, // 最大缓冲时间(ms) - 增加到30秒以提供更好的缓冲
-                2500,  // 播放前缓冲时间(ms) - 增加到2.5秒以确保流畅开始
-                5000   // 重新缓冲前的时间(ms) - 增加到5秒
+                2000,  // 最小缓冲：2秒（本地视频可以适当增加）
+                10000, // 最大缓冲：10秒（减少频繁缓冲）
+                1000,  // 播放前缓冲：1秒（确保快速启动）
+                2000   // 重新缓冲阈值：2秒（避免频繁重新缓冲）
             )
-            .setPrioritizeTimeOverSizeThresholds(true) // 优先考虑时间而非大小
+            .setPrioritizeTimeOverSizeThresholds(true)
             .build()
         
-        // 构建ExoPlayer实例，启用硬件加速和优化配置
+        // 构建播放器
         player = ExoPlayer.Builder(HopeBaseApp.getContext())
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .setBandwidthMeter(bandwidthMeter)
             .build()
-            
-        // 设置播放器准备状态
-        player?.playWhenReady = true
+        player?.playWhenReady = false
         
-        Timber.i("ExoPlayer初始化完成，已优化硬件解码和缓冲策略")
+        Timber.tag("LocalPlayer").i("ExoPlayer初始化完成，使用ConcatenatingMediaSource实现无缝播放")
     }
 
     fun initData() {
@@ -124,9 +131,7 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                Timber.i("相同数据，无需校验！ $checkPlay")
                 if (checkPlay) {
                     try {
-//                        player?.start()
                         player?.play()
-//                        setIndex(0)
                     } catch (e: Exception) {
                         Timber.i("checkVideo replay ${e.message}")
                         e.printStackTrace()
@@ -149,27 +154,126 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                     list3.add(it2)
                 }
             }
-//            list!!.map { it ->
-//                val item = record.find { it2 -> it.path == it2.path }
-//                if (item != null) {
-//                    list3.add(it)
-//                    it.status = 1
-//                } else it.status = 0
-//            }
         }
+        Timber.tag("LocalPlayer").i("checkVideo ${list3.size}")
         videoListObs.postValue(list3)
+        if (check)
+            playVideoList(list3)
     }
 
+    /**
+     * 切换到下一个视频
+     */
     fun next() {
-        if (videoListObs.value == null) return
-        if (playIndex + 1 >= videoListObs.value!!.size) setIndex(0)
-        else setIndex(playIndex + 1)
+        if (videoListObs.value.isNullOrEmpty()) {
+            Timber.tag("LocalPlayer").i("没有更多视频了")
+            return
+        }
+        
+        val currentSize = videoListObs.value!!.size
+        
+        // 如果只有一个视频，重新播放
+        if (currentSize == 1) {
+            player?.seekTo(0, 0)
+            player?.play()
+            Timber.tag("LocalPlayer").d("只有一个视频，重新播放")
+            return
+        }
+        
+        // 计算下一个索引（自动循环）
+        val nextIndex = (playIndex + 1) % currentSize
+        
+        // 检查播放器状态
+        val currentPlayerState = player?.playbackState
+        Timber.tag("LocalPlayer").d("next() 调用: 当前索引=$playIndex, 目标索引=$nextIndex, 播放器状态=$currentPlayerState")
+        
+        when (currentPlayerState) {
+            com.google.android.exoplayer2.Player.STATE_IDLE -> {
+                // 播放器未准备，需要重新加载
+                Timber.tag("LocalPlayer").w("播放器未准备(IDLE状态)，重新加载视频列表")
+                playIndex = nextIndex
+                playVideoList(videoListObs.value!!)
+            }
+            com.google.android.exoplayer2.Player.STATE_BUFFERING -> {
+                // 缓冲中，先停止再切换
+                Timber.tag("LocalPlayer").w("播放器缓冲中，先停止再切换")
+                player?.stop()
+                playIndex = nextIndex
+                // 使用协程延迟后重新加载
+                mScope.launch(Dispatchers.Main) {
+                    delay(300)
+                    playVideoList(videoListObs.value!!)
+                    delay(500)
+                    player?.seekToDefaultPosition(nextIndex)
+                    player?.play()
+                    Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $playIndex")
+                }
+            }
+            else -> {
+                // READY 或 ENDED 状态，直接切换
+                player?.seekToDefaultPosition(nextIndex)
+                // 确保播放
+                player?.playWhenReady = true
+                player?.play()
+                playIndex = nextIndex
+                Timber.tag("LocalPlayer").i("使用seekToDefaultPosition切换到索引: $playIndex")
+            }
+        }
     }
 
+    /**
+     * 切换到上一个视频
+     */
     fun pre() {
-        if (videoListObs.value == null) return
-        if (playIndex - 1 < 0) setIndex(videoListObs.value!!.size - 1)
-        else setIndex(playIndex - 1)
+        if (videoListObs.value == null || videoListObs.value!!.isEmpty()) return
+        
+        val currentSize = videoListObs.value!!.size
+        
+        // 如果只有一个视频，重新播放
+        if (currentSize == 1) {
+            player?.seekTo(0, 0)
+            player?.play()
+            Timber.tag("LocalPlayer").d("只有一个视频，重新播放")
+            return
+        }
+        
+        // 计算上一个索引（自动循环）
+        val prevIndex = if (playIndex - 1 < 0) currentSize - 1 else playIndex - 1
+        
+        // 检查播放器状态
+        val currentPlayerState = player?.playbackState
+        Timber.tag("LocalPlayer").d("pre() 调用: 当前索引=$playIndex, 目标索引=$prevIndex, 播放器状态=$currentPlayerState")
+        
+        when (currentPlayerState) {
+            com.google.android.exoplayer2.Player.STATE_IDLE -> {
+                // 播放器未准备，需要重新加载
+                Timber.tag("LocalPlayer").w("播放器未准备(IDLE状态)，重新加载视频列表")
+                playIndex = prevIndex
+                playVideoList(videoListObs.value!!)
+            }
+            com.google.android.exoplayer2.Player.STATE_BUFFERING -> {
+                // 缓冲中，先停止再切换
+                Timber.tag("LocalPlayer").w("播放器缓冲中，先停止再切换")
+                player?.stop()
+                playIndex = prevIndex
+                mScope.launch(Dispatchers.Main) {
+                    delay(300)
+                    playVideoList(videoListObs.value!!)
+                    delay(500)
+                    player?.seekToDefaultPosition(prevIndex)
+                    player?.play()
+                    Timber.tag("LocalPlayer").i("缓冲状态下切换完成，索引: $playIndex")
+                }
+            }
+            else -> {
+                // READY 或 ENDED 状态，直接切换
+                player?.seekToDefaultPosition(prevIndex)
+                player?.playWhenReady = true
+                player?.play()
+                playIndex = prevIndex
+                Timber.tag("LocalPlayer").i("使用seekToDefaultPosition切换到索引: $playIndex")
+            }
+        }
     }
 
     private fun setIndex(index: Int) {
@@ -179,9 +283,78 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
         play(fileBean)
     }
 
+    /**
+     * 播放指定视频列表（使用 ConcatenatingMediaSource）
+     */
+    fun playVideoList(videoList: ArrayList<FileBean>) {
+        if (videoList.isEmpty()) {
+            Timber.w("视频列表为空")
+            return
+        }
+        
+        try {
+            Timber.tag("LocalPlayer").d("开始播放视频列表，共${videoList.size}个视频")
+            
+            // 打印第一个视频的详细信息用于诊断
+            if (videoList.isNotEmpty()) {
+                val firstVideo = videoList[0]
+                val fileSize = File(firstVideo.path).length()
+                Timber.tag("LocalPlayer").i("第一个视频: ${firstVideo.name}")
+                Timber.tag("LocalPlayer").i("文件大小: ${fileSize / (1024 * 1024)}MB")
+                Timber.tag("LocalPlayer").i("文件路径: ${firstVideo.path}")
+            }
+            
+            // 创建数据源工厂
+            val dataSourceFactory = DefaultDataSource.Factory(HopeBaseApp.getContext())
+            
+            // 创建 ConcatenatingMediaSource
+            concatenatingMediaSource = ConcatenatingMediaSource()
+            
+            // 添加所有视频到拼接源
+            videoList.forEachIndexed { index, fileBean ->
+                val uri = Uri.fromFile(File(fileBean.path))
+                val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(uri))
+                concatenatingMediaSource?.addMediaSource(mediaSource)
+                Timber.tag("LocalPlayer").d("添加视频 ${index + 1}/${videoList.size}: ${fileBean.name}")
+            }
+            
+            // 设置给播放器
+            player?.setMediaSource(concatenatingMediaSource!!)
+            player?.prepare()
+            
+            // 启用重复模式，实现循环播放
+            player?.repeatMode = com.google.android.exoplayer2.Player.REPEAT_MODE_ALL
+            Timber.tag("LocalPlayer").d("已启用循环播放模式")
+            
+            // 根据可见性决定是否播放
+            if (isFragmentVisible) {
+                player?.playWhenReady = true
+                Timber.tag("LocalPlayer").d("Fragment可见，立即播放")
+            } else {
+                player?.playWhenReady = false
+                shouldResumePlay = true
+                Timber.tag("LocalPlayer").d("Fragment不可见，准备但不播放")
+            }
+            
+            // 重置缓冲计数器
+            resetBufferTimeoutCounter()
+            bufferStartTime = System.currentTimeMillis()
+            
+            Timber.tag("LocalPlayer").i("视频列表加载完成，开始播放")
+        } catch (e: Exception) {
+            Timber.tag("LocalPlayer").e(e, "加载视频列表失败")
+            e.printStackTrace()
+        }
+    }
+    
+    /**
+     * 播放单个视频（兼容旧接口）
+     */
     fun play(item: FileBean) {
         if (videoListObs.value == null) return
         playIndex = videoListObs.value!!.indexOf(item)
+        
         if (!File(item.path).exists()) {
             mScope.launch(Dispatchers.Main) {
                 ToastUtil.showS("未检测到视频 ${item.name},将重新加载")
@@ -196,79 +369,153 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                 ToastUtil.showS("视频格式可能不兼容: ${item.name}")
             }
             Timber.w("视频格式可能不兼容: ${item.path}")
-            // 仍然尝试播放，但记录警告
         }
         
         try {
-            // 停止当前播放
-            player?.stop()
+            Timber.tag("LocalPlayer").d("开始播放视频: ${item.name}, 索引: $playIndex")
             
             val uri = Uri.fromFile(File(item.path))
-            var mediaItem = MediaItem.fromUri(uri)
+            val mediaItem = MediaItem.fromUri(uri)
             
-            // 设置媒体项并准备播放
             player?.setMediaItem(mediaItem)
             player?.prepare()
-            player?.play()
             
-            Timber.i("播放 ${item.name}")
+            // 根据Fragment可见性决定是否播放
+            if (isFragmentVisible) {
+                player?.playWhenReady = true
+                Timber.tag("LocalPlayer").d("Fragment可见，立即播放")
+            } else {
+                player?.playWhenReady = false
+                shouldResumePlay = true
+                Timber.tag("LocalPlayer").d("Fragment不可见，准备但不播放")
+            }
             
-            // 预加载下一个视频
-            preloadNextVideo()
+            // 重置缓冲计数器
+            resetBufferTimeoutCounter()
+            bufferStartTime = System.currentTimeMillis()
+            
+            Timber.tag("LocalPlayer").i("播放 ${item.name} - 路径: ${item.path}")
         } catch (e: Exception) {
-            Timber.e(e, "播放视频时发生错误: ${item.name}")
+            Timber.tag("LocalPlayer").e(e, "播放视频时发生错误: ${item.name}")
             e.printStackTrace()
-            // 尝试重新初始化播放器
-            initPlayer()
+            handlePlayError(item)
         }
     }
     
     /**
-     * 预加载下一个视频以减少切换时的卡顿
+     * 处理播放错误
      */
-    private fun preloadNextVideo() {
-        if (videoListObs.value == null || videoListObs.value!!.size <= 1) return
-        
-        val nextIndex = if (playIndex + 1 >= videoListObs.value!!.size) 0 else playIndex + 1
-        val nextItem = videoListObs.value!![nextIndex]
-        
-        // 在后台线程中预加载下一个视频
-        mScope.launch(Dispatchers.IO) {
+    private fun handlePlayError(failedItem: FileBean) {
+        mScope.launch(Dispatchers.Main) {
             try {
-                // 这里可以添加更复杂的预加载逻辑
-                // 例如：预先解析视频元数据、检查文件完整性等
-                Timber.d("预加载下一个视频: ${nextItem.name}")
+                Timber.tag("LocalPlayer").w("播放失败，尝试跳过: ${failedItem.name}")
+                delay(500)
+                next()
             } catch (e: Exception) {
-                Timber.w("预加载下一个视频失败: ${e.message}")
+                Timber.tag("LocalPlayer").e(e, "错误恢复失败")
             }
         }
     }
 
     fun stop() {
-        if (videoListObs.value == null) return
-        try {
-            player?.stop()
-//            player?.next()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        player?.stop()
     }
 
     fun release() {
-        player?.release()
-    }
-
-    fun mute(isMute: Boolean) {
-        if (isMute)
-            player?.volume = 0f
-        else player?.volume = 1.0f
-//        if (isMute)
-//            player?.setVolume(0f, 0f)
-//        else player?.setVolume(1f, 1f)
+        releasePlayer()
     }
     
     /**
-     * 检查视频文件是否可能引起解码问题
+     * 释放播放器资源
+     */
+    private fun releasePlayer() {
+        player?.release()
+        player = null
+        concatenatingMediaSource = null
+        Timber.tag("LocalPlayer").d("播放器资源已释放")
+    }
+    
+    /**
+     * 获取当前播放器
+     */
+    fun getActivePlayer(): ExoPlayer? {
+        return player
+    }
+    
+    /**
+     * 设置Fragment可见性状态
+     */
+    fun setFragmentVisibility(visible: Boolean) {
+        isFragmentVisible = visible
+        val activePlayer = getActivePlayer()
+        val currentState = activePlayer?.playbackState
+        val currentPlayWhenReady = activePlayer?.playWhenReady
+        
+        Timber.tag("LocalPlayer").d("setFragmentVisibility: visible=$visible, state=$currentState, playWhenReady=$currentPlayWhenReady")
+        
+        if (visible) {
+            // Fragment显示，恢复播放
+            when (currentState) {
+                com.google.android.exoplayer2.Player.STATE_READY -> {
+                    // 已准备好，强制恢复播放
+                    if (!activePlayer!!.playWhenReady) {
+                        activePlayer.playWhenReady = true
+                        Timber.tag("LocalPlayer").w("Fragment显示，READY状态但未播放，强制恢复")
+                    } else {
+                        Timber.tag("LocalPlayer").d("Fragment显示，播放器正常运行")
+                    }
+                }
+                com.google.android.exoplayer2.Player.STATE_BUFFERING -> {
+                    // 缓冲中，确保会自动播放
+                    if (!activePlayer!!.playWhenReady) {
+                        activePlayer.playWhenReady = true
+                        Timber.tag("LocalPlayer").w("Fragment显示，缓冲中强制设置播放标记")
+                    } else {
+                        Timber.tag("LocalPlayer").d("Fragment显示，缓冲中等待就绪")
+                    }
+                }
+                com.google.android.exoplayer2.Player.STATE_IDLE -> {
+                    // 空闲状态，重新加载视频列表
+                    val currentList = videoListObs.value
+                    if (currentList != null && currentList.isNotEmpty()) {
+                        if (playIndex >= 0 && playIndex < currentList.size) {
+                            Timber.tag("LocalPlayer").w("Fragment显示且播放器空闲，重新加载视频列表")
+                            playVideoList(currentList)
+                        }
+                    }
+                }
+                com.google.android.exoplayer2.Player.STATE_ENDED -> {
+                    // 播放结束，重新开始
+                    Timber.tag("LocalPlayer").w("Fragment显示且播放已结束，从头开始")
+                    activePlayer?.seekTo(0, 0)
+                    activePlayer?.playWhenReady = true
+                }
+                else -> {
+                    Timber.tag("LocalPlayer").w("Fragment显示，未知播放器状态: $currentState")
+                }
+            }
+            shouldResumePlay = false
+        } else {
+            // Fragment隐藏，暂停播放
+            activePlayer?.playWhenReady = false
+            shouldResumePlay = true
+            Timber.tag("LocalPlayer").d("Fragment隐藏，暂停播放")
+        }
+    }
+
+    /**
+     * 静音控制
+     */
+    fun mute(isMute: Boolean) {
+        val activePlayer = getActivePlayer()
+        if (isMute)
+            activePlayer?.volume = 0f
+        else 
+            activePlayer?.volume = 1.0f
+    }
+    
+    /**
+     * 检查视频文件兼容性
      */
     fun checkVideoCompatibility(filePath: String): Boolean {
         return try {
@@ -278,9 +525,9 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                 return false
             }
             
-            // 检查文件大小，过大的文件可能导致内存问题
+            // 检查文件大小
             val fileSize = file.length()
-            if (fileSize > 2L * 1024 * 1024 * 1024) { // 大于2GB
+            if (fileSize > 2L * 1024 * 1024 * 1024) {
                 Timber.w("视频文件过大: ${fileSize / (1024 * 1024)}MB")
             }
             
@@ -293,16 +540,9 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
                 return false
             }
             
-            // 对于某些格式，可能需要额外的检查
             when (extension) {
-                "mkv" -> {
-                    // MKV 容器可能包含多种编码格式，需要特别注意
-                    Timber.d("MKV 格式视频，可能存在兼容性问题")
-                }
-                "avi" -> {
-                    // AVI 格式较老，可能有编码兼容性问题
-                    Timber.d("AVI 格式视频，可能存在兼容性问题")
-                }
+                "mkv" -> Timber.d("MKV 格式视频，可能存在兼容性问题")
+                "avi" -> Timber.d("AVI 格式视频，可能存在兼容性问题")
             }
             
             true
@@ -310,6 +550,67 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             Timber.e(e, "检查视频兼容性时出错")
             false
         }
+    }
+    
+    /**
+     * 记录缓冲事件
+     */
+    fun recordBufferEvent() {
+        val currentTime = System.currentTimeMillis()
+        
+        if (currentTime - lastBufferTime > BUFFER_WINDOW_MS) {
+            recentBufferCount = 0
+        }
+        
+        recentBufferCount++
+        lastBufferTime = currentTime
+        
+        // 获取当前视频信息用于诊断
+        val currentVideoName = if (videoListObs.value != null && playIndex < videoListObs.value!!.size) {
+            videoListObs.value!![playIndex].name
+        } else "未知"
+        
+        Timber.tag("LocalPlayer").d("缓冲事件 #${recentBufferCount} (30秒窗口内) - 视频: $currentVideoName, 索引: $playIndex")
+        
+        if (recentBufferCount > 5) {
+            Timber.tag("LocalPlayer").e("严重警告: 30秒内缓冲${recentBufferCount}次！")
+            Timber.tag("LocalPlayer").e("可能原因: 1.视频编码问题 2.分辨率过高 3.硬件解码失败 4.存储读取慢")
+            Timber.tag("LocalPlayer").e("建议: 检查视频格式、降低分辨率、或强制软件解码")
+        }
+    }
+    
+    /**
+     * 检查缓冲是否超时
+     */
+    fun checkBufferTimeout(currentTime: Long = System.currentTimeMillis()): Boolean {
+        if (bufferStartTime <= 0) return false
+        
+        val bufferDuration = currentTime - bufferStartTime
+        
+        // 本地文件缓冲超过6秒认为有问题
+        if (bufferDuration > 6000) {
+            consecutiveBufferTimeouts++
+            Timber.tag("LocalPlayer").e("缓冲超时: ${bufferDuration}ms，连续超时次数: $consecutiveBufferTimeouts")
+            
+            if (consecutiveBufferTimeouts >= MAX_BUFFER_TIMEOUTS) {
+                Timber.tag("LocalPlayer").e("连续缓冲超时${consecutiveBufferTimeouts}次，跳过当前视频")
+                bufferStartTime = 0
+                consecutiveBufferTimeouts = 0
+                return true
+            }
+            
+            bufferStartTime = 0
+            return true
+        }
+        return false
+    }
+    
+    /**
+     * 重置缓冲超时计数器
+     */
+    fun resetBufferTimeoutCounter() {
+        consecutiveBufferTimeouts = 0
+        Timber.tag("LocalPlayer").d("重置缓冲超时计数器")
     }
 
 }

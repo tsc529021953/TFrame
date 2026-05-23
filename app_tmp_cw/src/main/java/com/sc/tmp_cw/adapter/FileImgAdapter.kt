@@ -2,6 +2,7 @@ package com.sc.tmp_cw.adapter
 
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.nbhope.lib_frame.bean.FileBean
@@ -23,6 +24,8 @@ class FileImgAdapter(items: MutableList<FileBean>, var callback: FileImgCallback
         val path = "file://" + item.path
         Glide.with(binding!!.iv)
                 .load(path)
+            .skipMemoryCache(true) // 跳过内存缓存
+            .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
                 .into(binding!!.iv)
         binding!!.tv.text = item.name
     }

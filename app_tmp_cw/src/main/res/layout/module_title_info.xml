@@ -49,6 +49,8 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="20dp"
                     android:background="@mipmap/ic_title_bg"
+                    android:clipChildren="true"
+                    android:clipToPadding="true"
                     >
 
                 <TextView
@@ -65,24 +67,25 @@
 
                 <!--                <View style="@style/horizontal_space_style"/>-->
 
-                <!-- 优化：启用硬件加速的跑马灯 -->
-                <com.sc.tmp_cw.weight.OptimizedMarqueeView
+                <!-- CPU 绘制的轻量级跑马灯，不与视频争抢 GPU 资源 -->
+<!--                <com.sc.tmp_cw.weight.CpuMarqueeTextView-->
+<!--                        style="@style/main_title_station"-->
+<!--                        android:layout_weight="2.9"-->
+<!--                        android:paddingStart="20dp"-->
+<!--                        android:paddingEnd="25dp"-->
+<!--                        android:id="@+id/station_tv"-->
+<!--                        android:text="@{service.stationObs}"-->
+<!--                        android:layerType="software"-->
+<!--                        android:clipToOutline="true"-->
+<!--                        app:speed="30"-->
+<!--                        />-->
+                <com.nbhope.lib_frame.widget.MarqueeTextView
                         style="@style/main_title_station"
                         android:layout_weight="2.9"
                         android:paddingStart="20dp"
                         android:paddingEnd="25dp"
                         android:id="@+id/station_tv"
                         android:text="@{service.stationObs}"
-                        android:layerType="hardware"
-
-                        app:startPoint="end"
-                        app:isRepeat="true"
-                        app:direction="left"
-                        app:speed="30"
-                        app:textcolor="#fff"
-                        app:textSize="18sp"
-
-
                         />
                 <!--                android:flipInterval="2500"-->
                 <!--                android:inAnimation="@anim/in_right"-->

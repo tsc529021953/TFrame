@@ -39,8 +39,6 @@ class IntroduceViewModel @Inject constructor(val spManager: SharedPreferencesMan
 
     val typeObs = ObservableBoolean(true) // image video
 
-    var mScope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
     var gson = Gson()
 
     var player: SimpleExoPlayer? = null
@@ -51,10 +49,18 @@ class IntroduceViewModel @Inject constructor(val spManager: SharedPreferencesMan
 
     override fun onCleared() {
         super.onCleared()
+        // 释放播放器资源
+        player?.release()
+        player = null
+        
+        // 清空静态变量引用,帮助 GC 回收
         fileBean = null
         bigList = null
         videoList = null
         textList = null
+        
+        // 清空 observable 数据
+        textObs.set("")
     }
 
 

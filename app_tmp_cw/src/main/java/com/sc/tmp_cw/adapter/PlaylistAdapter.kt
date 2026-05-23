@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.viewholder.BaseViewHolder
 import com.nbhope.lib_frame.bean.FileBean
@@ -26,6 +27,8 @@ class PlaylistAdapter(items: MutableList<FileBean>, var callback: FileImgCallbac
         val path = "file://" + item.path
         Glide.with(binding!!.iv)
                 .load(path)
+            .skipMemoryCache(true) // 跳过内存缓存
+            .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
                 .error(R.drawable.ic_auto_df)
                 .into(binding!!.iv)
         binding!!.tv.text = item.name

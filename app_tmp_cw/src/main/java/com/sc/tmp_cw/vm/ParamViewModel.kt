@@ -39,7 +39,7 @@ class ParamViewModel @Inject constructor(val spManager: SharedPreferencesManager
     var finishTimeObs = ObservableInt(30)
 
     fun initData() {
-        val speed = (spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 1f) * 10).toInt()
+        val speed = (spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 3f) * 10).toInt()
         speedObs.set(speed)
         val finishTime = (MessageConstant.FINISH_TIME / 1000).toInt()
         finishTimeObs.set(finishTime)
