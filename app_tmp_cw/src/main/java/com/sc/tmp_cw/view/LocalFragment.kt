@@ -61,6 +61,11 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
             while (isActive) {
                 delay(3000)
                 
+                // 全局熔断检查
+                if (viewModel.isRecoveryExhausted()) {
+                    continue
+                }
+                
                 val player = viewModel.player
                 val currentState = player?.playbackState
                 
@@ -108,20 +113,30 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                 
                 if (isSurfaceError) {
                     Timber.tag("LocalPlayer").e("检测到Surface/MediaCodec错误，尝试恢复播放")
-                    handleSurfaceError()
+                    if (!viewModel.isRecoveryExhausted()) {
+                        handleSurfaceError()
+                    } else {
+                        Timber.tag("LocalPlayer").e("恢复已达上限，跳过Surface错误恢复")
+                    }
                 } else if (isMediaCodecError) {
                     Timber.tag("LocalPlayer").w("检测到MediaCodec错误，快速跳过当前视频")
-                    try {
-                        viewModel.next()
-                    } catch (e: Exception) {
-                        Timber.tag("LocalPlayer").e("跳过视频失败: ${e.message}")
+                    if (!viewModel.isRecoveryExhausted()) {
+                        try {
+                            viewModel.next()
+                        } catch (e: Exception) {
+                            Timber.tag("LocalPlayer").e("跳过视频失败: ${e.message}")
+                        }
                     }
                 } else {
-                    try {
-                        Timber.tag("LocalPlayer").w("播放错误，尝试跳过当前视频")
-                        viewModel.next()
-                    } catch (e: Exception) {
-                        Timber.tag("LocalPlayer").i("错误播放失败${e.message}")
+                    if (!viewModel.isRecoveryExhausted()) {
+                        try {
+                            Timber.tag("LocalPlayer").w("播放错误，尝试跳过当前视频")
+                            viewModel.next()
+                        } catch (e: Exception) {
+                            Timber.tag("LocalPlayer").i("错误播放失败${e.message}")
+                        }
+                    } else {
+                        Timber.tag("LocalPlayer").e("恢复已达上限，不再跳过")
                     }
                 }
             }
@@ -145,9 +160,13 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                         val duration = viewModel.player?.duration ?: 0
                         val currentPosition = viewModel.player?.currentPosition ?: 0
                         Timber.tag("LocalPlayer").i("准备就绪 (playWhenReady=$playWhenReady, 缓冲耗时: ${bufferDuration}ms, 位置: ${currentPosition}ms/${duration}ms)")
-                        
+
                         viewModel.resetBufferTimeoutCounter()
                         viewModel.bufferStartTime = 0
+                        // 播放成功，重置所有恢复计数
+                        viewModel.idleRetryCount = 0
+                        viewModel.isSwitching = false
+                        viewModel.resetRecoveryAttempts()
                         
                         if (bufferDuration > 2000) {
                             Timber.tag("LocalPlayer").w("警告: 初始缓冲时间过长 (${bufferDuration}ms)")
@@ -175,8 +194,16 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                         Timber.tag("LocalPlayer").w("播放器状态: 空闲 (playWhenReady=$playWhenReady)")
                         val videoList = viewModel.videoListObs.value
                         if (videoList != null && videoList.isNotEmpty() && viewModel.isFragmentVisible) {
-                            Timber.tag("LocalPlayer").w("检测到空闲状态，重新加载视频列表")
-                            viewModel.playVideoList(videoList)
+                            // 全局熔断检查优先于idleRetryCount检查
+                            if (viewModel.isRecoveryExhausted()) {
+                                Timber.tag("LocalPlayer").e("IDLE状态但全局恢复已达上限，不再自动恢复")
+                            } else if (viewModel.idleRetryCount < viewModel.MAX_IDLE_RETRIES) {
+                                Timber.tag("LocalPlayer").w("检测到空闲状态，重新加载视频列表 (重试${viewModel.idleRetryCount + 1}/${viewModel.MAX_IDLE_RETRIES})")
+                                viewModel.idleRetryCount++
+                                viewModel.playVideoList(videoList)
+                            } else {
+                                Timber.tag("LocalPlayer").e("IDLE重试已达上限，不再自动恢复")
+                            }
                         }
                     }
                 }
@@ -191,26 +218,26 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         viewModel.mScope.launch(Dispatchers.Main) {
             try {
                 Timber.tag("LocalPlayer").w("开始Surface错误恢复流程")
-                
+
                 // 1. 停止当前播放
                 viewModel.player?.stop()
                 delay(300)
-                
-                // 2. 重新初始化播放器（内部会自动rebind监听器）
+
+                // 2. 重新初始化播放器（内部会自动rebind监听器并重置恢复计数器）
                 Timber.tag("LocalPlayer").d("重新初始化播放器")
                 viewModel.initPlayer()
                 delay(200)
-                
+
                 // 3. 重新设置Surface
                 binding.videoView.player = viewModel.player
                 delay(200)
-                
+
                 // 4. 重新加载视频列表并播放
                 val currentList = viewModel.videoListObs.value
                 if (currentList != null && currentList.isNotEmpty()) {
                     Timber.tag("LocalPlayer").d("重新加载视频列表")
                     viewModel.playVideoList(currentList)
-                    
+
                     // 5. 等待播放器READY后再seek到之前的位置
                     var retryCount = 0
                     while (viewModel.player?.playbackState != Player.STATE_READY && retryCount < 20) {
@@ -220,17 +247,19 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                     val savedIndex = viewModel.playIndex.coerceIn(0, currentList.size - 1)
                     viewModel.player?.seekToDefaultPosition(savedIndex)
                     viewModel.player?.play()
-                    
+
                     Timber.tag("LocalPlayer").i("Surface错误恢复成功，seek到索引: $savedIndex")
                 } else {
                     Timber.tag("LocalPlayer").e("恢复失败：视频列表为空")
                 }
             } catch (e: Exception) {
                 Timber.tag("LocalPlayer").e(e, "Surface错误恢复失败")
-                try {
-                    viewModel.next()
-                } catch (e2: Exception) {
-                    Timber.tag("LocalPlayer").e(e2, "最终恢复也失败")
+                if (!viewModel.isRecoveryExhausted()) {
+                    try {
+                        viewModel.next()
+                    } catch (e2: Exception) {
+                        Timber.tag("LocalPlayer").e(e2, "最终恢复也失败")
+                    }
                 }
             }
         }
@@ -258,7 +287,8 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
         val playWhenReady = viewModel.player?.playWhenReady
         Timber.tag("LocalPlayer").d("onResume时播放器状态: state=$playerState, playWhenReady=$playWhenReady")
         
-        viewModel.setFragmentVisibility(true)
+        // setFragmentVisibility返回true表示已恢复播放，无需checkVideo再恢复
+        val recoveredByVisibility = viewModel.setFragmentVisibility(true)
         
         val cb = {
             viewModel.mute(false)
@@ -276,7 +306,10 @@ class LocalFragment: BaseBindingFragment<FragmentLocalVideoBinding, LocalViewMod
                 }
             }
         }
-        viewModel.checkVideo(true, true)
+        // 只有setFragmentVisibility未成功恢复时，才通过checkVideo尝试恢复
+        if (!recoveredByVisibility) {
+            viewModel.checkVideo(true, true)
+        }
     }
 
     override fun onPause() {
