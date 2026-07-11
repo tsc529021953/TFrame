@@ -1,11 +1,15 @@
 package com.sc.tmp_cw.service
 
+import android.content.Context
+import android.os.Build
+import android.provider.Settings
 import com.nbhope.lib_frame.utils.DataUtil
 import com.sc.tmp_cw.bean.PISBean
 import timber.log.Timber
 import com.sc.tmp_cw.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 /**
  * @author  tsc
@@ -129,7 +133,10 @@ object MessageHandler {
                 pisBean.minute = getInfoByIndex(msg, 96, 98)
                 pisBean.second = getInfoByIndex(msg, 98, 100)
                 service.timeObs.set("20${pisBean.year}年${getTime(pisBean.month)}月${getTime(pisBean.day)}日 ${getTime(pisBean.hour)}:${getTime(pisBean.minute)}:${getTime(pisBean.second)}")
-
+                                
+                // 自动校时逻辑
+                syncSystemTime(service, pisBean)
+                                
                 Timber.i("${service.timeObs.get()} ${pisBean.toString()}")
             }
         }
@@ -143,6 +150,119 @@ object MessageHandler {
     fun getTime(time: Int): String {
         return if (time < 10) return "0$time"
         else time.toString()
+    }
+
+    /**
+     * 同步系统时间
+     * @param service TmpServiceImpl实例
+     * @param pisBean 包含时间信息的PISBean
+     */
+    private fun syncSystemTime(service: TmpServiceImpl, pisBean: PISBean) {
+        try {
+            val context = service.applicationContext
+            
+            // 1. 检查并关闭自动校时
+            if (isAutoTimeEnabled(context)) {
+                disableAutoTime(context)
+                Timber.i("已关闭自动校时功能")
+            }
+            
+            // 2. 计算时间差
+            val receivedTimeMillis = convertToMillis(pisBean)
+            val currentTimeMillis = System.currentTimeMillis()
+            val timeDiff = Math.abs(receivedTimeMillis - currentTimeMillis)
+            
+            // Timber.i("时间对比 - 接收时间: $receivedTimeMillis, 当前时间: $currentTimeMillis, 差值: ${timeDiff}ms (${timeDiff / 1000 / 60}分钟)")
+            
+            // 3. 如果时间差大于1分钟(60000ms)，则设置系统时间
+            if (timeDiff > 60000) {
+                setSystemTime(receivedTimeMillis)
+                Timber.i("时间差超过1分钟，已更新系统时间为: ${service.timeObs.get()}")
+            }
+//            else {
+//                Timber.i("时间差在1分钟内，无需校时")
+//            }
+        } catch (e: Exception) {
+            Timber.e("自动校时失败: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+    
+    /**
+     * 检查是否开启了自动校时
+     */
+    private fun isAutoTimeEnabled(context: Context): Boolean {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                Settings.Global.getInt(context.contentResolver, Settings.Global.AUTO_TIME, 0) == 1
+            } else {
+                Settings.System.getInt(context.contentResolver, Settings.System.AUTO_TIME, 0) == 1
+            }
+        } catch (e: Exception) {
+            Timber.e("检查自动校时状态失败: ${e.message}")
+            false
+        }
+    }
+    
+    /**
+     * 关闭自动校时
+     */
+    private fun disableAutoTime(context: Context) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                Settings.Global.putInt(context.contentResolver, Settings.Global.AUTO_TIME, 0)
+            } else {
+                Settings.System.putInt(context.contentResolver, Settings.System.AUTO_TIME, 0)
+            }
+        } catch (e: Exception) {
+            Timber.e("关闭自动校时失败: ${e.message}")
+        }
+    }
+    
+    /**
+     * 将PISBean中的时间信息转换为毫秒时间戳
+     */
+    private fun convertToMillis(pisBean: PISBean): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, 2000 + pisBean.year)
+        calendar.set(Calendar.MONTH, pisBean.month - 1) // Calendar月份从0开始
+        calendar.set(Calendar.DAY_OF_MONTH, pisBean.day)
+        calendar.set(Calendar.HOUR_OF_DAY, pisBean.hour)
+        calendar.set(Calendar.MINUTE, pisBean.minute)
+        calendar.set(Calendar.SECOND, pisBean.second)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
+    }
+    
+    /**
+     * 设置系统时间
+     * 注意：需要系统权限 android.permission.SET_TIME
+     */
+    private fun setSystemTime(timeMillis: Long) {
+        try {
+            // 使用 root 权限或系统应用权限设置时间
+            val command = "date -s @$((timeMillis / 1000))"
+            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", command))
+            process.waitFor()
+            Timber.i("系统时间已设置为: $timeMillis")
+        } catch (e: Exception) {
+            Timber.e("设置系统时间失败: ${e.message}")
+            // 尝试另一种方法
+            try {
+                val process = Runtime.getRuntime().exec("su")
+                val outputStream = process.outputStream
+                val writer = java.io.OutputStreamWriter(outputStream)
+                writer.write("date -s @$((timeMillis / 1000))\n")
+                writer.write("exit\n")
+                writer.flush()
+                writer.close()
+                outputStream.close()
+                process.waitFor()
+                Timber.i("系统时间已通过备用方法设置")
+            } catch (e2: Exception) {
+                Timber.e("备用方法也失败: ${e2.message}")
+            }
+        }
     }
 
 }

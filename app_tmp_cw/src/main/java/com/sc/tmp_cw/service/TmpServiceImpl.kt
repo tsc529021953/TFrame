@@ -132,7 +132,6 @@ class TmpServiceImpl : ITmpService, Service() {
             rtspUrlObs.set(cwInfo.rtspUrl)
             if (NetworkUtil.isNetworkConnected(this))
                 reBuild() // onCreate
-            isFirstLink = false
         }
         urgentNotifyMsgObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
@@ -153,7 +152,7 @@ class TmpServiceImpl : ITmpService, Service() {
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
                 val m = stationNotifyObs.get()
                 val top = AppManager.appManager?.topActivity
-                Timber.e("站点提示 $m top:${if (top == null) "null" else top!!::class.java.simpleName}")
+                Timber.i("站点提示 $m top:${if (top == null) "null" else top!!::class.java.simpleName}")
                 LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
                 if (m in 0..9 && top != null
                     && top!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
@@ -272,6 +271,7 @@ class TmpServiceImpl : ITmpService, Service() {
             Timber.e("tcpBroadThread close fail ${e.message}")
         }
         try {
+            isFirstLink = false
             if (comThread == null) {
                 Timber.i("组播创建 $SERVER_IP $SERVER_PORT")
                 comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
@@ -351,7 +351,7 @@ class TmpServiceImpl : ITmpService, Service() {
 
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
         override fun onAvailable(network: Network?) {
-            if (!isFirstLink)
+//            if (!isFirstLink)
                 reBuild() // 联网
         }
 

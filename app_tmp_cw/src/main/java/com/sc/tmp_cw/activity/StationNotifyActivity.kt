@@ -61,16 +61,6 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
 
     override fun subscribeUi() {
         initService()
-//        binding.backBtn.setOnClickListener {
-//            finish()
-//        }
-//        binding.bgLy.setOnClickListener {
-//            timerHandler?.start()
-//        }
-//        timerHandler = TimerHandler(5000) {
-//            finish()
-//        }
-//        timerHandler?.start()
     }
 
     override fun onResume() {
@@ -129,7 +119,6 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                 binding.carIv.translationX = -(binding.carIv.width * 0.8f)
                 // 开始动画移动到最右边
                 AnimationUtil.slideToEnd(binding.carIv, ANIMATION_TIME) {
-//                    finish() // 离站动画结束后
                     val m = TmpServiceDelegate.service()?.stationNotifyObs?.get()
                     Timber.i("stationNotifyObs $m")
                     if (m != null && (m!! < 0 || m!! > 10 || m!! == 1)) {
@@ -151,15 +140,6 @@ class StationNotifyActivity : BaseBindingActivity<ActivityStationNotifyBinding, 
                         finish()
                     } else {
                         viewModel.isAnimationEnd = true
-//                        viewModel?.mScope.launch {
-//                            delay(1000)
-//                            if (viewModel.isAnimationEnd && !this@StationNotifyActivity.isFinishing && !this@StationNotifyActivity.isDestroyed) {
-//                                this@StationNotifyActivity.runOnUiThread {
-//                                    Timber.i("延时关闭动画界面！")
-//                                    this@StationNotifyActivity.finish()
-//                                }
-//                            }
-//                        }
                     }
                 }
             }

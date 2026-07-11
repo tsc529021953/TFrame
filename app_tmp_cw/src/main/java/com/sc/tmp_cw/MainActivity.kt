@@ -21,6 +21,7 @@ import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.base.BaseBindingActivity
 import com.nbhope.lib_frame.event.RemoteMessageEvent
 import com.nbhope.lib_frame.network.NetworkCallback
+import com.nbhope.lib_frame.utils.HopeUtils
 import com.nbhope.lib_frame.utils.LiveEBUtil
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.nbhope.phfame.utils.VoiceUtil
@@ -173,7 +174,11 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             TmpServiceDelegate.service()!!.stationObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
                 override fun onPropertyChanged(p0: Observable?, p1: Int) {
                     Timber.i("stationObs ${TmpServiceDelegate.service()!!.stationObs.get()}")
-                    binding.titleLy2.stationTv.setText(TmpServiceDelegate.service()!!.stationObs.get())
+                    if (!HopeUtils.isDestroy(this@MainActivity)) {
+                        this@MainActivity.runOnUiThread {
+                            binding.titleLy2.stationTv.setText(TmpServiceDelegate.service()!!.stationObs.get())
+                        }
+                    }
                 }
 
             })
