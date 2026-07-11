@@ -1,0 +1,283 @@
+{
+  "ip": "234.55.66.81",
+  "port": 16680,
+  "title": "武汉地铁12号线欢迎您",
+  "rtspUrl": "rtsp://stream.strba.sk:1935/strba/VYHLAD_JAZERO.stream",
+  "stations": [
+    {
+      "id": 31,
+      "cn": "汉口站北广场",
+      "en": "North Square of Hankou Railway Station"
+    },
+    {
+      "id": 32,
+      "cn": "石桥",
+      "en": "Shiqiao",
+      "hc": ["换乘6号线"],
+      "hcColor": ["#740c60"]
+    },
+    {
+      "id": 33,
+      "cn": "中一路",
+      "en": "Zhongyi Road",
+      "hc": ["换乘8号线"],
+      "hcColor": ["#FF6600"]
+    },
+    {
+      "id": 34,
+      "cn": "后湖四路",
+      "en": "Houhu 4th Road"
+    },
+    {
+      "id": 35,
+      "cn": "兴业路",
+      "en": "Xingye Road",
+      "hc": ["换乘3号线"],
+      "hcColor": ["#00FF00"]
+    },
+    {
+      "id": 36,
+      "cn": "百步亭",
+      "en": "Baibuting"
+    },
+    {
+      "id": 37,
+      "cn": "丹水池",
+      "en": "Danshuichi",
+      "hc": ["换乘1号线"],
+      "hcColor": ["#FF0000"]
+    },
+    {
+      "id": 38,
+      "cn": "科普公园",
+      "en": "Science Park",
+      "hc": ["换乘5号线"],
+      "hcColor": ["#0000FF"]
+    },
+    {
+      "id": 39,
+      "cn": "钢都花园",
+      "en": "Gangduhuayuan"
+    },
+    {
+      "id": 40,
+      "cn": "园林路",
+      "en": "Yuanlin Road",
+      "hc": ["换乘4号线"],
+      "hcColor": ["#facb05"]
+    },
+    {
+      "id": 41,
+      "cn": "团结大道",
+      "en": "Tuanjie Boulevard"
+    },
+    {
+      "id": 42,
+      "cn": "汪家墩",
+      "en": "Wangjiadun",
+      "hc": ["换乘8号线"],
+      "hcColor": ["#FF6600"]
+    },
+    {
+      "id": 43,
+      "cn": "秦园中路",
+      "en": "Qinyuan Middle Road"
+    },
+    {
+      "id": 44,
+      "cn": "公正路",
+      "en": "Gongzheng Road"
+    },
+    {
+      "id": 45,
+      "cn": "何家垅",
+      "en": "Hejialong"
+    },
+    {
+      "id": 46,
+      "cn": "十五中",
+      "en": "No. 15 Senior Middle School"
+    },
+    {
+      "id": 47,
+      "cn": "武昌站东广场",
+      "en": "East Square of Wuchang Railway Station",
+      "hc": ["换乘11号线"],
+      "hcColor": ["#00BFFF"]
+    },
+    {
+      "id": 48,
+      "cn": "瑞安街东",
+      "en": "Rui'an Street East"
+    },
+    {
+      "id": 49,
+      "cn": "富安街",
+      "en": "Fu'an Street"
+    },
+    {
+      "id": 50,
+      "cn": "楚祥大道",
+      "en": "Chuxiang Boulevard"
+    },
+    {
+      "id": 51,
+      "cn": "省农科院南",
+      "en": "Hubei Academy of Agricultural Sciences South"
+    },
+    {
+      "id": 52,
+      "cn": "光霞",
+      "en": "Guangxia",
+      "hc": ["换乘5号线"],
+      "hcColor": ["#0000FF"]
+    },
+    {
+      "id": 53,
+      "cn": "市农科院",
+      "en": "Wuhan Academy of Agricultural Sciences"
+    },
+    {
+      "id": 54,
+      "cn": "夹套河",
+      "en": "Jiataohe"
+    },
+    {
+      "id": 55,
+      "cn": "国博中心南",
+      "en": "South International Expo Center",
+      "hc": ["换乘6号线、16号线"],
+      "hcColor": ["#740c60"]
+    },
+    {
+      "id": 56,
+      "cn": "国博新城",
+      "en": "Guoboxincheng"
+    },
+    {
+      "id": 57,
+      "cn": "四新南路",
+      "en": "Sixin South Road"
+    },
+    {
+      "id": 58,
+      "cn": "四新中路",
+      "en": "Sixin Middle Road"
+    },
+    {
+      "id": 59,
+      "cn": "芳草路",
+      "en": "Fangcao Road"
+    },
+    {
+      "id": 60,
+      "cn": "港口村",
+      "en": "Gangkoucun"
+    },
+    {
+      "id": 61,
+      "cn": "墨水湖公园",
+      "en": "Moshuihu Park"
+    },
+    {
+      "id": 62,
+      "cn": "十里铺",
+      "en": "Shilipu",
+      "hc": ["换乘4号线"],
+      "hcColor": ["#facb05"]
+    },
+    {
+      "id": 63,
+      "cn": "汉钢",
+      "en": "Hangang"
+    },
+    {
+      "id": 64,
+      "cn": "汉西路南",
+      "en": "Hanxi Road South"
+    },
+    {
+      "id": 65,
+      "cn": "双墩",
+      "en": "Shuangdun",
+      "hc": ["换乘3号线"],
+      "hcColor": ["#00FF00"]
+    },
+    {
+      "id": 66,
+      "cn": "汉西路北",
+      "en": "Hanxi Road North"
+    },
+    {
+      "id": 67,
+      "cn": "华安里",
+      "en": "Hua'anli"
+    }
+  ],
+  "urgentNotify": [
+    {
+      "id": 1,
+      "msg": "各位乘客您好，现在是临时停车，请耐心等待，不要触动列车设备。给您造成的不便敬请谅解，谢谢合作！"
+    },
+    {
+      "id": 2,
+      "msg": "各位乘客您好，本次列车因故不能继续运行，需等待连挂救援，请大家耐心等待，抓稳扶牢。给您带来的不便请您谅解，谢谢合作！"
+    },
+    {
+      "id": 3,
+      "msg": "各位乘客您好，本次列车将退出服务，请所有乘客在本站下车。给您造成的不便敬请谅解，谢谢合作！"
+    },
+    {
+      "id": 4,
+      "msg": "各位乘客您好，本次列车无法继续运营，请听从工作人员的安排从车门下车，请保持秩序，不要拥挤，谢谢合作！"
+    },
+    {
+      "id": 5,
+      "msg": "各位乘客您好，本次列车将短时中断照明，请保持镇定。给您造成的不便敬请谅解，谢谢合作！"
+    },
+    {
+      "id": 6,
+      "msg": "各位乘客您好，车厢内发生火情，请保持镇定，工作人员马上到现场处理，可取出车厢端部或座椅下方的灭火器扑灭火源，谢谢合作！"
+    },
+    {
+      "id": 7,
+      "msg": "各位乘客您好，本次列车在下一站不停车。给您造成的不便敬请谅解，谢谢合作！"
+    },
+    {
+      "id": 8,
+      "msg": "各位乘客您好，现在客流较大，列车较为拥挤，下车乘客请提前准备，抓紧下车，上车乘客请尽量往里走，谢谢合作！"
+    },
+    {
+      "id": 101,
+      "msg": "各位乘客您好，现在是临时停车，请耐心等待，不要触动列车设备。给您造成的不便敬请谅解，谢谢合作！\nDear passengers, this is a temporary stop, please wait patiently, don't touch the train equipment. Please understand the inconvenience caused to you, thank you for your cooperation!"
+    },
+    {
+      "id": 102,
+      "msg": "乘客请注意，列车启动，请坐好扶稳。"
+    },
+    {
+      "id": 103,
+      "msg": "各位乘客您好，本次列车将退出服务，请所有乘客在本站下车。给您造成的不便敬请谅解，谢谢合作！\nDear passengers, this train will be out of service. Please get off at this station. Please understand the inconvenience caused to you, thank you for your cooperation!"
+    },
+    {
+      "id": 104,
+      "msg": "列车即将进行开关门测试，请远离车门"
+    },
+    {
+      "id": 105,
+      "msg": "列车即将休眠"
+    },
+    {
+      "id": 106,
+      "msg": "乘客请注意，本次列车将不在本站停靠，给您出行带来不便，我们深表歉意。\nPassengers, Please note that this train will not stop at thisstation. We apologize for any inconvenience this may cause toyour travel plans."
+    },
+    {
+      "id": 107,
+      "msg": "各位乘客您好，本次列车在下一站不停车。给您造成的不便敬请谅解，谢谢合作！\nDear passengers, this train will not stop at the next station. Please understand the inconvenience caused to you. Thank you for your cooperation!"
+    },
+    {
+      "id": 108,
+      "msg": "各位乘客您好，本次列车将退出服务，请所有乘客在本站下车。给您造成的不便敬请谅解，谢谢合作！\nDear passengers, this train will be out of service. Please get off at this station. Please understand the inconvenience caused to you, thank you for your cooperation!"
+    }
+  ]
+}

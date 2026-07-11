@@ -2,7 +2,6 @@ package com.sc.tmp_cw.vm
 
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableFloat
-import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.nbhope.lib_frame.base.BaseViewModel

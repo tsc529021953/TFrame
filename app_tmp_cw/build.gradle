@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 51
-        versionName "0.0.51"
+        versionCode 52
+        versionName "0.0.52"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -48,12 +48,42 @@ android {
         }
     }
 
+    // 配置产品风味
+    flavorDimensions "version"
+    productFlavors {
+        flavorA {
+            dimension "version"
+            buildConfigField "String", "FLAVOR_TYPE", '"flavorA"'
+            buildConfigField "boolean", "IS_FLAVOR_A", "true"
+            resValue "string", "app_flavor_name", "Flavor A"
+        }
+        flavorB {
+            dimension "version"
+            buildConfigField "String", "FLAVOR_TYPE", '"flavorB"'
+            buildConfigField "boolean", "IS_FLAVOR_A", "false"
+            resValue "string", "app_flavor_name", "Flavor B"
+        }
+    }
+
+    // 为不同风味配置不同的资源目录
+    sourceSets {
+        flavorA {
+            res.srcDirs 'src/flavorA/res'
+            assets.srcDirs 'src/flavorA/assets'
+        }
+        flavorB {
+            res.srcDirs 'src/flavorB/res'
+            assets.srcDirs 'src/flavorB/assets'
+        }
+    }
+
     def timeForDebugFileFormater = "MMddHH"
     def timeForReleaseFileFormater = "MMdd"
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
             def buildTypeName = variant.buildType.name
+            def flavorName = variant.flavorName
 
             def timeFormater
             if ("debug".equalsIgnoreCase(buildTypeName)) {
@@ -61,7 +91,7 @@ android {
             } else {
                 timeFormater = timeForReleaseFileFormater
             }
-            def tmp = "TMP_CW_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
+            def tmp = "TMP_CW_${flavorName}_${buildTypeName}_v${variant.versionName}_${releaseTime(timeFormater)}.apk"
             println(tmp)
             outputFileName = tmp
         }
