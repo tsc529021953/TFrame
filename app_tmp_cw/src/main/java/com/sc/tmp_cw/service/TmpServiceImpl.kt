@@ -43,7 +43,12 @@ import com.sc.tmp_cw.app.AppHope
 import com.sc.tmp_cw.bean.CWInfo
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.inter.ITmpService
+import com.sc.tmp_cw.weight.TcpClientThread
 import com.sc.tmp_cw.weight.UdpMultiThread
+import com.sc.tmp_cw.bean.WuhanProtocolConst
+import com.sc.tmp_cw.service.WuhanProtocolParser
+import com.sc.tmp_cw.utils.FlavorConfigUtil
+import com.nbhope.lib_frame.utils.DataUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -101,6 +106,14 @@ class TmpServiceImpl : ITmpService, Service() {
 
     /*udp*/
     private var comThread: UdpMultiThread? = null
+    /* 武汉协议 UDP 组播 (FlavorB) */
+    private var wuhanUdpThread: UdpMultiThread? = null
+    /* 武汉协议 TCP 客户端 (FlavorB) */
+    private var tcpClientThread: TcpClientThread? = null
+    /* 心跳定时器 (FlavorB) */
+    private var heartbeatHandler: Handler? = null
+    private var heartbeatRunnable: Runnable? = null
+    private val HEARTBEAT_INTERVAL_MS = 2000L  // 2秒心跳
 
     var cwInfo = CWInfo()
     private var isFirstLink = true
@@ -272,13 +285,46 @@ class TmpServiceImpl : ITmpService, Service() {
         }
         try {
             isFirstLink = false
-            if (comThread == null) {
-                Timber.i("组播创建 $SERVER_IP $SERVER_PORT")
-                comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
+
+            // ===== 根据风味启动不同的网络连接 =====
+            if (FlavorConfigUtil.isFlavorA()) {
+                // FlavorA: 旧协议 UDP 组播
+                if (comThread == null) {
+                    Timber.i("组播创建 $SERVER_IP $SERVER_PORT")
+                    comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
+                }
+                comThread?.start()
+            } else {
+                // FlavorB: 武汉协议 — TCP + 武汉UDP组播 + 心跳
+                // 同时保留旧协议监听以兼容
+                if (comThread == null) {
+                    Timber.i("旧协议组播创建 $SERVER_IP $SERVER_PORT")
+                    comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
+                }
+                comThread?.start()
+
+                // 武汉协议 UDP 组播监听 (接收PISC消息)
+                val wuhanRxIp = cwInfo.wuhanUdpRxIp
+                val wuhanRxPort = cwInfo.wuhanUdpRxPort
+                if (wuhanUdpThread == null) {
+                    Timber.i("武汉UDP组播创建 $wuhanRxIp:$wuhanRxPort")
+                    wuhanUdpThread = UdpMultiThread(wuhanRxIp, wuhanRxPort, onWuhanUdpListener)
+                }
+                wuhanUdpThread?.start()
+
+                // 武汉协议 TCP 连接
+                val tcpIp = cwInfo.tcpServerIp
+                val tcpPort = cwInfo.tcpServerPort
+                Timber.i("武汉TCP连接 $tcpIp:$tcpPort")
+                startTcpClient(tcpIp, tcpPort)
+
+                // 启动心跳
+                startHeartbeat()
+
+                Timber.i("武汉协议 (FlavorB) 网络已启动: TCP=$tcpIp:$tcpPort, UDP_RX=$wuhanRxIp:$wuhanRxPort")
             }
-            comThread?.start()
         } catch (e: Exception) {
-            Timber.e("tcpBroadThread create fail ${e.message}")
+            Timber.e("网络创建失败 ${e.message}")
         }
     }
 
@@ -312,6 +358,149 @@ class TmpServiceImpl : ITmpService, Service() {
     private fun release() {
         comThread?.stop()
         comThread?.close()
+        comThread = null
+
+        // 释放武汉协议资源
+        stopHeartbeat()
+        stopTcpClient()
+        try {
+            wuhanUdpThread?.stop()
+            wuhanUdpThread?.close()
+        } catch (e: Exception) {
+            Timber.e("wuhanUdpThread close fail ${e.message}")
+        }
+        wuhanUdpThread = null
+    }
+
+    // ===== 武汉协议 (FlavorB) 网络监听 =====
+
+    /** 武汉 UDP 组播监听器 */
+    private val onWuhanUdpListener = object : OnNetThreadListener {
+        override fun onAcceptSocket(ipAddress: String) {}
+        override fun onConnectFailed(ipAddress: String) {
+            Timber.i("武汉UDP onConnectFailed $ipAddress")
+        }
+        override fun onConnected(ipAddress: String) {
+            Timber.i("武汉UDP onConnected $ipAddress")
+        }
+        override fun onDisconnect(ipAddress: String) {
+            Timber.i("武汉UDP onDisconnect $ipAddress")
+        }
+        override fun onError(ipAddress: String, error: String) {
+            Timber.i("武汉UDP onError $ipAddress $error")
+        }
+        override fun onReceive(ipAddress: String, port: Int, time: Long, data: ByteArray) {
+            try {
+                val msg = DataUtil.byteArray2HexString(data)
+                Timber.i("武汉UDP onReceive $ipAddress $port ${data.size} $msg")
+                mScope.launch {
+                    MessageHandler.handleMessage(msg, this@TmpServiceImpl)
+                }
+            } catch (e: Exception) {
+                Timber.e("武汉UDP onReceive err ${e.message}")
+            }
+        }
+    }
+
+    /** 启动 TCP 客户端 */
+    private fun startTcpClient(ip: String, port: Int) {
+        stopTcpClient()
+        tcpClientThread = TcpClientThread(
+            serverIp = ip,
+            serverPort = port,
+            onDataReceived = { data ->
+                try {
+                    val msg = DataUtil.byteArray2HexString(data)
+                    Timber.i("武汉TCP 收到: ${data.size}字节 $msg")
+                    mScope.launch {
+                        MessageHandler.handleMessage(msg, this@TmpServiceImpl)
+                    }
+                } catch (e: Exception) {
+                    Timber.e("武汉TCP 数据处理异常 ${e.message}")
+                }
+            },
+            onConnected = {
+                Timber.i("武汉TCP 已连接")
+                // TCP连接后立即发送注册心跳
+                sendWuhanHeartbeat()
+            },
+            onDisconnected = {
+                Timber.i("武汉TCP 已断开")
+            },
+            onError = { error ->
+                Timber.e("武汉TCP 错误: $error")
+            }
+        )
+        tcpClientThread?.start()
+    }
+
+    /** 停止 TCP 客户端 */
+    private fun stopTcpClient() {
+        try {
+            tcpClientThread?.stopClient()
+        } catch (e: Exception) {
+            Timber.e("stopTcpClient err ${e.message}")
+        }
+        tcpClientThread = null
+    }
+
+    /** 启动心跳定时器 */
+    private fun startHeartbeat() {
+        stopHeartbeat()
+        heartbeatHandler = Handler(Looper.getMainLooper())
+        heartbeatRunnable = object : Runnable {
+            override fun run() {
+                sendWuhanHeartbeat()
+                heartbeatHandler?.postDelayed(this, HEARTBEAT_INTERVAL_MS)
+            }
+        }
+        heartbeatHandler?.post(heartbeatRunnable!!)
+        Timber.i("武汉心跳已启动 间隔=${HEARTBEAT_INTERVAL_MS}ms")
+    }
+
+    /** 停止心跳定时器 */
+    private fun stopHeartbeat() {
+        heartbeatRunnable?.let { heartbeatHandler?.removeCallbacks(it) }
+        heartbeatRunnable = null
+        heartbeatHandler = null
+    }
+
+    /** 发送武汉协议 0xA1 心跳帧 */
+    private fun sendWuhanHeartbeat() {
+        try {
+            val frame = WuhanProtocolParser.buildHeartbeatA1(
+                deviceId = cwInfo.deviceId,
+                carriagePosition = cwInfo.carriagePosition,
+                loadRate = 0,           // 由外部更新
+                swVerMajor = 1,
+                swVerMinor = 0,
+                flags = 0x01,           // Bit0=在线
+                cpuUsage = 0,
+                deviceType = WuhanProtocolConst.DEV_TYPE_DPLCD,
+                cpuTemp = 0,
+                lineId = 0,             // 由PISC下发后更新
+                routeId = 0,
+                direction = 0,
+                startStationId = 0,
+                endStationId = 0,
+                currentStationId = 0,
+                nextStationId = 0,
+                sourceId = cwInfo.deviceId.toByte()
+            )
+
+            // 优先通过 TCP 发送
+            val tcpOk = tcpClientThread?.send(frame) ?: false
+            if (!tcpOk) {
+                // TCP不可用时通过武汉UDP组播发送
+                val hex = DataUtil.byteArray2HexString(frame)
+                wuhanUdpThread?.send(cwInfo.wuhanUdpTxIp, cwInfo.wuhanUdpTxPort, frame)
+                Timber.d("武汉心跳 通过UDP发送")
+            } else {
+                Timber.d("武汉心跳 通过TCP发送")
+            }
+        } catch (e: Exception) {
+            Timber.e("武汉心跳发送失败 ${e.message}")
+        }
     }
 
     /*方法*/

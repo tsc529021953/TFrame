@@ -35,27 +35,37 @@ object MessageHandler {
      * @param service
      */
     fun test(msg: String, service: TmpServiceImpl) {
-//        var data = msg
-//        if (data.isNullOrEmpty()) {
-//            val sb = StringBuilder()
-//            sb.append("ff00ff00") // 框架版本
-//            val end = sb.toString()
-//            data = "${PISBean.START_MESSAGE}${DataUtil.intToHex2(PISBean.START_MESSAGE.length + 4 + end.length) }$end"
-//            System.out.println("message:$data")
-//        }
-        service.mScope.launch {
-            handleMessage(testData2.replace(" ", ""), service)
-//            delay(4000)
-//            handleMessage(testData3.replace(" ", ""), service)
-            delay(1000)
-            handleMessage(testData1.replace(" ", ""), service)
-//            delay(1000)
-//            handleMessage(testData1.replace(" ", ""), service)
+        // 优先使用传入的测试数据
+        val data = if (msg.isNotEmpty()) {
+            msg.replace(" ", "")
+        } else {
+            null
         }
-
+        service.mScope.launch {
+            if (data != null) {
+                // 使用传入的测试指令
+                Timber.i("使用自定义测试数据: ${data.length}字符")
+                handleMessage(data, service)
+            } else {
+                // 默认: 跑武汉协议测试序列 (FlavorB) + 旧协议测试
+                // 先跑武汉协议场景
+                WuhanTestData.runAll(service)
+                // 延迟后跑旧协议
+                delay(8000)
+                handleMessage(testData2.replace(" ", ""), service)
+                delay(1000)
+                handleMessage(testData1.replace(" ", ""), service)
+            }
+        }
     }
 
     fun handleMessage(msg: String, service: TmpServiceImpl) {
+        // ===== 协议自动检测 =====
+        if (WuhanProtocolParser.isWuhanProtocol(msg)) {
+            handleWuhanMessage(msg, service)
+            return
+        }
+
         if (!msg.startsWith(PISBean.START_MESSAGE)) {
             Timber.e("消息头错误 $msg")
         } else {
@@ -145,6 +155,103 @@ object MessageHandler {
     private fun getInfoByIndex(msg: String, start: Int, end: Int): Int {
         if (end > msg.length) return -1
         return DataUtil.hexStringToDecimal(msg.substring(start, end))
+    }
+
+    /**
+     * 处理武汉协议 (FlavorB) 消息
+     * 将 WuhanParsedMessage 映射到现有 PISBean/service 接口
+     */
+    private fun handleWuhanMessage(msg: String, service: TmpServiceImpl) {
+        val parsed = WuhanProtocolParser.parseFromHex(msg)
+        if (parsed == null) {
+            Timber.e("武汉协议解析失败")
+            return
+        }
+
+        when {
+            // 0xB1 线路/站点信息 (核心数据包)
+            parsed.routeInfo != null -> {
+                val info = parsed.routeInfo!!
+                val pisBean = PISBean()
+
+                // 站点信息映射
+                pisBean.startCode = info.startStationId
+                pisBean.endCode = info.endStationId
+                pisBean.currentCode = info.currentStationId
+                pisBean.nextCode = info.nextStationId
+
+                // boardStatus 映射: 0x00=停车→0(arrived), 0x01=运行→?, 0x02=即将到站→0(next)
+                pisBean.boardStatus = when (info.trainStatus and 0x03) {
+                    0 -> 2  // 停车 → arrived
+                    1 -> -1 // 运行中 → 无站点提示
+                    2 -> 0  // 即将到站 → next station
+                    else -> -1
+                }
+
+                pisBean.runDirection = info.direction
+                pisBean.lineNumber = info.lineId
+                pisBean.carCiNumber = info.routeId
+                pisBean.jiaoLuNumber = info.piscId
+                pisBean.urgentNotifyCode = info.emergencyFlag
+
+                // 更新服务状态
+                service.stationNotifyObs.set(pisBean.boardStatus)
+
+                var tip = ""
+                if (pisBean.boardStatus != -1) {
+                    when (pisBean.boardStatus) {
+                        0 -> {
+                            tip = service.getString(R.string.nextStation)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.nextCode))
+                        }
+                        1 -> {
+                            tip = service.getString(R.string.arrive)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.nextCode))
+                        }
+                        2 -> {
+                            tip = service.getString(R.string.arrived)
+                            service.stationStatusObs.set(tip)
+                            service.stationObs.set("$tip：" + service.getStationStr(pisBean.currentCode))
+                        }
+                        else -> { /* 无状态 */ }
+                    }
+                }
+
+                Timber.i("武汉B1 站点信息: 当前站=${pisBean.currentCode}, 下一站=${pisBean.nextCode}, " +
+                        "状态=${pisBean.boardStatus} 方向=${pisBean.runDirection} " +
+                        "温度=${info.temperature} 拥挤度=${info.crowding}")
+            }
+
+            // 0xB5 文本广播 → 紧急通知
+            parsed.textBroadcast != null -> {
+                val broadcast = parsed.textBroadcast!!
+                if (broadcast.message.isNotEmpty()) {
+                    service.urgentNotifyMsgObs.set(broadcast.message)
+                    Timber.i("武汉B5 文本广播: 类型=${broadcast.broadcastType}, " +
+                            "优先级=${broadcast.priority}, 消息=${broadcast.message}")
+                }
+            }
+
+            // 0xB2/B3/B4 站点/车门数据 (辅助信息)
+            parsed.stationData != null || parsed.doorData != null || parsed.doorStatus != null -> {
+                Timber.d("武汉协议 站点/车门数据: " +
+                        "B2=${parsed.stationData != null}, " +
+                        "B3=${parsed.doorData != null}, " +
+                        "B4=${parsed.doorStatus != null}")
+                // 这些数据主要用于拥挤度显示，目前先记录日志
+            }
+
+            // 0xA1 心跳 (通常是设备发送的，收到说明是PISC回显，可忽略)
+            parsed.heartbeat != null -> {
+                Timber.d("武汉A1 心跳回显: 设备=${parsed.heartbeat!!.deviceId}")
+            }
+
+            else -> {
+                Timber.w("武汉协议 未识别的数据包")
+            }
+        }
     }
 
     fun getTime(time: Int): String {

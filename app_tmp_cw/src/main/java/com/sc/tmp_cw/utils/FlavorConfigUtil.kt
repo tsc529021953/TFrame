@@ -41,6 +41,22 @@ object FlavorConfigUtil {
     }
     
     /**
+     * 获取当前使用的协议类型
+     * FlavorA → "legacy" (旧协议)
+     * FlavorB → "wuhan" (武汉协议)
+     */
+    fun getProtocolType(): String {
+        return if (isFlavorA()) "legacy" else "wuhan"
+    }
+
+    /**
+     * 是否为武汉协议
+     */
+    fun isWuhanProtocol(): Boolean {
+        return !isFlavorA()
+    }
+
+    /**
      * 示例：根据不同风味加载不同的配置
      */
     fun getConfigValue(): String {
@@ -59,7 +75,7 @@ object FlavorConfigUtil {
             }
         }
     }
-    
+
     /**
      * 示例：根据不同风味启用不同的功能
      */
