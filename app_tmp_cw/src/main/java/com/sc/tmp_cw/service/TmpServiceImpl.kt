@@ -156,7 +156,9 @@ class TmpServiceImpl : ITmpService, Service() {
                     val top = AppManager.appManager?.topActivity ?: return
                     if (top::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
                         ) {
-                        ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this@TmpServiceImpl)
+                        mainHandler.post {
+                            ARouter.getInstance().build(MessageConstant.ROUTH_URGENT_NOTIFY).navigation(this@TmpServiceImpl)
+                        }
                     }
                 }
             }
@@ -175,7 +177,9 @@ class TmpServiceImpl : ITmpService, Service() {
                     && top::class.java.simpleName != PlatylistActivity::class.java.simpleName
                     && top::class.java.simpleName != LogActivity::class.java.simpleName
                     ) {
-                    ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
+                    mainHandler.post {
+                        ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
+                    }
                 }
             }
         })
@@ -574,7 +578,7 @@ class TmpServiceImpl : ITmpService, Service() {
             val analysis = { msg: String? ->
 //                System.out.println(msg?.replace(" ", "")?.replace("\n", "") ?: "")
                 if (msg != null) {
-                    Timber.i(msg)
+                    Timber.i("AppInfo读取完成")
                     try {
                         if (gson == null) gson = Gson()
                         cwInfo = gson.fromJson(msg, CWInfo::class.java)

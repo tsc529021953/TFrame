@@ -119,6 +119,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
                 if (TmpServiceDelegate.service() != null)
                     binding.service = TmpServiceDelegate.service()!!
                 Timber.i("SERVICE_INIT_SUCCESS ${TmpServiceDelegate.service()}")
+
+//                TmpServiceDelegate.service()?.test("")
             }
             MessageConstant.CMD_BACK_HOME -> {
                 homeDelay()

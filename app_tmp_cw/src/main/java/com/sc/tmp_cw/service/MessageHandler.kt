@@ -7,6 +7,7 @@ import com.nbhope.lib_frame.utils.DataUtil
 import com.sc.tmp_cw.bean.PISBean
 import timber.log.Timber
 import com.sc.tmp_cw.R
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -24,6 +25,12 @@ object MessageHandler {
     val testData3 = "504100f602008d0000ff001d020200ff0000007dffff000000000000000000000000000000000000ffffffff1907180e0009000000ffffff00fa00f000f000f000fa00e60000000000000000000042ff000000ff820082018200820182008201820082218200822182008201820082018200820182008221820082218200820182208201820082018200822182008201820182008201820082018200820182008201820082018200820182008201820082018200820182008201820082018200820182008201820082018200000000000000000000000000000000000000000000000000000000000000000000000000000000009403"
     // 紧报
     val testData4 = "5041d00f602008d0002ff001d020200320000007dffff000000000000000000000000000000000000ffffffff1907180e0009000000ffffff00fa00f000f000f000fa00e60000000000000000000042ff000000ff820082018200820182008201820082218200822182008201820082018200820182008221820082218200820182208201820082018200822182008201820182008201820082018200820182008201820082018200820182008201820082018200820182008201820082018200820182008201820082018200000000000000000000000000000000000000000000000000000000000000000000000000000000009403"
+
+    // ===== FlavorA 测试数据：模拟日志中的三帧站点到达信号 =====
+    // boardStatus=2（已到达）, currentCode=1（咸水沽西）, lifeSignal=10/11/12, second=28/29/30
+    val testLogSignal1 = "504100f602000a0002ff001d000000ff00ff0022ffff000000000000000000000000000000000000ffffffff00000101001c000000fffffffefffefffefffefffefffeff00000000ffffffffffff020a000000ff020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200000000000000000000000000000000000000000000000000000000000000000000000000000000006802"
+    val testLogSignal2 = "504100f602000b0002ff001d000000ff00ff0022ffff000000000000000000000000000000000000ffffffff00000101001d000000fffffffefffefffefffefffefffeff00000000ffffffffffff020a000000ff020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    val testLogSignal3 = "504100f602000c0002ff001d000000ff00ff0022ffff000000000000000000000000000000000000ffffffff00000101001e000000fffffffefffefffefffefffefffeff00000000ffffffffffff0400000000ff020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200020002000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
 
     val IS_JUDGE_LENGTH = false
 
@@ -46,9 +53,17 @@ object MessageHandler {
                 // 使用传入的测试指令
                 Timber.i("使用自定义测试数据: ${data.length}字符")
                 handleMessage(data, service)
+            } else if (FlavorConfigUtil.isFlavorA()) {
+                // FlavorA: 模拟日志中的三帧站点到达信号，间隔1秒
+                // boardStatus=2（已到达：咸水沽西），触发 StationNotifyActivity
+                Timber.i("FlavorA 测试：模拟日志三帧站点到达信号")
+                handleMessage(testLogSignal1, service)
+                delay(1000)
+                handleMessage(testLogSignal2, service)
+                delay(1000)
+                handleMessage(testLogSignal3, service)
             } else {
-                // 默认: 跑武汉协议测试序列 (FlavorB) + 旧协议测试
-                // 先跑武汉协议场景
+                // FlavorB: 跑武汉协议测试序列 + 旧协议测试
                 WuhanTestData.runAll(service)
                 // 延迟后跑旧协议
                 delay(8000)
@@ -274,14 +289,21 @@ object MessageHandler {
                 Timber.i("已关闭自动校时功能")
             }
             
-            // 2. 计算时间差
+            // 2. 校验 PIS 时间数据有效性
+            // year=0 或 month=0 表示 PIS 时间数据未初始化，应跳过校时
+            if (pisBean.year <= 0 || pisBean.month <= 0 || pisBean.day <= 0) {
+                Timber.w("PIS时间数据无效(year=${pisBean.year}, month=${pisBean.month}, day=${pisBean.day})，跳过校时")
+                return
+            }
+
+            // 3. 计算时间差
             val receivedTimeMillis = convertToMillis(pisBean)
             val currentTimeMillis = System.currentTimeMillis()
             val timeDiff = Math.abs(receivedTimeMillis - currentTimeMillis)
-            
+
             // Timber.i("时间对比 - 接收时间: $receivedTimeMillis, 当前时间: $currentTimeMillis, 差值: ${timeDiff}ms (${timeDiff / 1000 / 60}分钟)")
-            
-            // 3. 如果时间差大于1分钟(60000ms)，则设置系统时间
+
+            // 4. 如果时间差大于1分钟(60000ms)，则设置系统时间
             if (timeDiff > 60000) {
                 setSystemTime(receivedTimeMillis)
                 Timber.i("时间差超过1分钟，已更新系统时间为: ${service.timeObs.get()}")
