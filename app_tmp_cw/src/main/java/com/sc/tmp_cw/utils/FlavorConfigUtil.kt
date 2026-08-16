@@ -61,8 +61,8 @@ object FlavorConfigUtil {
      */
     fun getConfigValue(): String {
         return when (getFlavorType()) {
-            "flavorA" -> {
-                // Flavor A 的配置
+            "flavorA", "flavorTJ6" -> {
+                // Flavor A / flavorTJ6 的配置（逻辑相同）
                 "https://api.flavora.example.com"
             }
             "flavorB" -> {
@@ -81,7 +81,8 @@ object FlavorConfigUtil {
      */
     fun isFeatureEnabled(featureName: String): Boolean {
         return when (getFlavorType()) {
-            "flavorA" -> {
+            "flavorA", "flavorTJ6" -> {
+                // Flavor A / flavorTJ6 的功能开关（逻辑相同）
                 when (featureName) {
                     "feature_x" -> true
                     "feature_y" -> false

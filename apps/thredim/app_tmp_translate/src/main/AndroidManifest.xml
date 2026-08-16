@@ -34,7 +34,6 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.TFrame"
             android:usesCleartextTraffic="true"
-            android:requestRawExternalStorageAccess="true"
             >
 
         <activity

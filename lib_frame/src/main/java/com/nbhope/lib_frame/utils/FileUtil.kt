@@ -57,7 +57,7 @@ object FileUtil {
         if (!file.exists()) return null
         var sb = StringBuilder()
         try {
-            val fr = FileReader(filePath)
+            val fr = InputStreamReader(FileInputStream(filePath), "UTF-8")
             val br = BufferedReader(fr)
             var line: String?
             while (br.readLine().also { line = it } != null) {

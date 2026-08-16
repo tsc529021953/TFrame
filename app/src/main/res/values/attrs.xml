@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="BatteryIconView">
+        <!-- 电池电量 0-100 -->
+        <attr name="batteryLevel" format="integer" />
+        <!-- 是否正在充电 -->
+        <attr name="isCharging" format="boolean" />
+        <!-- 电池外壳圆角半径 -->
+        <attr name="batteryBodyRadius" format="dimension" />
+        <!-- 电池头左侧圆角半径 -->
+        <attr name="batteryHeadStartRadius" format="dimension" />
+        <!-- 电池头右侧圆角半径 -->
+        <attr name="batteryHeadEndRadius" format="dimension" />
+        <!-- 剩余电量颜色 -->
+        <attr name="remainingBatteryColor" format="color" />
+        <!-- 已消耗电量颜色 -->
+        <attr name="consumedBatteryColor" format="color" />
+        <attr name="chargingBatteryColor" format="color" />
+        <attr name="minBatteryColor" format="color" />
+        <!-- 电量过低时显示的最小电量值 -->
+        <attr name="minBatteryLevelDisplay" format="integer" />
+        <!-- 充电图标 Drawable -->
+        <attr name="chargingIconDrawable" format="reference" />
+        <!-- 充电图标颜色 -->
+        <attr name="chargingIconColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="FixedScaleImageView">
+        <attr name="cropHorizontally" format="boolean" />
+        <attr name="antiAliasScale" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -4,13 +4,13 @@ apply from: "../build_types.gradle"
 apply from: "../app_types.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.sc.tframe"
         minSdkVersion 24
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "0.1.0-1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -60,5 +60,5 @@ dependencies {
 //    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation deps.espresso.core
 //    implementation 'com.arthenica:ffmpeg-kit-full:6.0-2' // 32
-    implementation("com.arthenica:ffmpeg-kit-min-gpl:6.0-2") // 25150  8060 17M
+//    implementation("com.arthenica:ffmpeg-kit-min-gpl:6.0-2") // 25150  8060 17M
 }
