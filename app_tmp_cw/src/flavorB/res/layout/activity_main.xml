@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.sc.tmp_cw.vm.MainViewModel"/>
+
+        <variable
+                name="service"
+                type="com.sc.tmp_cw.inter.ITmpService"/>
+    </data>
+
+    <androidx.drawerlayout.widget.DrawerLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/right_ly"
+            app:layout_constraintTop_toBottomOf="@+id/title_ly"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bg_ly"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_color"
+                >
+
+
+            <fragment
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/nav_host_fragment"
+                    android:name="androidx.navigation.fragment.NavHostFragment"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:descendantFocusability="afterDescendants"
+                    app:defaultNavHost="true"
+                    />
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:id="@+id/title_ly"
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
+
+                <include
+                        layout="@layout/module_title_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/title_ly2"
+                        app:service="@{service}"
+                        />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    >
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                        style="@style/main_bottom_right_bottom_btn_ly"
+                        android:id="@+id/home_sf"
+                        app:shimmer_base_alpha="1"
+                        app:shimmer_duration="3000"
+                        app:shimmer_highlight_alpha="0.4"
+                        app:shimmer_tilt="180"
+                        >
+
+                    <ImageView
+                            style="@style/main_bottom_right_bottom_btn_btn"
+                            android:id="@+id/home_btn"
+                            android:src="@drawable/ic_home"
+                            />
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                        style="@style/main_bottom_right_bottom_btn_ly"
+                        android:id="@+id/list_sf"
+                        app:shimmer_base_alpha="1"
+                        app:shimmer_duration="3000"
+                        app:shimmer_highlight_alpha="0.4"
+                        app:shimmer_tilt="180"
+                        >
+
+                    <ImageView
+                            style="@style/main_bottom_right_bottom_btn_btn"
+                            android:id="@+id/list_btn"
+                            android:src="@drawable/icon_btn_list"
+                            />
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+                android:layout_width="@dimen/bottom_ly_right_width"
+                android:layout_height="match_parent"
+                android:id="@+id/right_dl"
+                android:orientation="vertical"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/title_ly_height"
+                >
+
+            <View style="@style/vertical_space_style"/>
+
+<!--            <ImageView-->
+<!--                    style="@style/main_bottom_right_image"-->
+<!--                    android:src="@drawable/icon_btn_rtsp"-->
+<!--                    android:id="@+id/rtsp_btn"-->
+<!--                    />-->
+
+<!--            <View style="@style/vertical_space_style"/>-->
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_fj"
+                    android:id="@+id/fj_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+            <ImageView
+                    style="@style/main_bottom_right_image"
+                    android:src="@drawable/icon_btn_jh"
+                    android:id="@+id/jh_btn"
+                    />
+
+            <View style="@style/vertical_space_style"/>
+
+<!--            <ImageView-->
+<!--                    style="@style/main_bottom_right_image"-->
+<!--                    android:src="@drawable/icon_btn_local"-->
+<!--                    android:id="@+id/local_btn"-->
+<!--                    />-->
+
+<!--            <View style="@style/vertical_space_style"/>-->
+
+
+
+        </LinearLayout>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>

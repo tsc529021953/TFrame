@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        >
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.sc.tmp_cw.vm.ParamViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bg_ly"
+            >
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginTop="70dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
+                >
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="静音开关："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="200dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_height="20dp"
+                        android:id="@+id/mute_sc"
+                        android:thumb="@drawable/setting_switch_thumb_setting"
+                        app:track="@drawable/setting_switch_setting_track"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="音量设置："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                        style="@style/setting_item_slider_style"
+                        android:id="@+id/volume_sb"
+                        android:min="0"
+                        android:max="15"
+                        android:progress="@{vm.volumeObs}"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="设置为默认音量："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="200dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_height="20dp"
+                        android:id="@+id/default_voice_sc"
+                        android:thumb="@drawable/setting_switch_thumb_setting"
+                        app:track="@drawable/setting_switch_setting_track"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="跑马灯速度："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                        style="@style/setting_item_slider_style"
+                        android:id="@+id/speed_sb"
+                        android:min="0"
+                        android:max="100"
+                        android:progress="@{vm.speedObs}"
+                        />
+
+            </LinearLayout>
+
+            <LinearLayout style="@style/setting_item_style">
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text="返回主页时间："
+                        />
+
+                <View style="@style/horizontal_space_style"/>
+
+                <TextView
+                        style="@style/setting_item_text_style"
+                        android:text='@{vm.finishTimeObs + "秒"}'
+                        />
+
+                <SeekBar
+                        style="@style/setting_item_slider_style"
+                        android:id="@+id/finish_time_sb"
+                        android:min="0"
+                        android:max="100"
+                        />
+<!--                android:progress="@{vm.finishTimeObs}"-->
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+                style="@style/main_bottom_right_bottom_btn_ly"
+                android:id="@+id/shimmer_view_container1"
+                app:shimmer_base_alpha="1"
+                app:shimmer_duration="3000"
+                app:shimmer_highlight_alpha="0.4"
+                app:shimmer_tilt="180"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                >
+
+            <ImageView
+                    style="@style/main_bottom_right_bottom_btn_btn"
+                    android:id="@+id/back_btn"
+                    android:src="@drawable/icon_btn_back"
+                    />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                style="@style/top_title_ly_style">
+
+            <TextView style="@style/top_title_tv_style"
+                      android:id="@+id/top_title_tv"
+                      android:text="参数设置"
+                    />
+            <View style="@style/top_title_iv_style"
+                  app:layout_constraintStart_toStartOf="@+id/top_title_tv"
+                  app:layout_constraintEnd_toEndOf="@+id/top_title_tv"
+                  app:layout_constraintTop_toBottomOf="@+id/top_title_tv"
+                    />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

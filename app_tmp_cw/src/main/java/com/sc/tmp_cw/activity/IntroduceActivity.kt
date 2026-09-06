@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -21,6 +22,7 @@ import com.sc.tmp_cw.R
 import com.sc.tmp_cw.base.CWBaseBindingActivity
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityIntroduceBinding
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.vm.IntroduceViewModel
 import com.sc.tmp_cw.vm.SceneryViewModel
@@ -77,7 +79,7 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
         val callback = { item: FileBean ->
             val path = "file://" + item.path
             // Glide 会自动在后台线程加载,不需要 runOnUiThread
-            Glide.with(binding!!.imageView)
+            val glideRequest = Glide.with(binding!!.imageView)
                 .load(path)
                 .override(960, 540) // 限制最大尺寸,避免加载过大的图片
                 .centerInside() // 保持比例居中显示
@@ -86,7 +88,13 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
                 .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL) // 启用磁盘缓存
                 .placeholder(android.R.color.transparent) // 设置透明占位,避免闪烁
-                .into(binding!!.imageView)
+
+            // flavorB 时添加圆角
+            if (FlavorConfigUtil.isFlavorB()) {
+                glideRequest.transform(RoundedCorners(24))
+            }
+
+            glideRequest.into(binding!!.imageView)
 
             val item3 = IntroduceViewModel.textList?.find { it.name.startsWith(IntroduceViewModel.fileBean!!.name) }
             var msg = resources.getString(R.string.no_introduce)
@@ -104,6 +112,7 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
                 viewModel.textObs.set(msg)
             }
         }
+        viewModel.titleObs.set(IntroduceViewModel.fileBean!!.name)
         val item = IntroduceViewModel.bigList?.find { it.name.startsWith(IntroduceViewModel.fileBean!!.name) }
         if (item == null) {
             // 判断视频有没有

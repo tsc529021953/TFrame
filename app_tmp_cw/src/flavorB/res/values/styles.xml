@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="in_btn_tv">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/in_btn_tv_height</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="setting_item_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/setting_item_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">@dimen/setting_item_margin</item>
+        <item name="android:paddingEnd">@dimen/setting_item_margin</item>
+        <item name="android:background">@drawable/shape_param_bg</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
+    <style name="setting_item_text_style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">start |center_vertical</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+</resources>

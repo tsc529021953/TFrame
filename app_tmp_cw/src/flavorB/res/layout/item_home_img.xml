@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        >
+
+    <LinearLayout style="@style/travel_btn_ly"
+                  android:id="@+id/bg_ly"
+            >
+
+        <ImageView style="@style/travel_btn_iv"
+                   android:id="@+id/iv"
+                />
+
+        <TextView style="@style/travel_btn_tv"
+                  android:layout_width="wrap_content"
+                  android:layout_height="23dp"
+                  android:layout_marginTop="10dp"
+                  android:gravity="center"
+                  android:layout_gravity="center"
+                  android:id="@+id/tv"
+                  android:paddingStart="15dp"
+                  android:paddingEnd="15dp"
+                  android:background="@drawable/shape_title_cv_bg"
+                />
+
+    </LinearLayout>
+</layout>
+

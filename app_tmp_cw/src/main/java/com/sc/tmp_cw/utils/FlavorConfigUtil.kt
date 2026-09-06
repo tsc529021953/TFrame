@@ -26,6 +26,10 @@ object FlavorConfigUtil {
     fun isFlavorA(): Boolean {
         return BuildConfig.IS_FLAVOR_A
     }
+
+    fun isFlavorB(): Boolean {
+        return BuildConfig.FLAVOR_TYPE == "flavorB"
+    }
     
     /**
      * 根据风味执行不同的逻辑

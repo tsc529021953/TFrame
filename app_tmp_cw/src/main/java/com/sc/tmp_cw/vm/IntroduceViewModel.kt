@@ -35,6 +35,8 @@ class IntroduceViewModel @Inject constructor(val spManager: SharedPreferencesMan
 
     }
 
+    val titleObs = ObservableField<String>("")
+
     val textObs = ObservableField<String>("")
 
     val typeObs = ObservableBoolean(true) // image video

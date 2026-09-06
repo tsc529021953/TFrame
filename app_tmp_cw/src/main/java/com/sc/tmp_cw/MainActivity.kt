@@ -30,6 +30,7 @@ import com.sc.tmp_cw.databinding.ActivityMainBinding
 import com.sc.tmp_cw.inter.IMainView
 import com.sc.tmp_cw.service.TmpServiceDelegate
 import com.sc.tmp_cw.service.TmpServiceImpl
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.vm.MainViewModel
 import com.sc.tmp_cw.weight.KeepStateNavigator
 import kotlinx.coroutines.GlobalScope
@@ -227,6 +228,7 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 //            TmpServiceDelegate.service()?.test("")
             layoutClick(binding.jhBtn, true) {
                 navController.navigate(R.id.navigation_interactive, null)
+                if (FlavorConfigUtil.isFlavorB())  binding.titleLy2.logoLy.visibility = View.GONE
             }
         }
 //        ARouter.getInstance().build(MessageConstant.ROUTH_PARAM).navigation(this)
@@ -335,13 +337,13 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
     private fun init() {
         //
-        viewModel.initData()
-        // 优化动画性能：使用 translationY 替代 alpha，避免表层重建
-        iconAnimator = ObjectAnimator.ofFloat(binding.titleLy2.logoLy, "translationY", 0f, -20f)
-        iconAnimator?.duration = MessageConstant.MAIN_ANIMATION_TIME
-        iconAnimator?.repeatMode = ObjectAnimator.REVERSE
-        iconAnimator?.repeatCount = 1
-        
+        if (!FlavorConfigUtil.isFlavorB()) {
+            // 优化动画性能：使用 translationY 替代 alpha，避免表层重建
+            iconAnimator = ObjectAnimator.ofFloat(binding.titleLy2.logoLy, "translationY", 0f, -20f)
+            iconAnimator?.duration = MessageConstant.MAIN_ANIMATION_TIME
+            iconAnimator?.repeatMode = ObjectAnimator.REVERSE
+            iconAnimator?.repeatCount = 1
+        }
         // 持久启用硬件加速图层，避免频繁切换导致的性能问题
         binding.titleLy2.logoLy.setLayerType(View.LAYER_TYPE_HARDWARE, null)
         
@@ -439,10 +441,12 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun home() {
         try {
             navController.navigate(R.id.navigation_local, null)
+            if (FlavorConfigUtil.isFlavorB())  binding.titleLy2.logoLy.visibility = View.VISIBLE
         } catch (e: Exception) {}
     }
 
     private fun showHideTitle(isShow: Boolean = true) {
+        if (FlavorConfigUtil.isFlavorB()) return
         if (isShow) {
             // 显示
             if (binding.titleLy2.logoLy.visibility == View.VISIBLE) {
@@ -463,7 +467,6 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             }
         } else {
             if (binding.titleLy2.logoLy.visibility != View.GONE){
-//                binding.titleLy2.stationTv.stopMarquee()
                 binding.titleLy2.logoLy.visibility = View.GONE
             }
         }

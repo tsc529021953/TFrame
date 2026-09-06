@@ -4,6 +4,7 @@ import android.os.Environment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
@@ -12,6 +13,7 @@ import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentLineBinding
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.databinding.FragmentTravelBinding
 import timber.log.Timber
 import java.io.File
@@ -80,7 +82,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
             // 延迟加载，确保视图已准备好
             view?.post {
                 if (!isDetached && isAdded) {
-                    Glide.with(this)
+                    val glideRequest = Glide.with(this)
                         .load(source)
                         .apply(requestOptions)
                         .override(3840, 2160) // 根据实际显示尺寸调整，避免加载过大的图片
@@ -88,7 +90,13 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
                         .placeholder(android.R.color.transparent) // 透明占位，避免闪烁
                         .skipMemoryCache(true) // 跳过内存缓存
                         .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
-                        .into(binding!!.lineIv)
+
+                    // flavorB 时添加圆角
+                    if (FlavorConfigUtil.isFlavorB()) {
+                        glideRequest.transform(RoundedCorners(36))
+                    }
+
+                    glideRequest.into(binding!!.lineIv)
                 }
             }
         }
