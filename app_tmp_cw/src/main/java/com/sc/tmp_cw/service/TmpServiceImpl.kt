@@ -49,6 +49,7 @@ import com.sc.tmp_cw.bean.WuhanProtocolConst
 import com.sc.tmp_cw.service.WuhanProtocolParser
 import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.nbhope.lib_frame.utils.DataUtil
+import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -585,6 +586,14 @@ class TmpServiceImpl : ITmpService, Service() {
                         SERVER_PORT = cwInfo.port
                         SERVER_IP = cwInfo.ip
                         titleObs.set(cwInfo.title)
+                        // flavorB 时优先读取 SP 中的标题配置
+                        if (FlavorConfigUtil.isFlavorB()) {
+                            val spManager = (application as HopeBaseApp).spManager
+                            val spTitle = spManager.getString(MessageConstant.SP_TITLE, "")
+                            if (spTitle.isNotEmpty()) {
+                                titleObs.set(spTitle)
+                            }
+                        }
                         Timber.e("配置文件解析成功")
                     } catch (e: Exception) {
                         Timber.e("配置文件存在问题 ${e.message}")

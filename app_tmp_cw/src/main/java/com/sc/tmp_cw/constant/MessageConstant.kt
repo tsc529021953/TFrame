@@ -31,6 +31,7 @@ object MessageConstant {
     const val SP_PLAYLIST_CHECK = "SP_PLAYLIST_CHECK" // 校验列表是否变更
     const val SP_PARAM_DEFAULT_VOICE_OPEN = "SP_PARAM_DEFAULT_VOICE_OPEN" // 是否开启设置默认音量
     const val SP_PARAM_VOICE = "SP_PARAM_VOICE" // 记录的音量
+    const val SP_TITLE = "SP_TITLE" // 标题配置
 
     const val CMD_PLAY = "play"
     const val CMD_PAUSE = "pause"

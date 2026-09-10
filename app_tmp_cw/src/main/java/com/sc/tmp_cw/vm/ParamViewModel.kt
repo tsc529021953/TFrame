@@ -1,6 +1,7 @@
 package com.sc.tmp_cw.vm
 
 import androidx.databinding.ObservableBoolean
+import androidx.databinding.ObservableField
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -8,6 +9,7 @@ import com.nbhope.lib_frame.base.BaseViewModel
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import com.nbhope.lib_frame.utils.TimerHandler
 import com.sc.tmp_cw.constant.MessageConstant
+import com.sc.tmp_cw.service.TmpServiceDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,11 +40,15 @@ class ParamViewModel @Inject constructor(val spManager: SharedPreferencesManager
 
     var finishTimeObs = ObservableInt(30)
 
+    var titleObs = ObservableField<String>("")
+
     fun initData() {
         val speed = (spManager.getFloat(MessageConstant.SP_MARQUEE_SPEED, 3f) * 10).toInt()
         speedObs.set(speed)
         val finishTime = (MessageConstant.FINISH_TIME / 1000).toInt()
         finishTimeObs.set(finishTime)
+        val title = spManager.getString(MessageConstant.SP_TITLE, TmpServiceDelegate.service()?.titleObs?.get() ?: "")
+        titleObs.set(title)
     }
 
 

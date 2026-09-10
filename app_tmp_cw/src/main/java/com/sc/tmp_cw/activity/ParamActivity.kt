@@ -13,6 +13,8 @@ import com.nbhope.phfame.utils.VoiceUtil
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityParamBinding
+import com.sc.tmp_cw.service.TmpServiceDelegate
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.vm.ParamViewModel
 import timber.log.Timber
 import javax.inject.Inject
@@ -129,6 +131,12 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
                 if (finishTime != MessageConstant.FINISH_TIME) {
                     viewModel.spManager.setLong(MessageConstant.SP_FINISH_TIME,finishTime)
                     MessageConstant.FINISH_TIME = finishTime
+                }
+                // flavorB 时保存标题配置
+                if (FlavorConfigUtil.isFlavorB()) {
+                    val title = binding.titleEt.text.toString().trim()
+                    viewModel.spManager.setString(MessageConstant.SP_TITLE, title)
+                    TmpServiceDelegate.service()?.titleObs?.set(title.ifEmpty { null })
                 }
                 super.finish()
                 return@showInfoTip true
