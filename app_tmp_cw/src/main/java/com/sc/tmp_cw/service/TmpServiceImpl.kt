@@ -545,12 +545,13 @@ class TmpServiceImpl : ITmpService, Service() {
 
     var networkCallbackModule: NetworkCallbackModule = object : NetworkCallbackModule {
         override fun onAvailable(network: Network?) {
+            Timber.i("网络连接")
 //            if (!isFirstLink)
                 reBuild() // 联网
         }
 
         override fun onLost(network: Network?) {
-
+            Timber.i("网络断开")
         }
 
         override fun onCapabilitiesChanged(network: Network?, networkCapabilities: NetworkCapabilities) {
@@ -594,7 +595,7 @@ class TmpServiceImpl : ITmpService, Service() {
                                 titleObs.set(spTitle)
                             }
                         }
-                        Timber.e("配置文件解析成功")
+                        Timber.e("配置文件解析成功 $cwInfo")
                     } catch (e: Exception) {
                         Timber.e("配置文件存在问题 ${e.message}")
                         e.printStackTrace()

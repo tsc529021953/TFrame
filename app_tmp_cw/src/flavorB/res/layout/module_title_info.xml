@@ -22,7 +22,7 @@
             android:id="@+id/list_sf"
             app:shimmer_base_alpha="1"
             app:shimmer_duration="5000"
-            app:shimmer_highlight_alpha="0.8"
+            app:shimmer_highlight_alpha="0.6"
             app:shimmer_tilt="180"
             >
 

@@ -58,4 +58,10 @@ class CWInfo {
 
         var msg = ""
     }
+
+    override fun toString(): String {
+        return "CWInfo(port=$port, ip='$ip', title='$title', stations=$stations, urgentNotify=$urgentNotify, rtspUrl='$rtspUrl', protocolType='$protocolType', tcpServerIp='$tcpServerIp', tcpServerPort=$tcpServerPort, wuhanUdpRxIp='$wuhanUdpRxIp', wuhanUdpRxPort=$wuhanUdpRxPort, wuhanUdpTxIp='$wuhanUdpTxIp', wuhanUdpTxPort=$wuhanUdpTxPort, deviceId=$deviceId, carriagePosition=$carriagePosition)"
+    }
+
+
 }
