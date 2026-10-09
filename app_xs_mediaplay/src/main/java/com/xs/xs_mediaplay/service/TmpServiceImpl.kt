@@ -71,7 +71,7 @@ class TmpServiceImpl : ITmpService, Service() {
         const val BASE_FILE = "/XS_MEDIA/"
         const val CONFIG_FILE = "AppInfo.json"
 
-        const val SERVER_PORT = 60000
+        const val SERVER_PORT = 2368 // 60000
     }
 
     private val mBinder: IBinder = BaseBinder()

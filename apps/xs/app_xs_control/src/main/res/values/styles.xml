@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 设备控制块（GridLayout 4列x2行，白色圆角24dp，行高234dp） -->
+    <style name="DeviceBlockStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">234dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:background">@drawable/bg_block</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">24dp</item>
+    </style>
+
+    <!-- 块首行图标 -->
+    <style name="BlockIconStyle">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+    </style>
+
+    <!-- 灯光大块（高489dp，白色圆角24dp，两两间隔24dp，末块在布局里覆写marginEnd=0） -->
+    <style name="LightColumnStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">489dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">24dp</item>
+        <item name="android:background">@drawable/bg_block</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <!-- 灯光分组头（大块内第1行，与其他行等高均分） -->
+    <style name="LightGroupHeaderStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+    </style>
+
+    <!-- 灯光区域行（大块内的行，与其他行等高均分，行间以分割线分隔） -->
+    <style name="LightAreaCardStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+    </style>
+
+    <!-- 大块内行间分割线 -->
+    <style name="LightDividerStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/divider_color</item>
+    </style>
+
+    <!-- 灯光区域行图标 -->
+    <style name="LightRowIconStyle">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+    </style>
+
+    <!-- 播放/暂停按钮（白底胶囊，图标在布局里单独指定）
+         固定160dp宽+gravity=center时，drawableLeft贴内边缘而文字居中，间隔会变大；
+         两侧对称padding使[图标+6dp+文字]整体居中：图标28dp+文字约32dp => (160-66)/2=47dp -->
+    <style name="MediaBtnStyle">
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">@drawable/bg_btn_media</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">47dp</item>
+        <item name="android:paddingEnd">47dp</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!-- 开按钮：对称padding50dp让[图标19dp+6dp+文字约16dp]在160dp内整体居中 -->
+    <style name="OnBtnStyle">
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">@drawable/bg_btn_on</item>
+        <item name="android:drawableLeft">@drawable/ic_switch_on</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">50dp</item>
+        <item name="android:paddingEnd">50dp</item>
+        <item name="android:textColor">@color/btn_green_text</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+    <style name="AllOnBtnStyle" parent="OnBtnStyle">
+        <item name="android:layout_width">114dp</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <!-- 关按钮：同开按钮，对称padding50dp -->
+    <style name="OffBtnStyle">
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:background">@drawable/bg_btn_off</item>
+        <item name="android:drawableLeft">@drawable/ic_switch_off</item>
+        <item name="android:drawablePadding">6dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">50dp</item>
+        <item name="android:paddingEnd">50dp</item>
+        <item name="android:textColor">@color/btn_red_text</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AllOffBtnStyle" parent="OffBtnStyle">
+        <item name="android:layout_width">114dp</item>
+        <item name="android:layout_height">46dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 侧栏选中菜单背景（浅绿圆角+按下涟漪） -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="#3323795B">
+
+    <item>
+        <shape>
+            <solid android:color="@color/btn_green_bg"/>
+            <corners android:radius="6dp"/>
+        </shape>
+    </item>
+</ripple>

@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">显示控制</string>
+    <string name="tab_device">设备控制</string>
+    <string name="tab_light">灯光控制</string>
+
+    <!-- 顶栏标题（按页签切换） -->
+    <string name="title_device">全部设备</string>
+    <string name="title_light">全部灯光</string>
+    <string name="title_subtitle">/ 平罗中学校史陈列馆智能照明集中矩阵</string>
+    <string name="all_switch">一键开关</string>
+    <string name="all_on">全部开启</string>
+    <string name="all_off">全部关闭</string>
+    <string name="pc">大厅电子屏</string>
+    <!-- 一体机对应的功能名称：换装体验 -->
+    <string name="aio">换装体验</string>
+    <string name="tv_format">电视%1$d</string>
+    <string name="tv_name_1">电视一</string>
+    <string name="tv_name_2">电视二</string>
+    <string name="tv_name_3">电视三</string>
+    <string name="tv_name_4">电视四</string>
+    <string name="tv_name_5">电视五</string>
+    <string name="tv_name_6">电视六</string>
+    <string name="area_name_1">区域一</string>
+    <string name="area_name_2">区域二</string>
+    <string name="area_name_3">区域三</string>
+    <string name="btn_on">开启</string>
+    <string name="btn_off">关闭</string>
+    <string name="btn_play">播放</string>
+    <string name="btn_pause">暂停</string>
+    <string name="light_ceiling">顶面照明</string>
+    <string name="light_wall">墙面照明</string>
+    <string name="light_space">空间区域</string>
+    <string name="area_format">区域%1$d</string>
+    <string name="one_key_control">天花板主照明阵列</string>
+
+    <!-- 侧栏底部联机状态 -->
+    <string name="net_status_ok">中控系统联机正常</string>
+    <string name="net_status_error">中控系统联机异常</string>
+</resources>

@@ -15,8 +15,8 @@ include ':app'
 //include ':app_common'
 //include ':app_paint'
 include ':app_td_float_setting'
-//include ':app_xs_mediaplay'
-//include ':app_xs_ctrl'
+include ':app_xs_mediaplay'
+include ':app_xs_ctrl'
 //include ':app_xs_by'
 //include ':app_tmp'
 include ':app_tmp_cw' /*视睿迪透明屏车窗交互系统    */
@@ -29,6 +29,8 @@ include ':app_tpm_player' /*视睿迪透明屏播放器*/
 project(':app_tpm_player').projectDir = new File('./apps/thredim/app_tpm_player')
 include ':app_td_test' /*视睿迪测试*/
 project(':app_td_test').projectDir = new File('./apps/thredim/app_td_test')
+include ':app_xs_control' /*显示控制（设备控制/灯光控制 UDP指令）*/
+project(':app_xs_control').projectDir = new File('./apps/xs/app_xs_control')
 //include ':app_xw'
 //include ':app_xsg'
 //include ':app_heTest'

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 关按钮背景（浅红胶囊+按下涟漪） -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="#33E5484D">
+
+    <item>
+        <shape>
+            <solid android:color="#FAEEE9"/>
+            <corners android:radius="100dp"/>
+        </shape>
+    </item>
+</ripple>

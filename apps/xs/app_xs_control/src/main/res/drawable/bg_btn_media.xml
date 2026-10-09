@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 播放/暂停按钮背景（浅绿白胶囊+浅色描边+按下涟漪） -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+        android:color="#3323795B">
+
+    <item>
+        <shape>
+            <solid android:color="#F1F5EE"/>
+            <corners android:radius="100dp"/>
+            <stroke android:width="1dp" android:color="@color/divider_color"/>
+        </shape>
+    </item>
+</ripple>

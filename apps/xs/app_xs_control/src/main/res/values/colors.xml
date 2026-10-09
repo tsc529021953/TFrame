@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#000</color>
+    <color name="purple_500">#000</color>
+    <color name="purple_700">#000</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <!-- 依据效果图配色：整体浅色 -->
+    <!-- 页面背景 -->
+    <color name="bg_color">#FFFFFF</color>
+    <!-- 主要文字 -->
+    <color name="text_color">#374941</color>
+    <!-- 次要文字 -->
+    <color name="text_color_sub">#7C8A84</color>
+    <!-- 分割线/描边 -->
+    <color name="divider_color">#E5F1F3</color>
+
+    <!-- 侧栏选中项 / 开按钮背景（浅绿） -->
+    <color name="btn_green_bg">#E6EFE4</color>
+    <!-- 关按钮背景（浅红） -->
+    <color name="btn_red_bg">#FAEEE9</color>
+    <!-- 卡片背景 -->
+    <color name="card_bg">#F4F7F2</color>
+
+    <!-- 开按钮文字（深绿） -->
+    <color name="btn_green_text">#1F6B3D</color>
+    <!-- 关按钮文字（深红） -->
+    <color name="btn_red_text">#A04B3A</color>
+    <!-- 图标占位（logo绿） -->
+    <color name="icon_green">#3C9F5A</color>
+    <!-- 平面图占位背景 -->
+    <color name="plan_bg">#E1E8EC</color>
+
+    <!-- 侧栏菜单文字：选中（深绿）/ 未选中 -->
+    <color name="menu_text_selected">#23795B</color>
+    <color name="menu_text_normal">#3F4943</color>
+
+    <!-- 侧栏底部联机状态 -->
+    <color name="status_text">#3F4943</color>
+    <color name="status_dot_normal">#3F4943</color>
+    <color name="status_dot_error">#E5484D</color>
+</resources>

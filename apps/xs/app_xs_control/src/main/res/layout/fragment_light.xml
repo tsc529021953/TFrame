@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+                name="vm"
+                type="com.sc.xs_control.vm.LightViewModel"/>
+    </data>
+
+    <!--
+      灯光控制页：依据效果图绘制
+      - 3个大块（顶面照明/墙面照明/空间区域灯光）：高489dp，白色，圆角24dp，两两间隔24dp
+      - 每个大块内4行（一键控制+区域1~3），行间以1dp分割线分隔，每行最前是图标
+      - 分组头与各行暂复用本组灯具图标（ic_ceiling_light/ic_wall_light/ic_normal_light），
+        区域行图标资源待补充后可单独替换
+    -->
+    <ScrollView
+            android:id="@+id/page_light"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="24dp"
+                android:paddingBottom="24dp">
+
+            <!-- 3个大块：顶面照明 / 墙面照明 / 空间区域灯光（两两间隔24dp，左右贴边） -->
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                <!-- ========== 第1块：顶面照明 ========== -->
+                <LinearLayout style="@style/LightColumnStyle">
+
+                    <!-- 分组头：一键控制 -->
+                    <LinearLayout style="@style/LightGroupHeaderStyle">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:contentDescription="@string/light_ceiling"
+                                android:src="@drawable/ic_ceiling_light"/>
+
+                        <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:orientation="vertical">
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/light_ceiling"
+                                    android:textColor="@color/text_color"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold"/>
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/one_key_control"
+                                    android:textColor="@color/text_color_sub"
+                                    android:textSize="12sp"/>
+                        </LinearLayout>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_all_on"
+                                style="@style/AllOnBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAllOn()}"
+                                android:text="@string/all_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_all_off"
+                                style="@style/AllOffBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAllOff()}"
+                                android:text="@string/all_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域1 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_1"
+                                android:src="@drawable/ic_ceiling_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_1"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area1_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOn(1)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area1_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOff(1)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域2 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_2"
+                                android:src="@drawable/ic_ceiling_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_2"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area2_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOn(2)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area2_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOff(2)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域3 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_3"
+                                android:src="@drawable/ic_ceiling_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_3"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area3_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOn(3)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_ceiling_area3_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightCeilingAreaOff(3)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ========== 第2块：墙面照明 ========== -->
+                <LinearLayout style="@style/LightColumnStyle">
+
+                    <!-- 分组头：一键控制 -->
+                    <LinearLayout style="@style/LightGroupHeaderStyle">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:contentDescription="@string/light_wall"
+                                android:src="@drawable/ic_wall_light"/>
+
+                        <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:orientation="vertical">
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/light_wall"
+                                    android:textColor="@color/text_color"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                                android:id="@+id/btn_wall_all_on"
+                                style="@style/AllOnBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAllOn()}"
+                                android:text="@string/all_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_all_off"
+                                style="@style/AllOffBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAllOff()}"
+                                android:text="@string/all_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域1 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_1"
+                                android:src="@drawable/ic_wall_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_1"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area1_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOn(1)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area1_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOff(1)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域2 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_2"
+                                android:src="@drawable/ic_wall_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_2"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area2_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOn(2)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area2_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOff(2)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域3 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_3"
+                                android:src="@drawable/ic_wall_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_3"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area3_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOn(3)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_wall_area3_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightWallAreaOff(3)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ========== 第3块：空间区域灯光（末尾，右边距为0） ========== -->
+                <LinearLayout
+                        style="@style/LightColumnStyle"
+                        android:layout_marginEnd="0dp">
+
+                    <!-- 分组头：一键控制 -->
+                    <LinearLayout style="@style/LightGroupHeaderStyle">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:contentDescription="@string/light_space"
+                                android:src="@drawable/ic_normal_light"/>
+
+                        <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:orientation="vertical">
+
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/light_space"
+                                    android:textColor="@color/text_color"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold"/>
+
+                        </LinearLayout>
+
+                        <TextView
+                                android:id="@+id/btn_space_all_on"
+                                style="@style/AllOnBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAllOn()}"
+                                android:text="@string/all_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_all_off"
+                                style="@style/AllOffBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAllOff()}"
+                                android:text="@string/all_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域1 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_1"
+                                android:src="@drawable/ic_normal_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_1"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area1_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOn(1)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area1_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOff(1)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域2 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_2"
+                                android:src="@drawable/ic_normal_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_2"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area2_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOn(2)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area2_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOff(2)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <View style="@style/LightDividerStyle"/>
+
+                    <!-- 区域3 -->
+                    <LinearLayout style="@style/LightAreaCardStyle">
+
+                        <ImageView
+                                style="@style/LightRowIconStyle"
+                                android:contentDescription="@string/area_name_3"
+                                android:src="@drawable/ic_normal_light"/>
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/area_name_3"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area3_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOn(3)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_space_area3_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onLightSpaceAreaOff(3)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</layout>

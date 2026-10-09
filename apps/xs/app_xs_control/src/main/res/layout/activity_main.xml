@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View"/>
+
+        <variable
+                name="vm"
+                type="com.sc.xs_control.vm.MainViewModel"/>
+    </data>
+
+    <!--
+      控制主界面：依据效果图绘制
+      - 左侧栏：logo + 菜单（设备控制/灯光控制，点击切换 DeviceFragment/LightFragment）
+      - 顶栏：标题 + 一键开关（全开/全关）
+      - 内容区：Fragment容器（fragment_device / fragment_light）
+    -->
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:orientation="horizontal">
+
+        <!-- ==================== 左侧栏 ==================== -->
+        <LinearLayout
+                android:id="@+id/sidebar"
+                android:layout_width="240dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="32dp">
+
+            <!-- logo（图片资源待补充，先用占位图标） -->
+            <ImageView
+                    android:id="@+id/iv_logo"
+                    android:layout_width="156dp"
+                    android:layout_height="76dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@mipmap/img_logo"
+                    android:contentDescription="@string/app_name"/>
+
+            <!-- 菜单：设备控制（切换到 DeviceFragment） -->
+            <TextView
+                    android:id="@+id/menu_device"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@{vm.tabObs.get() == 0 ? @drawable/bg_menu_selected : @drawable/bg_btn_normal}"
+                    android:gravity="center"
+                    android:onClick="@{() -> vm.switchTab(0)}"
+                    android:text="@string/tab_device"
+                    android:textColor="@{vm.tabObs.get() == 0 ? @color/menu_text_selected : @color/menu_text_normal}"
+                    android:textSize="17sp"/>
+
+            <!-- 菜单：灯光控制（切换到 LightFragment） -->
+            <TextView
+                    android:id="@+id/menu_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@{vm.tabObs.get() == 1 ? @drawable/bg_menu_selected : @drawable/bg_btn_normal}"
+                    android:gravity="center"
+                    android:onClick="@{() -> vm.switchTab(1)}"
+                    android:text="@string/tab_light"
+                    android:textColor="@{vm.tabObs.get() == 1 ? @color/menu_text_selected : @color/menu_text_normal}"
+                    android:textSize="16sp"/>
+
+            <!-- 弹性占位，将联机状态推到侧栏底部 -->
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            <!-- 联机状态：网络正常（圆点#3F4943）/异常（圆点红色） -->
+            <LinearLayout
+                    android:id="@+id/status_bar"
+                    android:layout_width="196dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="32dp"
+                    android:background="@drawable/bg_status"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp">
+
+                <View
+                        android:id="@+id/iv_status_dot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@{vm.netObs.get() ? @drawable/bg_dot_normal : @drawable/bg_dot_error}"/>
+
+                <TextView
+                        android:id="@+id/tv_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@{vm.netObs.get() ? @string/net_status_ok : @string/net_status_error}"
+                        android:textColor="@color/status_text"
+                        android:textSize="14sp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/divider_color"/>
+
+        <!-- ==================== 右侧主区域 ==================== -->
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#F4F7F2"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:orientation="vertical">
+
+            <LinearLayout
+                    android:id="@+id/top_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:gravity="end | center_vertical"
+                    android:orientation="horizontal"
+                   >
+
+                <!-- 时间（时:分，TextClock自刷新） -->
+                <TextClock
+                        android:id="@+id/tv_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="23dp"
+                        android:format12Hour="HH:mm"
+                        android:format24Hour="HH:mm"
+                        android:textColor="@color/text_color"
+                        android:textSize="34sp"
+                        android:textStyle="bold"
+                        tools:text="14:05"/>
+
+                <!-- 日期：上为月日，下为星期（TextClock自刷新） -->
+                <LinearLayout
+                        android:id="@+id/date_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="32dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                    <TextClock
+                            android:id="@+id/tv_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:format12Hour="M月d日"
+                            android:format24Hour="M月d日"
+                            android:textColor="#4A564D"
+                            android:textSize="14sp"
+                            tools:text="10月8日"/>
+
+                    <TextClock
+                            android:id="@+id/tv_week"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:format12Hour="EEEE"
+                            android:format24Hour="EEEE"
+                            android:textColor="#6F7A73"
+                            android:textSize="14sp"
+                            tools:text="星期四"/>
+                </LinearLayout>
+
+                <ImageView
+                        android:id="@+id/btn_account"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_account" />
+
+            </LinearLayout>
+
+            <!-- 顶栏：标题 + 一键开关 -->
+            <LinearLayout
+                    android:id="@+id/title_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="24dp"
+                    android:background="@drawable/bg_title_bar"
+                    >
+
+                <!-- 标题图标：设备控制/灯光控制切换 -->
+                <ImageView
+                        android:id="@+id/iv_title_icon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:contentDescription="@string/app_name"
+                        android:src="@{vm.tabObs.get() == 0 ? @drawable/ic_device_logo : @drawable/ic_light_logo}"/>
+
+                <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:text="@{vm.tabObs.get() == 0 ? @string/title_device : @string/title_light}"
+                        android:textColor="@color/text_color"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        tools:text="全部灯光"/>
+
+                <!-- 副标题（仅灯光控制页显示） -->
+                <TextView
+                        android:id="@+id/tv_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/title_subtitle"
+                        android:textColor="#4A564D"
+                        android:textSize="14sp"
+                        android:visibility="@{vm.tabObs.get() == 0 ? View.GONE : View.VISIBLE}"
+                        tools:text="/ 平罗中学校史陈列馆智能照明集中矩阵"/>
+
+                <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                <!-- 一键开关 全开（按当前页签发送对应指令） -->
+                <TextView
+                        android:id="@+id/btn_all_on"
+                        android:layout_width="144dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_btn_on"
+                        android:drawableLeft="@drawable/ic_switch_on"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:onClick="@{(v) -> vm.tabObs.get() == 0 ? vm.onDeviceAllOn() : vm.onLightAllOn()}"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp"
+                        android:text="@string/all_on"
+                        android:textColor="@color/btn_green_text"
+                        android:textSize="18sp"/>
+
+                <!-- 一键开关 全关 -->
+                <TextView
+                        android:id="@+id/btn_all_off"
+                        android:layout_width="144dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/bg_btn_off"
+                        android:drawableLeft="@drawable/ic_switch_off"
+                        android:drawablePadding="6dp"
+                        android:gravity="center_vertical"
+                        android:onClick="@{(v) -> vm.tabObs.get() == 0 ? vm.onDeviceAllOff() : vm.onLightAllOff()}"
+                        android:paddingEnd="20dp"
+                        android:paddingStart="20dp"
+                        android:text="@string/all_off"
+                        android:textColor="@color/btn_red_text"
+                        android:textSize="18sp"/>
+            </LinearLayout>
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider_color"/>
+
+            <!-- ==================== 内容区：Fragment容器 ==================== -->
+            <FrameLayout
+                    android:id="@+id/fragment_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="321dp"
+                    android:layout_marginBottom="27dp"
+                    android:src="@mipmap/img_bg"
+                    android:scaleType="centerCrop"/>
+        </LinearLayout>
+    </LinearLayout>
+</layout>
