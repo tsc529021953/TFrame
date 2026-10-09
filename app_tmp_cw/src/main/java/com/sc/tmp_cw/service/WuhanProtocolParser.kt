@@ -124,8 +124,10 @@ object WuhanProtocolParser {
                         textBroadcast = parseTextBroadcastB5(data, dataStart, dataLength))
                 }
                 else -> {
-                    Timber.w("$TAG 未知命令: 0x${String.format("%02X", command)}")
-                    null
+                    // 未实现的命令(如0xC4): 帧合法但暂无业务处理, 返回基础消息,
+                    // 避免被上层误判为"解析失败"
+                    Timber.d("$TAG 未实现命令, 忽略: 0x${String.format("%02X", command)}")
+                    WuhanParsedMessage(command, sourceId)
                 }
             }
 
@@ -195,63 +197,45 @@ object WuhanProtocolParser {
     }
 
     /**
-     * 解析 0xB1 线路/站点信息 (核心数据包)
+     * 解析 0xB1 报站信息 (核心数据包, 协议V2.12 §5.2)
+     *
+     * 字段布局:
+     * DATA0:       PISC ID
+     * DATA1:       Bit0=开门信息有效, Bit1=站点信息有效
+     * DATA2:       保留
+     * DATA3:       Bit0=TC1激活, Bit1=TC2激活, Bit2=紧急广播播放中
+     * DATA4:       线ID
+     * DATA5:       线路ID (奇数上行/偶数下行; 3,4=环线)
+     * DATA6-7:     起始站ID
+     * DATA8-9:     终点站ID
+     * DATA10-11:   当前站ID
+     * DATA12-13:   下一站ID
+     * DATA14-15:   紧急广播ID (触发紧急广播时有效)
+     * DATA16:      Bit0-1=广播控制(0无操作/1开始/2停止), Bit4-7=广播类型(见BC_TYPE_*)
+     * DATA17:      开门信息 (Bit0-1下一站开左/右/双, Bit3-2本站开, Bit4-5本站关)
+     * DATA18:      停靠站总数, 0=默认全线停靠
+     * DATA19-20:   第1-8站/第9-16站停靠位图
      */
     private fun parseRouteInfoB1(data: ByteArray, offset: Int): WuhanRouteInfoB1 {
-        val piscId = data[offset].toInt() and 0xFF
-        val emergencyFlag = data[offset + 1].toInt() and 0xFF
-        val serviceStatus = data[offset + 2].toInt() and 0xFF
-        val tcStatus = data[offset + 3].toInt() and 0xFF
-        val lineId = data[offset + 4].toInt() and 0xFF
-        val routeId = data[offset + 5].toInt() and 0xFF
-        val startStationId = readUInt16(data, offset + 6)
-        val endStationId = readUInt16(data, offset + 8)
-        val currentStationId = readUInt16(data, offset + 10)
-        val nextStationId = readUInt16(data, offset + 12)
-        val destStationId = readUInt16(data, offset + 14)
-        val trainStatus = data[offset + 16].toInt() and 0xFF
-        val doorStatus = data[offset + 17].toInt() and 0xFF
-        val direction = (data[offset + 17].toInt() shr 4) and 0x0F
-        val temperature = data[offset + 18].toInt() and 0xFF
-
-        // 拥挤度: DATA19-20 (UINT8每bit表示一个车厢)
-        val crowding = mutableListOf<Int>()
-        val crowding1 = data[offset + 19].toInt() and 0xFF
-        val crowding2 = data[offset + 20].toInt() and 0xFF
-        for (i in 0 until 8) {
-            crowding.add(if (((crowding1 shr i) and 0x01) != 0) 1 else 0)
-        }
-        for (i in 0 until 8) {
-            crowding.add(if (((crowding2 shr i) and 0x01) != 0) 1 else 0)
-        }
-
-        // 站名: DATA21-52 (最多32字节, UTF-8)
-        val nameStart = offset + 21
-        val nameMaxLen = minOf(32, data.size - nameStart)
-        val stationNames = try {
-            String(data, nameStart, nameMaxLen, Charsets.UTF_8).trimEnd(' ')
-        } catch (e: Exception) {
-            ""
-        }
-
+        val data16 = data[offset + 16].toInt() and 0xFF
         return WuhanRouteInfoB1(
-            piscId = piscId,
-            emergencyFlag = emergencyFlag,
-            serviceStatus = serviceStatus,
-            tcStatus = tcStatus,
-            lineId = lineId,
-            routeId = routeId,
-            startStationId = startStationId,
-            endStationId = endStationId,
-            currentStationId = currentStationId,
-            nextStationId = nextStationId,
-            destStationId = destStationId,
-            trainStatus = trainStatus,
-            doorStatus = doorStatus,
-            direction = direction,
-            temperature = temperature,
-            crowding = crowding,
-            stationNames = stationNames,
+            piscId = data[offset].toInt() and 0xFF,
+            validFlags = data[offset + 1].toInt() and 0xFF,
+            reserved2 = data[offset + 2].toInt() and 0xFF,
+            tcStatus = data[offset + 3].toInt() and 0xFF,
+            lineId = data[offset + 4].toInt() and 0xFF,
+            routeId = data[offset + 5].toInt() and 0xFF,
+            startStationId = readUInt16(data, offset + 6),
+            endStationId = readUInt16(data, offset + 8),
+            currentStationId = readUInt16(data, offset + 10),
+            nextStationId = readUInt16(data, offset + 12),
+            urgentNotifyId = readUInt16(data, offset + 14),
+            broadcastControl = data16 and 0x03,
+            broadcastType = (data16 shr 4) and 0x0F,
+            doorInfo = data[offset + 17].toInt() and 0xFF,
+            stopStationCount = data[offset + 18].toInt() and 0xFF,
+            stopMask1 = data[offset + 19].toInt() and 0xFF,
+            stopMask2 = data[offset + 20].toInt() and 0xFF,
         )
     }
 
@@ -340,14 +324,26 @@ object WuhanProtocolParser {
     }
 
     /**
-     * 解析 0xB5 文本广播
+     * 解析 0xB5 自定义文字显示信息 (协议V2.12 §5.6, 脉冲连发3次)
+     *
+     * 字段布局:
+     * DATA0-1:     PISC ID/保留
+     * DATA2:       操作命令 (B5_ACTION_*: 0x00无操作/0x01显示(广播可打断)/0x02停止显示/0x11持续显示)
+     * DATA3-4:     保留
+     * DATA5:       内容长度
+     * DATA6-260:   文字内容 (UTF-8, 最长255字节)
      */
     private fun parseTextBroadcastB5(data: ByteArray, offset: Int, dataLength: Int): WuhanTextBroadcastB5 {
-        val broadcastType = data[offset + 2].toInt() and 0xFF
-        val priority = data[offset + 5].toInt() and 0xFF
+        val piscId = data[offset].toInt() and 0xFF
+        val action = data[offset + 2].toInt() and 0xFF
+        val contentLength = data[offset + 5].toInt() and 0xFF
 
         val msgStart = offset + 6
-        val msgLen = minOf(dataLength - (CMD_SIZE + SRC_ID_SIZE + 6), 255)
+        // DATA5内容长度有效则优先; 否则按帧长推算 (DATA区长度 = dataLength - 命令(1) - 源ID(1)), 均以实际剩余字节兜底
+        val msgLen = minOf(
+            if (contentLength > 0) contentLength else dataLength - (CMD_SIZE + SRC_ID_SIZE + 6),
+            data.size - msgStart
+        ).coerceAtMost(255)
         val message = if (msgLen > 0) {
             try {
                 String(data, msgStart, msgLen, Charsets.UTF_8).trimEnd(' ')
@@ -357,8 +353,9 @@ object WuhanProtocolParser {
         } else ""
 
         return WuhanTextBroadcastB5(
-            broadcastType = broadcastType,
-            priority = priority,
+            piscId = piscId,
+            action = action,
+            contentLength = contentLength,
             message = message,
         )
     }

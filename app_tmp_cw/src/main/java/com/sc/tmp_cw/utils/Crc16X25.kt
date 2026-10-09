@@ -4,34 +4,23 @@ package com.sc.tmp_cw.utils
  * CRC16/X25 校验工具
  * 用于武汉通信协议的帧校验
  *
- * 多项式: 0x1021
+ * 标准参数 (check: "123456789" => 0x906E):
+ * 多项式: 0x1021 (反射后右移异或 0x8408)
  * 初始值: 0xFFFF
  * 异或值: 0xFFFF
  * 输入反转: true
  * 输出反转: true
+ *
+ * 注意: 输入/输出必须是按位反射, 不能用字节交换代替位反转,
+ * 否则与PISC设备的校验结果不一致。
  *
  * @author tsc
  * @date 2025/1/13
  */
 object Crc16X25 {
 
-    // CRC16/X25 查找表
-    private val crcTable: IntArray by lazy {
-        IntArray(256) { i ->
-            var crc = i shl 8
-            for (j in 0 until 8) {
-                crc = if ((crc and 0x8000) != 0) {
-                    (crc shl 1) xor 0x1021
-                } else {
-                    crc shl 1
-                }
-            }
-            crc and 0xFFFF
-        }
-    }
-
     /**
-     * 计算 CRC16/X25
+     * 计算 CRC16/X25 (标准反射实现)
      * @param data 输入数据
      * @param offset 起始偏移
      * @param length 长度
@@ -40,13 +29,17 @@ object Crc16X25 {
     fun calculate(data: ByteArray, offset: Int, length: Int): Int {
         var crc = 0xFFFF
         for (i in offset until offset + length) {
-            val index = ((crc shr 8) xor (data[i].toInt() and 0xFF)) and 0xFF
-            crc = ((crc shl 8) xor crcTable[index]) and 0xFFFF
+            crc = crc xor (data[i].toInt() and 0xFF)
+            for (j in 0 until 8) {
+                crc = if ((crc and 0x0001) != 0) {
+                    (crc shr 1) xor 0x8408
+                } else {
+                    crc shr 1
+                }
+            }
         }
         // 异或输出
-        crc = crc xor 0xFFFF
-        // 输出反转（字节交换）
-        return ((crc shl 8) and 0xFF00) or ((crc shr 8) and 0x00FF)
+        return (crc xor 0xFFFF) and 0xFFFF
     }
 
     /**

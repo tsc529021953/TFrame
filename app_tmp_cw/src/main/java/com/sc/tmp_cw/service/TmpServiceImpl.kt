@@ -52,7 +52,10 @@ import com.nbhope.lib_frame.utils.DataUtil
 import com.nbhope.lib_frame.utils.SharedPreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.File
@@ -111,9 +114,8 @@ class TmpServiceImpl : ITmpService, Service() {
     private var wuhanUdpThread: UdpMultiThread? = null
     /* 武汉协议 TCP 客户端 (FlavorB) */
     private var tcpClientThread: TcpClientThread? = null
-    /* 心跳定时器 (FlavorB) */
-    private var heartbeatHandler: Handler? = null
-    private var heartbeatRunnable: Runnable? = null
+    /* 心跳协程 (FlavorB) */
+    private var heartbeatJob: Job? = null
     private val HEARTBEAT_INTERVAL_MS = 2000L  // 2秒心跳
 
     var cwInfo = CWInfo()
@@ -146,6 +148,9 @@ class TmpServiceImpl : ITmpService, Service() {
             rtspUrlObs.set(cwInfo.rtspUrl)
             if (NetworkUtil.isNetworkConnected(this))
                 reBuild() // onCreate
+            else {
+                Timber.e("XTAG 网络未连接")
+            }
         }
         urgentNotifyMsgObs.addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
             override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
@@ -449,25 +454,22 @@ class TmpServiceImpl : ITmpService, Service() {
         tcpClientThread = null
     }
 
-    /** 启动心跳定时器 */
+    /** 启动心跳定时器 (IO协程, 避免主线程网络操作) */
     private fun startHeartbeat() {
         stopHeartbeat()
-        heartbeatHandler = Handler(Looper.getMainLooper())
-        heartbeatRunnable = object : Runnable {
-            override fun run() {
+        heartbeatJob = mScope.launch {
+            while (isActive) {
                 sendWuhanHeartbeat()
-                heartbeatHandler?.postDelayed(this, HEARTBEAT_INTERVAL_MS)
+                delay(HEARTBEAT_INTERVAL_MS)
             }
         }
-        heartbeatHandler?.post(heartbeatRunnable!!)
         Timber.i("武汉心跳已启动 间隔=${HEARTBEAT_INTERVAL_MS}ms")
     }
 
     /** 停止心跳定时器 */
     private fun stopHeartbeat() {
-        heartbeatRunnable?.let { heartbeatHandler?.removeCallbacks(it) }
-        heartbeatRunnable = null
-        heartbeatHandler = null
+        heartbeatJob?.cancel()
+        heartbeatJob = null
     }
 
     /** 发送武汉协议 0xA1 心跳帧 */

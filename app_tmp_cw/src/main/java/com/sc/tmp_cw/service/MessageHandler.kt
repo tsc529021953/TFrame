@@ -5,6 +5,7 @@ import android.os.Build
 import android.provider.Settings
 import com.nbhope.lib_frame.utils.DataUtil
 import com.sc.tmp_cw.bean.PISBean
+import com.sc.tmp_cw.bean.WuhanProtocolConst
 import timber.log.Timber
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.utils.FlavorConfigUtil
@@ -184,30 +185,51 @@ object MessageHandler {
         }
 
         when {
-            // 0xB1 线路/站点信息 (核心数据包)
+            // 0xB1 报站信息 (核心数据包, 协议V2.12 §5.2)
             parsed.routeInfo != null -> {
                 val info = parsed.routeInfo!!
                 val pisBean = PISBean()
 
-                // 站点信息映射
+                // 站点信息映射 (站点ID与配置stations.id直接对应, 无需偏移)
                 pisBean.startCode = info.startStationId
                 pisBean.endCode = info.endStationId
                 pisBean.currentCode = info.currentStationId
                 pisBean.nextCode = info.nextStationId
 
-                // boardStatus 映射: 0x00=停车→0(arrived), 0x01=运行→?, 0x02=即将到站→0(next)
-                pisBean.boardStatus = when (info.trainStatus and 0x03) {
-                    0 -> 2  // 停车 → arrived
-                    1 -> -1 // 运行中 → 无站点提示
-                    2 -> 0  // 即将到站 → next station
+                // boardStatus 映射: 广播类型(DATA16 Bit4-7) 1=离站→下一站, 2=预到站→即将到站, 3=到站→已到站
+                pisBean.boardStatus = when (info.broadcastType) {
+                    WuhanProtocolConst.BC_TYPE_DEPART -> 0
+                    WuhanProtocolConst.BC_TYPE_APPROACH -> 1
+                    WuhanProtocolConst.BC_TYPE_ARRIVE -> 2
                     else -> -1
                 }
 
-                pisBean.runDirection = info.direction
                 pisBean.lineNumber = info.lineId
                 pisBean.carCiNumber = info.routeId
                 pisBean.jiaoLuNumber = info.piscId
-                pisBean.urgentNotifyCode = info.emergencyFlag
+
+                // 紧急广播 (DATA16: Bit4-7类型=5紧急广播, Bit0-1控制=1开始/2停止; DATA14-15=紧急广播ID)
+                // 触发时PISC无间隔连发3条, 之后随2s周期B1持续下发开始帧 → 依赖set去重避免重复拉起界面;
+                // 停止帧可能带类型5(0x52)也可能随下一广播(如离站0x12)下发 → 停止只看控制位
+                if (info.broadcastType == WuhanProtocolConst.BC_TYPE_URGENT) {
+                    pisBean.urgentNotifyCode = info.urgentNotifyId
+                }
+                when (info.broadcastControl) {
+                    WuhanProtocolConst.BC_CTRL_START -> {
+                        if (info.broadcastType == WuhanProtocolConst.BC_TYPE_URGENT) {
+                            // 查配置urgentNotify块: ID→文案 → urgentNotifyMsgObs → UrgentNotifyActivity
+                            val urgentStr = service.getUrgentNotifyStr(info.urgentNotifyId)
+                            if (service.urgentNotifyMsgObs.get() != urgentStr) {
+                                service.urgentNotifyMsgObs.set(urgentStr)
+                            }
+                        }
+                    }
+                    WuhanProtocolConst.BC_CTRL_STOP -> {
+                        if (!service.urgentNotifyMsgObs.get().isNullOrEmpty()) {
+                            service.urgentNotifyMsgObs.set("")
+                        }
+                    }
+                }
 
                 // 更新服务状态
                 service.stationNotifyObs.set(pisBean.boardStatus)
@@ -234,19 +256,31 @@ object MessageHandler {
                     }
                 }
 
-                Timber.i("武汉B1 站点信息: 当前站=${pisBean.currentCode}, 下一站=${pisBean.nextCode}, " +
-                        "状态=${pisBean.boardStatus} 方向=${pisBean.runDirection} " +
-                        "温度=${info.temperature} 拥挤度=${info.crowding}")
+                Timber.i("武汉B1 报站信息: 当前站=${pisBean.currentCode}, 下一站=${pisBean.nextCode}, " +
+                        "广播类型=${info.broadcastType} 广播控制=${info.broadcastControl} " +
+                        "紧急广播ID=${info.urgentNotifyId} TC状态=0x${String.format("%02X", info.tcStatus)} " +
+                        "状态=${pisBean.boardStatus} 线ID=${pisBean.lineNumber} 线路=${info.routeId}")
             }
 
-            // 0xB5 文本广播 → 紧急通知
+            // 0xB5 自定义文字显示信息 (协议V2.12 §5.6, 脉冲连发3次)
             parsed.textBroadcast != null -> {
                 val broadcast = parsed.textBroadcast!!
-                if (broadcast.message.isNotEmpty()) {
-                    service.urgentNotifyMsgObs.set(broadcast.message)
-                    Timber.i("武汉B5 文本广播: 类型=${broadcast.broadcastType}, " +
-                            "优先级=${broadcast.priority}, 消息=${broadcast.message}")
+                when (broadcast.action) {
+                    WuhanProtocolConst.B5_ACTION_SHOW, WuhanProtocolConst.B5_ACTION_SHOW_HOLD -> {
+                        // 收到"显示"命令时, 无论当前处于什么界面, 应马上显示文字内容
+                        if (broadcast.message.isNotEmpty() &&
+                            service.urgentNotifyMsgObs.get() != broadcast.message) {
+                            service.urgentNotifyMsgObs.set(broadcast.message)
+                        }
+                    }
+                    WuhanProtocolConst.B5_ACTION_HIDE -> {
+                        if (!service.urgentNotifyMsgObs.get().isNullOrEmpty()) {
+                            service.urgentNotifyMsgObs.set("")
+                        }
+                    }
                 }
+                Timber.i("武汉B5 文字显示: 命令=0x${String.format("%02X", broadcast.action)}, " +
+                        "长度=${broadcast.contentLength}, 消息=${broadcast.message}")
             }
 
             // 0xB2/B3/B4 站点/车门数据 (辅助信息)
@@ -264,7 +298,8 @@ object MessageHandler {
             }
 
             else -> {
-                Timber.w("武汉协议 未识别的数据包")
+                // 未实现命令(如0xC4), 帧合法但无需处理, 降级为debug避免刷屏
+                Timber.d("武汉协议 未处理的命令: 0x${String.format("%02X", parsed.command)}")
             }
         }
     }
