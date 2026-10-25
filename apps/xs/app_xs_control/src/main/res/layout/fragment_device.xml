@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -14,7 +15,9 @@
       4列x2行共8个块（白色，圆角24dp，行高234dp，间隔24dp），超出可滚动
       块顺序：PC、电视1、换装体验(一体机)、电视2~6
       普通块三行：图标+名称 / 开+关 / 播放+暂停；换装体验块只有一行按钮
-      按钮与指令发射器绑定发送UDP指令（开/关走9128端口，播放/暂停发"play"/"pause"到192.168.1.90~96:2368）
+      块根为FrameLayout：除换装体验外，右上角(top=18dp,end=29dp)悬浮44dp音量按钮，
+      点击静音/取消静音（图标显示当前状态：已静音=ic_voice_1、未静音=ic_voice_2）
+      按钮与指令发射器绑定发送UDP指令（开/关走9128端口，播放/暂停/音量发192.168.1.90~96:2368）
     -->
     <ScrollView
             android:id="@+id/page_device"
@@ -30,586 +33,666 @@
                 android:useDefaultMargins="false">
 
             <!-- ========== 块1：大厅电子屏（字符串指令：开="0"、关="1"） ========== -->
-            <LinearLayout style="@style/DeviceBlockStyle">
+            <FrameLayout style="@style/DeviceBlockFrameStyle">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/pc"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="@string/pc"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="PC"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/pc"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/pc"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="PC"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <!-- 第二行：开 / 关 -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_pc_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onPcOn()}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_pc_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onPcOff()}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <!-- 第三行：播放 / 暂停（字符串指令"play"/"pause"） -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_pc_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onPcPlay()}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_pc_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onPcPause()}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <!-- 第二行：开 / 关 -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_pc_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onPcOn()}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_pc_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onPcOff()}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <!-- 第三行：播放 / 暂停（字符串指令"play"/"pause"） -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_pc_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onPcPlay()}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_pc_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onPcPause()}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_pc_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onPcVoice()}"
+                        app:mutedIcon="@{vm.pcMuteObs.get()}"
+                        android:contentDescription="@string/pc"/>
+            </FrameLayout>
 
             <!-- ========== 块2：电视1（与一体机调换位置） ========== -->
-            <LinearLayout style="@style/DeviceBlockStyle">
+            <FrameLayout style="@style/DeviceBlockFrameStyle">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_1"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_1"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视1"/>
-                </LinearLayout>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_1"/>
 
-                <!-- 第二行：开 / 关 -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_1"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视1"/>
+                    </LinearLayout>
 
-                    <TextView
-                            android:id="@+id/btn_tv1_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(1)}"
-                            android:text="@string/btn_on"/>
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
 
-                    <TextView
-                            android:id="@+id/btn_tv1_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(1)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <!-- 第三行：播放 / 暂停（字符串指令"play"/"pause"） -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv1_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(1)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv1_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(1)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- ========== 块3：换装体验（一体机，只有一行开/关按钮；字符串指令：开="0"、关="1"） ========== -->
-            <LinearLayout style="@style/DeviceBlockStyle">
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_clothes"
-                            android:contentDescription="@string/aio"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <!-- 第二行：开 / 关 -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/aio"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="换装体验"/>
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv1_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(1)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv1_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(1)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <!-- 第三行：播放 / 暂停（字符串指令"play"/"pause"） -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv1_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(1)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv1_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(1)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv1_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(1)}"
+                        app:mutedIcon="@{vm.tvMuteObs[0].get()}"
+                        android:contentDescription="@string/tv_name_1"/>
+            </FrameLayout>
 
-                <!-- 一行：开 / 关 -->
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
+            <!-- ========== 块3：换装体验（一体机，只有一行开/关按钮；字符串指令：开="0"、关="1"；无音量按钮） ========== -->
+            <FrameLayout style="@style/DeviceBlockFrameStyle">
 
-                    <TextView
-                            android:id="@+id/btn_aio_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onAioOn()}"
-                            android:text="@string/btn_on"/>
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <TextView
-                            android:id="@+id/btn_aio_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onAioOff()}"
-                            android:text="@string/btn_off"/>
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_clothes"
+                                android:contentDescription="@string/aio"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/aio"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="换装体验"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <!-- 一行：开 / 关 -->
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_aio_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onAioOn()}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_aio_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onAioOff()}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
                 </LinearLayout>
-
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-            </LinearLayout>
+            </FrameLayout>
 
             <!-- ========== 块4：电视2（第一行末尾，右边距为0） ========== -->
-            <LinearLayout
-                    style="@style/DeviceBlockStyle"
+            <FrameLayout
+                    style="@style/DeviceBlockFrameStyle"
                     android:layout_marginEnd="0dp">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_2"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_2"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视2"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_2"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_2"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视2"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv2_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(2)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv2_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(2)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv2_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(2)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv2_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(2)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv2_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(2)}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv2_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(2)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv2_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(2)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv2_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(2)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv2_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(2)}"
+                        app:mutedIcon="@{vm.tvMuteObs[1].get()}"
+                        android:contentDescription="@string/tv_name_2"/>
+            </FrameLayout>
 
             <!-- ========== 块5：电视3（第二行开始，上边距24dp） ========== -->
-            <LinearLayout
-                    style="@style/DeviceBlockStyle"
+            <FrameLayout
+                    style="@style/DeviceBlockFrameStyle"
                     android:layout_marginTop="24dp">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_3"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_3"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视3"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_3"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_3"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视3"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv3_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(3)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv3_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(3)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv3_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(3)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv3_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(3)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv3_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(3)}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv3_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(3)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv3_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(3)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv3_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(3)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv3_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(3)}"
+                        app:mutedIcon="@{vm.tvMuteObs[2].get()}"
+                        android:contentDescription="@string/tv_name_3"/>
+            </FrameLayout>
 
             <!-- ========== 块6：电视4 ========== -->
-            <LinearLayout
-                    style="@style/DeviceBlockStyle"
+            <FrameLayout
+                    style="@style/DeviceBlockFrameStyle"
                     android:layout_marginTop="24dp">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_4"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_4"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视4"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_4"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_4"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视4"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv4_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(4)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv4_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(4)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv4_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(4)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv4_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(4)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv4_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(4)}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv4_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(4)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv4_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(4)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv4_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(4)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv4_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(4)}"
+                        app:mutedIcon="@{vm.tvMuteObs[3].get()}"
+                        android:contentDescription="@string/tv_name_4"/>
+            </FrameLayout>
 
             <!-- ========== 块7：电视5 ========== -->
-            <LinearLayout
-                    style="@style/DeviceBlockStyle"
+            <FrameLayout
+                    style="@style/DeviceBlockFrameStyle"
                     android:layout_marginTop="24dp">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_5"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_5"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视5"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_5"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_5"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视5"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv5_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(5)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv5_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(5)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv5_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(5)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv5_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(5)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv5_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(5)}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv5_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(5)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv5_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(5)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv5_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(5)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv5_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(5)}"
+                        app:mutedIcon="@{vm.tvMuteObs[4].get()}"
+                        android:contentDescription="@string/tv_name_5"/>
+            </FrameLayout>
 
             <!-- ========== 块8：电视6（末尾，右边距为0） ========== -->
-            <LinearLayout
-                    style="@style/DeviceBlockStyle"
+            <FrameLayout
+                    style="@style/DeviceBlockFrameStyle"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="0dp">
 
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                <LinearLayout style="@style/DeviceBlockContentStyle">
 
-                    <ImageView
-                            style="@style/BlockIconStyle"
-                            android:src="@drawable/ic_tv_room"
-                            android:contentDescription="@string/tv_name_6"/>
-
-                    <TextView
-                            android:layout_width="wrap_content"
+                    <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:text="@string/tv_name_6"
-                            android:textColor="@color/text_color"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            tools:text="电视6"/>
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                        <ImageView
+                                style="@style/BlockIconStyle"
+                                android:src="@drawable/ic_tv_room"
+                                android:contentDescription="@string/tv_name_6"/>
+
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:text="@string/tv_name_6"
+                                android:textColor="@color/text_color"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="电视6"/>
+                    </LinearLayout>
+
+                    <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv6_on"
+                                style="@style/OnBtnStyle"
+                                android:onClick="@{() -> vm.onTvOn(6)}"
+                                android:text="@string/btn_on"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv6_off"
+                                style="@style/OffBtnStyle"
+                                android:onClick="@{() -> vm.onTvOff(6)}"
+                                android:text="@string/btn_off"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/btn_tv6_play"
+                                style="@style/MediaBtnStyle"
+                                android:drawableLeft="@drawable/ic_play"
+                                android:onClick="@{() -> vm.onTvPlay(6)}"
+                                android:text="@string/btn_play"/>
+
+                        <TextView
+                                android:id="@+id/btn_tv6_pause"
+                                style="@style/MediaBtnStyle"
+                                android:layout_marginStart="10dp"
+                                android:drawableLeft="@drawable/ic_pause"
+                                android:onClick="@{() -> vm.onTvPause(6)}"
+                                android:text="@string/btn_pause"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"/>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv6_on"
-                            style="@style/OnBtnStyle"
-                            android:onClick="@{() -> vm.onTvOn(6)}"
-                            android:text="@string/btn_on"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv6_off"
-                            style="@style/OffBtnStyle"
-                            android:onClick="@{() -> vm.onTvOff(6)}"
-                            android:text="@string/btn_off"/>
-                </LinearLayout>
-
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:gravity="center"
-                        android:orientation="horizontal">
-
-                    <TextView
-                            android:id="@+id/btn_tv6_play"
-                            style="@style/MediaBtnStyle"
-                            android:drawableLeft="@drawable/ic_play"
-                            android:onClick="@{() -> vm.onTvPlay(6)}"
-                            android:text="@string/btn_play"/>
-
-                    <TextView
-                            android:id="@+id/btn_tv6_pause"
-                            style="@style/MediaBtnStyle"
-                            android:layout_marginStart="10dp"
-                            android:drawableLeft="@drawable/ic_pause"
-                            android:onClick="@{() -> vm.onTvPause(6)}"
-                            android:text="@string/btn_pause"/>
-                </LinearLayout>
-            </LinearLayout>
+                <!-- 右上角：静音/取消静音（"voice:0"/"voice:100"） -->
+                <ImageView
+                        android:id="@+id/btn_tv6_voice"
+                        style="@style/VoiceBtnStyle"
+                        android:onClick="@{() -> vm.onTvVoice(6)}"
+                        app:mutedIcon="@{vm.tvMuteObs[5].get()}"
+                        android:contentDescription="@string/tv_name_6"/>
+            </FrameLayout>
         </GridLayout>
     </ScrollView>
 </layout>

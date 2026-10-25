@@ -28,12 +28,13 @@ import java.lang.ref.WeakReference
  * @date  2026/10/8
  * @version 0.0.0-1
  * @description 指令服务
- * 1. 依据《指令代码.xlsx》生成对应指令发射器，与界面按钮绑定发送指令（统一UDP）；
+ * 1. 依据《指令代码2.xlsx》(2026/10/15更新版) 生成对应指令发射器，与界面按钮绑定发送指令（统一UDP）；
  * 2. 当前无指令接收协议，监听9128端口，收到数据仅在日志中打印。
  *
  * 备注：
  * - 大厅电子屏/换装体验 开/关为字符串指令：开="0"、关="1"，各发对应IP；
- * - 电视1~6 为 8 位掩码指令（setr=xxxxxxxx）；
+ * - 8 位掩码（发.102）：bit1=大厅电子屏(PC)，bit2~bit7=电视1~6，bit8未使用，
+ *   PC 开/关除字符串指令外还需同时发 bit1 掩码（新表调整，旧表为 bit1~6=电视1~6）；
  * - 表格中设备控制 IP 段 192.169.1.x 为笔误，已按 192.168.1.x 配置；
  * - 一键开关(设备) 全开/全关：大厅电子屏/换装体验发字符串指令，
  *   电视发 8 位掩码指令。
@@ -223,10 +224,13 @@ class TmpServiceImpl : ITmpService, Service() {
         sendHex(CommandConstant.DEVICE_IP_TV, mask)
     }
 
-    /** 大厅电子屏 开/关：发字符串指令（开="0"、关="1"） */
+    /** 大厅电子屏 开/关：发字符串指令（开="0"、关="1"），并同步发 bit1 掩码到 .102 */
     override fun sendPcCmd(on: Boolean) {
         val cmd = if (on) CommandConstant.CMD_STR_ON else CommandConstant.CMD_STR_OFF
         sendHex(CommandConstant.DEVICE_IP_PC, cmd)
+        // 新表：PC 占 8 位掩码 bit1，开关时同步发往电视掩码目标
+        val mask = if (on) CommandConstant.MASK_PC_ON else CommandConstant.MASK_PC_OFF
+        sendHex(CommandConstant.DEVICE_IP_TV, mask)
     }
 
     /** 换装体验(一体机) 开/关：发字符串指令（开="0"、关="1"） */
@@ -258,18 +262,41 @@ class TmpServiceImpl : ITmpService, Service() {
         sendHex(CommandConstant.MEDIA_IPS[deviceIndex], CommandConstant.MEDIA_PORT, cmd)
     }
 
+    /** 大厅电子屏 静音/取消静音（"voice:0"/"voice:100"，发 .90:2368） */
+    override fun sendPcVoiceCmd(mute: Boolean) {
+        sendVoiceCmd(0, mute)
+    }
+
+    /** 电视 index: 1~6 静音/取消静音（"voice:0"/"voice:100"，发 .(89+index):2368） */
+    override fun sendTvVoiceCmd(index: Int, mute: Boolean) {
+        if (index < 1 || index > 6) {
+            Timber.e("$TAG 电视序号越界 $index")
+            return
+        }
+        sendVoiceCmd(index, mute)
+    }
+
+    /**
+     * 静音/取消静音指令（格式与 xs_mediaplay 的 MessageConstant.CMD_VOICE 协议一致）
+     * @param deviceIndex 0=大厅电子屏(PC)，1~6=电视1~6，对应 MEDIA_IPS 下标
+     */
+    private fun sendVoiceCmd(deviceIndex: Int, mute: Boolean) {
+        val cmd = if (mute) CommandConstant.CMD_VOICE_MUTE else CommandConstant.CMD_VOICE_UNMUTE
+        sendHex(CommandConstant.MEDIA_IPS[deviceIndex], CommandConstant.MEDIA_PORT, cmd)
+    }
+
     /** 电视 index: 1~6 */
     override fun sendTvCmd(index: Int, on: Boolean) {
         if (index < 1 || index > 6) {
             Timber.e("$TAG 电视序号越界 $index")
             return
         }
-        // 8位掩码，仅控制位写1/0，其余位发'x'（设备端不改变）
+        // 8位掩码：bit1=PC(恒为'x')，bit2~bit7=电视1~6，bit8未使用；
+        // 仅控制位写1/0，其余位发'x'（设备端不改变）
         val sb = StringBuilder(8)
-        for (i in 0 until 6) {
-            sb.append(if (i == index - 1) (if (on) '1' else '0') else 'x')
+        for (i in 0 until 8) {
+            sb.append(if (i == index) (if (on) '1' else '0') else 'x')
         }
-        sb.append("xx") // bit7、bit8 未使用
         sendHex(CommandConstant.DEVICE_IP_TV, "setr=$sb")
     }
 

@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 设备控制块（GridLayout 4列x2行，白色圆角24dp，行高234dp） -->
-    <style name="DeviceBlockStyle">
+    <!-- 设备块根容器（FrameLayout，白色圆角24dp，行高234dp；
+         用FrameLayout以便右上角音量按钮按块边缘精确定位 top=18dp/end=29dp） -->
+    <style name="DeviceBlockFrameStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">234dp</item>
         <item name="android:layout_columnWeight">1</item>
         <item name="android:layout_marginEnd">24dp</item>
         <item name="android:background">@drawable/bg_block</item>
+    </style>
+
+    <!-- 设备块内容（垂直排列，24dp内边距） -->
+    <style name="DeviceBlockContentStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
         <item name="android:padding">24dp</item>
+    </style>
+
+    <!-- 右上角音量按钮（44dp，距块顶18dp、距块右29dp，图标随静音状态切换） -->
+    <style name="VoiceBtnStyle">
+        <item name="android:layout_width">44dp</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_gravity">top|end</item>
+        <item name="android:layout_marginTop">18dp</item>
+        <item name="android:layout_marginEnd">29dp</item>
+        <item name="android:background">@drawable/bg_btn_voice</item>
     </style>
 
     <!-- 块首行图标 -->

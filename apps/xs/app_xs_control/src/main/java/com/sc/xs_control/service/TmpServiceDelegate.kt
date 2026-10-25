@@ -75,6 +75,14 @@ class TmpServiceDelegate : ITmpService {
         mService?.sendTvMediaCmd(index, isPlay)
     }
 
+    override fun sendPcVoiceCmd(mute: Boolean) {
+        mService?.sendPcVoiceCmd(mute)
+    }
+
+    override fun sendTvVoiceCmd(index: Int, mute: Boolean) {
+        mService?.sendTvVoiceCmd(index, mute)
+    }
+
     override fun sendTvCmd(index: Int, on: Boolean) {
         mService?.sendTvCmd(index, on)
     }

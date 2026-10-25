@@ -29,7 +29,7 @@ interface ITmpService {
     /** 设备控制 一键开关 全开/全关（大厅电子屏/换装体验发字符串指令，电视发掩码） */
     fun sendDeviceAllCmd(on: Boolean)
 
-    /** 大厅电子屏 开/关（字符串指令：开="0"、关="1"） */
+    /** 大厅电子屏 开/关（字符串指令：开="0"、关="1"，并同步发 bit1 掩码到 .102） */
     fun sendPcCmd(on: Boolean)
 
     /** 换装体验(一体机) 开/关（字符串指令：开="0"、关="1"） */
@@ -41,7 +41,13 @@ interface ITmpService {
     /** 电视 index: 1~6 播放/暂停（字符串指令"play"/"pause"，发192.168.1.(89+index):2368） */
     fun sendTvMediaCmd(index: Int, isPlay: Boolean)
 
-    /** 电视 index: 1~6 开/关 */
+    /** 大厅电子屏 静音/取消静音（字符串指令"voice:0"/"voice:100"，发192.168.1.90:2368） */
+    fun sendPcVoiceCmd(mute: Boolean)
+
+    /** 电视 index: 1~6 静音/取消静音（字符串指令"voice:0"/"voice:100"，发192.168.1.(89+index):2368） */
+    fun sendTvVoiceCmd(index: Int, mute: Boolean)
+
+    /** 电视 index: 1~6 开/关（8位掩码：bit1=PC，bit2~bit7=电视1~6） */
     fun sendTvCmd(index: Int, on: Boolean)
 
     /** 灯光控制 一键开关 全开/全关 */

@@ -32,6 +32,12 @@ class DeviceViewModel @Inject constructor(val spManager: SharedPreferencesManage
     /** 电视1~6 开关状态 */
     val tvObs = Array(6) { ObservableBoolean(false) }
 
+    /** PC 静音状态（true=已静音） */
+    var pcMuteObs = ObservableBoolean(false)
+
+    /** 电视1~6 静音状态（true=已静音） */
+    val tvMuteObs = Array(6) { ObservableBoolean(false) }
+
     private val tmpService: ITmpService
         get() = TmpServiceDelegate.getInstance()
 
@@ -112,5 +118,27 @@ class DeviceViewModel @Inject constructor(val spManager: SharedPreferencesManage
     fun onTvPause(index: Int) {
         Timber.i("$TAG 电视$index 暂停")
         tmpService.sendTvMediaCmd(index, false)
+    }
+
+    // 静音/取消静音：字符串指令 "voice:0"/"voice:100"，
+    // 发往 192.168.1.90~96 的 2368 端口（与播放/暂停同端口）
+
+    /** 大厅电子屏 静音/取消静音（图标切换：未静音显示"静音"图标，静音后显示"取消静音"图标） */
+    fun onPcVoice() {
+        val mute = !pcMuteObs.get()
+        pcMuteObs.set(mute)
+        Timber.i("$TAG 大厅电子屏 ${if (mute) "静音" else "取消静音"}")
+        tmpService.sendPcVoiceCmd(mute)
+    }
+
+    /** 电视 index: 1~6 静音/取消静音 */
+    fun onTvVoice(index: Int) {
+        if (index < 1 || index > 6) {
+            return
+        }
+        val mute = !tvMuteObs[index - 1].get()
+        tvMuteObs[index - 1].set(mute)
+        Timber.i("$TAG 电视$index ${if (mute) "静音" else "取消静音"}")
+        tmpService.sendTvVoiceCmd(index, mute)
     }
 }
