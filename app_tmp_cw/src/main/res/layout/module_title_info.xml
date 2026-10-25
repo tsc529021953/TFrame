@@ -55,6 +55,7 @@
                 <TextView
                         style="@style/main_title_station"
                         android:layout_height="match_parent"
+                        android:id="@+id/title_tv"
                         app:layout_constraintStart_toEndOf="@+id/logo_iv"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_weight="1.6"
@@ -109,11 +110,23 @@
 
                 <TextView
                         style="@style/main_title_station"
+                        android:id="@+id/time_tv"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         tools:text="2025年10月12日 99:88:88"
                         android:text="@{service.timeObs}"
+                        />
+
+                <!-- flavorB到站后显示的系统时间,非flavorB永不显示,仅为保持绑定类id一致 -->
+                <TextClock
+                        style="@style/main_title_station"
+                        android:layout_weight="0.4"
+                        android:id="@+id/time_clock"
+                        android:visibility="gone"
+                        android:format24Hour="yyyy年MM月dd日 HH:mm"
+                        android:format12Hour="yyyy年MM月dd日 HH:mm"
+                        tools:text="2026年10月09日 14:30"
                         />
 
             </LinearLayout>

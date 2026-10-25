@@ -15,6 +15,78 @@
                 android:layout_marginEnd="@dimen/travel_btn_ly_margin"
                 />
 
+        <!-- 方案2(flavorB):图片详情页内浮层,点击卡片后浮现;非flavorB永不显示。
+             放在shimmer之前,保证返回按钮浮层显示时仍可见可点。
+             背景与应用详情页一致(window背景紫色) -->
+        <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/detail_ly"
+                android:background="@drawable/shape_launcher"
+                android:visibility="gone"
+                android:clickable="true"
+                >
+
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    >
+
+                <ImageView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/detail_iv"
+                        android:layout_margin="@dimen/introduce_margin"
+                        />
+
+                <ScrollView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:layout_margin="@dimen/introduce_margin"
+                        android:fillViewport="true"
+                        >
+
+                    <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/detail_text_tv"
+                            android:textColor="@color/text_color"
+                            android:textSize="@dimen/introduce_text_size"
+                            android:gravity="center_vertical"
+                            />
+
+                </ScrollView>
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    style="@style/top_title_ly_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:paddingTop="0dp"
+                    >
+
+                <TextView style="@style/top_title_tv_style"
+                          android:id="@+id/detail_title_tv"
+                          tools:text="测试"
+                        />
+
+                <View style="@style/top_title_iv_style"
+                      android:id="@+id/detail_underline_v"
+                      app:layout_constraintStart_toStartOf="@+id/detail_title_tv"
+                      app:layout_constraintEnd_toEndOf="@+id/detail_title_tv"
+                      app:layout_constraintTop_toBottomOf="@+id/detail_title_tv"
+                      />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </FrameLayout>
+
         <com.facebook.shimmer.ShimmerFrameLayout
                 style="@style/main_bottom_right_bottom_btn_ly2"
                 android:id="@+id/shimmer_view_container1"

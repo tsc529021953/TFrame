@@ -99,10 +99,12 @@
 
             <TextView style="@style/top_title_tv_style"
                       android:id="@+id/top_title_tv"
+                      android:tag="reveal_title"
                       tools:text="测试"
                       android:text="@{vm.titleObs}"
                     />
             <View style="@style/top_title_iv_style"
+                  android:tag="reveal_underline"
                   app:layout_constraintStart_toStartOf="@+id/top_title_tv"
                   app:layout_constraintEnd_toEndOf="@+id/top_title_tv"
                   app:layout_constraintTop_toBottomOf="@+id/top_title_tv"

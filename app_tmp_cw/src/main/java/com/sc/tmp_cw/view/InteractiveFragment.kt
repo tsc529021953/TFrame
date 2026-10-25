@@ -13,6 +13,7 @@ import com.sc.tmp_cw.base.CWBaseBindingFragment
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentInteractiveBinding
 import com.sc.tmp_cw.inter.IFragment
+import com.sc.tmp_cw.inter.TimerIntercept
 import com.sc.tmp_cw.service.MessageHandler
 import com.sc.tmp_cw.weight.KeepStateNavigator
 
@@ -51,8 +52,13 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
         MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
         super.rootLy = binding.bgLy
         super.finish = {
-            hide()
-            MainActivity.iMain?.home()
+            // 定时到达:当前子页面存在浮层等界面时优先关界面并重新计时,再次到达才退出页面
+            if (interceptTimerByChild()) {
+                reset()
+            } else {
+                hide()
+                MainActivity.iMain?.home()
+            }
         }
         iFragment = this
         super.subscribeUi()
@@ -101,6 +107,12 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
 
     override fun clicked() {
         reset()
+    }
+
+    /** 定时器到达时,询问当前显示的子页面是否消费(如先关闭页内浮层) */
+    private fun interceptTimerByChild(): Boolean {
+        val child = mNavHostFragment.childFragmentManager.primaryNavigationFragment ?: return false
+        return (child as? TimerIntercept)?.onTimerReach() == true
     }
 
     override fun stop2() {

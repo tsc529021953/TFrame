@@ -54,6 +54,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:id="@+id/title_ly"
+                        android:tag="title_bg_ly"
                         app:layout_constraintStart_toEndOf="@+id/logo_iv"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:orientation="horizontal"
@@ -67,6 +68,7 @@
                     <TextView
                             style="@style/main_title_station"
                             android:layout_height="match_parent"
+                            android:id="@+id/title_tv"
                             app:layout_constraintStart_toEndOf="@+id/logo_iv"
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_weight="1.6"
@@ -94,8 +96,9 @@
                     <!--                        />-->
                     <com.nbhope.lib_frame.widget.MarqueeTextView
                             style="@style/main_title_station"
-                            android:layout_weight="0.5"
+                            android:layout_weight="0.6"
                             android:visibility="gone"
+                            android:textSize="12sp"
                             android:paddingStart="20dp"
                             android:paddingEnd="25dp"
                             android:id="@+id/station_tv"
@@ -124,12 +127,26 @@
 
                     <TextView
                             style="@style/main_title_station"
+                            android:id="@+id/time_tv"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             android:layout_weight="0.1"
                             tools:text="2025年10月12日 99:88:88"
                             android:text="@{service.timeObs}"
+                            android:visibility="invisible"
+                            />
+
+                    <!-- 到站后右侧系统时间:TextClock自动刷新 -->
+                    <TextClock
+                            style="@style/main_title_station"
+                            android:layout_weight="0.4"
+                            android:textSize="12sp"
+                            android:id="@+id/time_clock"
+                            android:visibility="gone"
+                            android:format24Hour="yyyy年MM月dd日 HH:mm"
+                            android:format12Hour="yyyy年MM月dd日 HH:mm"
+                            tools:text="2026年10月09日 14:30"
                             />
 
                 </LinearLayout>
@@ -140,6 +157,7 @@
                 <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:tag="title_bg_overlay"
                         app:layout_constraintStart_toStartOf="@+id/title_ly"
                         app:layout_constraintEnd_toEndOf="@+id/title_ly"
                         app:layout_constraintTop_toTopOf="@+id/title_ly"

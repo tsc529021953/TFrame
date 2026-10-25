@@ -1,6 +1,13 @@
 package com.sc.tmp_cw.activity
 
+import android.animation.Animator
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
+import android.view.View
+import android.widget.TextView
+import androidx.databinding.Observable
 import androidx.lifecycle.viewModelScope
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.bumptech.glide.Glide
@@ -24,6 +31,7 @@ import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.ActivityIntroduceBinding
 import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.service.TmpServiceDelegate
+import com.sc.tmp_cw.utils.TextReveal
 import com.sc.tmp_cw.vm.IntroduceViewModel
 import com.sc.tmp_cw.vm.SceneryViewModel
 import kotlinx.coroutines.Dispatchers
@@ -65,16 +73,21 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
 
     override fun initData() {
         binding.vm = viewModel
+        if (FlavorConfigUtil.isFlavorB()) setupSchemeKEnter()
         LiveEBUtil.regist(RemoteMessageEvent::class.java, this, listener)
         if (IntroduceViewModel.fileBean == null) return
-        
+
         // 使用 post 确保视图已经准备好
         binding.root.post {
+            // post回调可能在Activity已销毁后执行(快速返回/定时关闭),此时不能再对已销毁的Activity发起Glide加载
+            if (isDestroyed || isFinishing) return@post
             loadContent()
         }
     }
     
     private fun loadContent() {
+        // loadContent整体在主线程同步执行,销毁检查可覆盖其内所有Glide.with调用
+        if (isDestroyed || isFinishing) return
         // 判断大图有没有
         val callback = { item: FileBean ->
             val path = "file://" + item.path
@@ -92,6 +105,15 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
             // flavorB 时添加圆角
             if (FlavorConfigUtil.isFlavorB()) {
                 glideRequest.transform(RoundedCorners(24))
+                // 方案K: 先用卡片小图占位,转场落位时即有内容,大图加载完成后自然替换(近似thumb→大图crossfade)
+                val thumb = IntroduceViewModel.fileBean
+                if (thumb != null && thumb.path.isNotEmpty()) {
+                    glideRequest.thumbnail(
+                            Glide.with(binding!!.imageView)
+                                .load("file://" + thumb.path)
+                                .dontAnimate()
+                                .transform(RoundedCorners(24)))
+                }
             }
 
             glideRequest.into(binding!!.imageView)
@@ -128,7 +150,47 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
             // 显示大图
             callback.invoke(item)
         }
+        // 方案K: 标题与下划线随转场浮现
+        if (FlavorConfigUtil.isFlavorB()) startSchemeKTitleReveal()
     }
+
+    // ==================== 方案K: 文字逐步显示(flavorB) ====================
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    /** 进入时间点,用于保证文字浮现不早于页面出现 */
+    private var enterAt = 0L
+
+    private val revealAnims = mutableListOf<Animator>()
+
+    /** 正文加载完成(异步)后触发逐字浮现 */
+    private val textObsCallback = object : Observable.OnPropertyChangedCallback() {
+        override fun onPropertyChanged(sender: Observable, propertyId: Int) {
+            mainHandler.post {
+                if (isDestroyed || isFinishing) return@post
+                val content = viewModel.textObs.get()
+                if (content.isNullOrEmpty()) return@post
+                // 正文在进入约850ms后开始浮现,加载晚于该点则立即开始
+                val delay = (enterAt + 850 - SystemClock.uptimeMillis()).coerceAtLeast(0)
+                revealAnims.add(TextReveal.revealText(binding.textView, delay, 1200))
+            }
+        }
+    }
+
+    private fun setupSchemeKEnter() {
+        enterAt = SystemClock.uptimeMillis()
+        viewModel.textObs.addOnPropertyChangedCallback(textObsCallback)
+    }
+
+    /** 标题逐字浮现 + 下划线从左向右生长(main布局无标题区,用tag查找) */
+    private fun startSchemeKTitleReveal() {
+        val titleTv = binding.root.findViewWithTag<TextView>("reveal_title")
+        if (titleTv != null) revealAnims.add(TextReveal.revealText(titleTv, 450, 450))
+        val underline = binding.root.findViewWithTag<View>("reveal_underline")
+        if (underline != null) TextReveal.growFromLeft(underline, 600, 450)
+    }
+
+    // ==================== 方案K END ====================
 
     private fun initPlayer() {
         viewModel.player = SimpleExoPlayer.Builder(this).build()
@@ -173,6 +235,9 @@ class IntroduceActivity : CWBaseBindingActivity<ActivityIntroduceBinding, Introd
     override fun onDestroy() {
         super.onDestroy()
         viewModel.player?.release()
+        viewModel.textObs.removeOnPropertyChangedCallback(textObsCallback)
+        revealAnims.forEach { it.cancel() }
+        revealAnims.clear()
         viewModel.textObs.set(resources.getString(R.string.no_introduce))
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
     }

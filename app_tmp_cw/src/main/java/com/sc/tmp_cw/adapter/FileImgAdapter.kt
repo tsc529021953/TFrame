@@ -1,5 +1,6 @@
 package com.sc.tmp_cw.adapter
 
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -21,7 +22,9 @@ class FileImgAdapter(items: MutableList<FileBean>, var callback: FileImgCallback
 //        binding!!.nameTv.text = item.name + "\n" + item.address
 //        binding?.vm = item
         binding?.bgLy?.setOnClickListener {
-            callback.onItemClick(item)
+            // flavorB(方案2): 把被点击的卡片图传给回调用于页内飞行动画
+            val sharedIv = if (FlavorConfigUtil.isFlavorB()) binding!!.iv else null
+            callback.onItemClick(item, sharedIv)
         }
         val path = "file://" + item.path
         val glideRequest = Glide.with(binding!!.iv)
@@ -40,7 +43,7 @@ class FileImgAdapter(items: MutableList<FileBean>, var callback: FileImgCallback
 
     interface FileImgCallback{
 
-        fun onItemClick(item: FileBean)
+        fun onItemClick(item: FileBean, sharedIv: View? = null)
 
     }
 }

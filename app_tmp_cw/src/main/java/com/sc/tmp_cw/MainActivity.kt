@@ -446,7 +446,10 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     }
 
     private fun showHideTitle(isShow: Boolean = true) {
-        if (FlavorConfigUtil.isFlavorB()) return
+        if (FlavorConfigUtil.isFlavorB()) {
+            showHideTitleFlavorB(isShow)
+            return
+        }
         if (isShow) {
             // 显示
             if (binding.titleLy2.logoLy.visibility == View.VISIBLE) {
@@ -469,6 +472,42 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
             if (binding.titleLy2.logoLy.visibility != View.GONE){
                 binding.titleLy2.logoLy.visibility = View.GONE
             }
+        }
+    }
+
+    /**
+     * flavorB标题栏切换:
+     * false显示常规标题(欢迎语+服务时间+标题栏背景);
+     * true(到站播报结束)隐藏标题栏背景,中间显示当前站点信息,右侧TextClock显示系统时间(年月日时分),
+     * 显示MAIN_TITLE_SHOW_TIME后自动恢复常规标题
+     */
+    private fun showHideTitleFlavorB(isShow: Boolean) {
+        // 标题栏背景相关控件为flavorB布局独有,用tag查找保证跨flavor编译安全
+        val titleLy = binding.titleLy2.root.findViewWithTag<View>("title_bg_ly")
+        val bgOverlay = binding.titleLy2.root.findViewWithTag<View>("title_bg_overlay")
+        if (isShow) {
+            titleLy?.background = null
+            bgOverlay?.visibility = View.GONE
+            binding.titleLy2.titleTv.visibility = View.GONE
+            binding.titleLy2.timeTv.visibility = View.GONE
+            binding.titleLy2.stationTv.visibility = View.VISIBLE
+            binding.titleLy2.timeClock.visibility = View.VISIBLE
+            viewModel.mJob?.cancel()
+            viewModel.mJob = viewModel.mScope.launch {
+                System.out.println("showHideTitle delay start HideTitle")
+                delay(MessageConstant.MAIN_TITLE_SHOW_TIME)
+                this@MainActivity.runOnUiThread {
+                    System.out.println("showHideTitle delay end HideTitle")
+                    showHideTitle(false)
+                }
+            }
+        } else {
+            titleLy?.setBackgroundResource(R.mipmap.ic_title_bg)
+            bgOverlay?.visibility = View.VISIBLE
+            binding.titleLy2.titleTv.visibility = View.VISIBLE
+            binding.titleLy2.timeTv.visibility = View.GONE
+            binding.titleLy2.stationTv.visibility = View.GONE
+            binding.titleLy2.timeClock.visibility = View.GONE
         }
     }
 
