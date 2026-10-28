@@ -175,6 +175,10 @@ class TmpServiceImpl : ITmpService, Service() {
                 val top = AppManager.appManager?.topActivity
                 Timber.i("站点提示 $m top:${if (top == null) "null" else top!!::class.java.simpleName}")
                 LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
+                if (FlavorConfigUtil.isFlavorB()) {
+                    handleStationNotifyFlavorB(m, top)
+                    return
+                }
                 if (m in 0..9 && top != null
                     && top!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
                     && top!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName
@@ -193,6 +197,52 @@ class TmpServiceImpl : ITmpService, Service() {
 
 
 //        stationObs.set("收到卡里的克拉斯打开的大是大非撒啊发发发")
+    }
+
+    /**
+     * flavorB 进出站播报(武汉协议):
+     * 1=预到站 → 只更新顶部文案(stationObs已在MessageHandler更新),不切界面
+     * 2=到站   → 拉起StationNotifyActivity播放进站视频
+     * 0=离站   → 拉起播放出站视频
+     * 到站/出站信号均会持续下发(到站后开门声等无效帧穿插还会让信号重新触发):
+     * 状态+站点信息不变时不重复拉起(视频播完界面已finish)
+     */
+    private fun handleStationNotifyFlavorB(m: Int, top: android.app.Activity?) {
+        val topName = top?.javaClass?.simpleName
+        when (m) {
+            1 -> {
+                // 预到站: 新一轮播报开始,只改文案不切界面
+                lastShownNotifyKey = null
+            }
+            0, 2 -> {
+                val station = stationObs.get()
+                if (station.isNullOrEmpty()) return
+                val key = "$m:$station"
+                if (key == lastShownNotifyKey) return
+                lastShownNotifyKey = key
+                navigateStationNotify(topName)
+            }
+            else -> {
+                // 无广播/无效状态(开门声/安全广播等映射-1): 保持去重记录,避免无效帧穿插导致信号重复拉起
+            }
+        }
+    }
+
+    /** flavorB: 上次已拉起播报界面的 状态+站点文案,用于到站/出站持续信号去重 */
+    private var lastShownNotifyKey: String? = null
+
+    private fun navigateStationNotify(topName: String?) {
+        if (topName == null) return
+        if (topName == UrgentNotifyActivity::class.java.simpleName
+            || topName == StationNotifyActivity::class.java.simpleName
+            || topName == SettingActivity::class.java.simpleName
+            || topName == ParamActivity::class.java.simpleName
+            || topName == PlatylistActivity::class.java.simpleName
+            || topName == LogActivity::class.java.simpleName
+        ) return
+        mainHandler.post {
+            ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this)
+        }
     }
 
     override fun onDestroy() {

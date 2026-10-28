@@ -1,11 +1,13 @@
 package com.sc.tmp_cw.view
 
+import android.os.Environment
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.alibaba.android.arouter.launcher.ARouter
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
+import com.nbhope.lib_frame.utils.FileUtil
 import com.nbhope.lib_frame.utils.HandleClick
 import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
@@ -15,6 +17,8 @@ import com.sc.tmp_cw.databinding.FragmentInteractiveBinding
 import com.sc.tmp_cw.inter.IFragment
 import com.sc.tmp_cw.inter.TimerIntercept
 import com.sc.tmp_cw.service.MessageHandler
+import com.sc.tmp_cw.utils.BigImageLoader
+import com.sc.tmp_cw.utils.FlavorConfigUtil
 import com.sc.tmp_cw.weight.KeepStateNavigator
 
 /**
@@ -62,6 +66,21 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
         }
         iFragment = this
         super.subscribeUi()
+        preloadBigImages()
+    }
+
+    /**
+     * 提前在后台解码站点查询整图并写入缓存，
+     * 用户点进对应页面时直接命中缓存，避免进页面后等待解码。
+     * （线路图 LineFragment 已改用 SubsamplingScaleImageView 瓦片式解码，不走 Glide，无需预加载）
+     */
+    private fun preloadBigImages() {
+        if (FlavorConfigUtil.isFlavorB()) {
+            val root = Environment.getExternalStorageDirectory().absolutePath
+            FileUtil.getPath(root + MessageConstant.PATH_STATION_SEARCH)?.let {
+                BigImageLoader.preload(requireContext(), it)
+            }
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

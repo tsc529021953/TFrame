@@ -19,7 +19,7 @@
             android:id="@+id/bg_ly"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="0dp"
             >
 
 <!--        <ImageView-->
@@ -29,6 +29,30 @@
 <!--                android:scaleType="centerCrop"-->
 <!--                android:foreground="#B3000000"-->
 <!--                />-->
+
+        <!-- 可缩放大图放在最底层，标题/logo 悬浮在图片上方显示 -->
+        <com.nbhope.lib_frame.view.ZoomView
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/zoom"
+                android:visibility="gone"
+                android:background="#000"
+                tools:visibility="gone"
+                android:layout_marginTop="50dp"
+                >
+
+            <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/line_iv"
+                    android:scaleType="fitCenter"
+                    />
+
+        </com.nbhope.lib_frame.view.ZoomView>
 
         <ImageView
                 android:id="@+id/logo_iv"
@@ -53,12 +77,15 @@
                 android:text="@string/station_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/logo_iv"
+                app:layout_constraintTop_toTopOf="parent"
                 android:textColor="@color/white"
                 android:textSize="26sp"
                 android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
                 />
 
         <View
+                android:id="@+id/line_ly"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/si_line_height"
                 app:layout_constraintTop_toTopOf="@+id/station_rv"
@@ -77,27 +104,6 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 />
-
-        <com.nbhope.lib_frame.view.ZoomView
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/zoom"
-                android:visibility="gone"
-                android:background="#000"
-                tools:visibility="gone"
-                >
-
-            <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/line_iv"
-                    />
-
-        </com.nbhope.lib_frame.view.ZoomView>
 
         <com.facebook.shimmer.ShimmerFrameLayout
                 style="@style/main_bottom_right_bottom_btn_ly2"

@@ -7,19 +7,12 @@
             style="@style/ly_no_title"
             >
 
-        <com.nbhope.lib_frame.view.ZoomView
+        <!-- 瓦片式大图控件：按缩放级别分块解码8K原图，双指缩放/拖动自带，放大不糊不OOM -->
+        <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/zoom"
-                >
-
-            <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/line_iv"
-                    />
-
-        </com.nbhope.lib_frame.view.ZoomView>
+                android:id="@+id/line_iv"
+                />
 
         <com.facebook.shimmer.ShimmerFrameLayout
                 style="@style/main_bottom_right_bottom_btn_ly2"

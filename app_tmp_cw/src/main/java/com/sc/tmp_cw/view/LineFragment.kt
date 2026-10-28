@@ -1,20 +1,13 @@
 package com.sc.tmp_cw.view
 
 import android.os.Environment
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
+import com.davemorrissey.labs.subscaleview.ImageSource
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.nbhope.lib_frame.base.BaseBindingFragment
 import com.nbhope.lib_frame.base.BaseViewModel
-import com.nbhope.lib_frame.view.ZoomView
-import com.sc.tmp_cw.MainActivity
 import com.sc.tmp_cw.R
 import com.sc.tmp_cw.constant.MessageConstant
 import com.sc.tmp_cw.databinding.FragmentLineBinding
-import com.sc.tmp_cw.utils.FlavorConfigUtil
-import com.sc.tmp_cw.databinding.FragmentTravelBinding
 import timber.log.Timber
 import java.io.File
 
@@ -27,10 +20,14 @@ import java.io.File
 class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
     override var layoutId: Int = R.layout.fragment_line
-    
-    // 保存加载参数，用于重新显示时重新加载
-    private var loadImageSource: Any? = null
-    private lateinit var requestOptions: RequestOptions
+
+    // 保存外部图片路径，用于重新显示时重新加载
+    private var imagePath: String? = null
+
+    companion object {
+        /** 初始显示比例：在完整显示的最小比例基础上放大 1.8 倍 */
+        private const val INITIAL_SCALE_FACTOR = 1.8f
+    }
 
     override fun linkViewModel() {
 
@@ -42,64 +39,49 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
             InteractiveFragment.iFragment?.back()
         }
 
-        requestOptions = RequestOptions()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .skipMemoryCache(false) // 启用内存缓存
-            .format(DecodeFormat.PREFER_RGB_565) // 使用 RGB_565 减少内存占用（不需要透明度）
-//            .placeholder(R.drawable.ic_launcher_foreground)
-//        .format(DecodeFormat.PREFER_RGB_565)  //设置为这种格式去掉透明度通道，可以减少内存占有
-//        .placeholder(R.drawable.img_error)
-//            .error(R.drawable.img_error)
-
-        var path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_LINE
-                
-        // 判断路径下的图片是否存在
-        val imageFile = File(path)
-        Timber.i("imageFile: ${imageFile.path} ${imageFile.exists()} ${imageFile.isFile}")
-        loadImageSource = if (imageFile.exists() && imageFile.isFile) {
-            Timber.i("文件加载")
-            // 文件存在，加载外部存储的图片
-            path
-        } else {
-            // 文件不存在，使用本地图片
-            R.mipmap.ic_line_ly
-        }
-        
-        // 加载图片
-        loadGlideImage()
-        
-        binding.zoom.setOnTouchListener { view, motionEvent ->
+        // 双指缩放/拖动/双击放大由控件自身处理（瓦片式分块解码，任意倍率清晰），
+        // 触摸事件只用来重置页面无操作定时器
+        binding.lineIv.setOnTouchListener { view, motionEvent ->
             InteractiveFragment.iFragment?.clicked()
             return@setOnTouchListener false
         }
+        // 放大上限与原 ZoomView 一致（5 倍）；最小比例默认 CENTER_INSIDE，完整显示、长边贴边
+        binding.lineIv.maxScale = 5f
+
+        val path = Environment.getExternalStorageDirectory().absolutePath + MessageConstant.PATH_LINE
+
+        // 判断路径下的图片是否存在
+        val imageFile = File(path)
+        Timber.i("imageFile: ${imageFile.path} ${imageFile.exists()} ${imageFile.isFile}")
+        imagePath = if (imageFile.exists() &&imageFile.isFile) imageFile.path else null
+
+        loadImage()
     }
-    
+
     /**
-     * 加载 Glide 图片
+     * 加载大图：外部 8K 图走瓦片式分块解码（初始按整屏解码，放大时按当前缩放级别
+     * 解码对应区域的高清块，任意倍率都清晰且不 OOM，与系统图库同原理）；
+     * 文件不存在时回退内置线路图
      */
-    private fun loadGlideImage() {
-        loadImageSource?.let { source ->
-            // 延迟加载，确保视图已准备好
-            view?.post {
-                if (!isDetached && isAdded) {
-                    val glideRequest = Glide.with(this)
-                        .load(source)
-                        .apply(requestOptions)
-                        .override(3840, 2160) // 根据实际显示尺寸调整，避免加载过大的图片
-                        .centerInside() // 保持比例居中显示
-                        .placeholder(android.R.color.transparent) // 透明占位，避免闪烁
-                        .skipMemoryCache(true) // 跳过内存缓存
-                        .diskCacheStrategy(DiskCacheStrategy.NONE) // 禁用磁盘缓存
-
-                    // flavorB 时添加圆角
-                    if (FlavorConfigUtil.isFlavorB()) {
-                        glideRequest.transform(RoundedCorners(36))
-                    }
-
-                    glideRequest.into(binding!!.lineIv)
-                }
+    private fun loadImage() {
+        val path = imagePath
+        // 图片就绪后才能拿到 minScale/center，此时设初始缩放为 1.8 倍
+        binding.lineIv.setOnImageEventListener(object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
+            override fun onImageLoaded() {
+                applyInitialScale()
             }
+        })
+        if (path != null) {
+            binding.lineIv.setImage(ImageSource.uri(path))
+        } else {
+            binding.lineIv.setImage(ImageSource.resource(R.mipmap.ic_line_ly))
         }
+    }
+
+    /** 以完整显示的最小比例为基准放大 1.8 倍，中心点保持图片中心 */
+    private fun applyInitialScale() {
+        val view = binding.lineIv
+        view.setScaleAndCenter(view.minScale * INITIAL_SCALE_FACTOR, view.center)
     }
 
     override fun initData() {
@@ -109,17 +91,15 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         if (!hidden) {
-            // Fragment 重新显示时，重置缩放并重新加载图片
-            (binding.zoom as ZoomView).reset()
-            // 由于使用了缓存，重新加载会很快从缓存读取
-            loadGlideImage()
+            // Fragment 重新显示时重置缩放位置（图片数据仍在内存，无需重新解码）
+            binding.lineIv.resetScaleAndCenter()
+            applyInitialScale()
         }
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
-        // Fragment 销毁时清理图片资源
-        Glide.with(this).clear(binding.lineIv)
+        // 位图随控件 onDetachedFromWindow 自动回收，无需手动清理
     }
 
 }

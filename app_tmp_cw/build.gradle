@@ -11,8 +11,8 @@ android {
         applicationId "com.sc.tmp_cw"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 62
-        versionName "0.0.62"
+        versionCode 69
+        versionName "0.0.69"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -134,6 +134,8 @@ dependencies {
     implementation deps.support.design
     androidTestImplementation deps.support.design
     implementation deps.constraint_layout
+    // 线路图8K大图瓦片式分块解码缩放，放大不糊（LineFragment）
+    implementation deps.subsampling
     implementation project(path: ':lib_frame')
     testImplementation deps.junit
     androidTestImplementation deps.espresso.core

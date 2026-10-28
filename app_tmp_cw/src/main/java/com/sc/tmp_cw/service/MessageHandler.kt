@@ -64,13 +64,9 @@ object MessageHandler {
                 delay(1000)
                 handleMessage(testLogSignal3, service)
             } else {
-                // FlavorB: 跑武汉协议测试序列 + 旧协议测试
-                WuhanTestData.runAll(service)
-                // 延迟后跑旧协议
-                delay(8000)
-                handleMessage(testData2.replace(" ", ""), service)
-                delay(1000)
-                handleMessage(testData1.replace(" ", ""), service)
+                // FlavorB: 站点播报视频测试: 预到站→到站→出站→出站信号持续下发(不重复拉起)→新出站
+                // 全场景测试(含紧急广播/B5)可手动调用 WuhanTestData.runAll(service)
+                WuhanTestData.runStationNotifyScene(service)
             }
         }
     }
@@ -231,9 +227,6 @@ object MessageHandler {
                     }
                 }
 
-                // 更新服务状态
-                service.stationNotifyObs.set(pisBean.boardStatus)
-
                 var tip = ""
                 if (pisBean.boardStatus != -1) {
                     when (pisBean.boardStatus) {
@@ -255,6 +248,9 @@ object MessageHandler {
                         else -> { /* 无状态 */ }
                     }
                 }
+
+                // 更新服务状态(需在stationObs之后,保证stationNotifyObs回调里读到的是本次最新站点文案)
+                service.stationNotifyObs.set(pisBean.boardStatus)
 
                 Timber.i("武汉B1 报站信息: 当前站=${pisBean.currentCode}, 下一站=${pisBean.nextCode}, " +
                         "广播类型=${info.broadcastType} 广播控制=${info.broadcastControl} " +

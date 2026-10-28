@@ -2,6 +2,8 @@ package com.sc.tmp_cw.service
 
 import com.nbhope.lib_frame.utils.DataUtil
 import com.sc.tmp_cw.bean.WuhanProtocolConst
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -34,6 +36,21 @@ object WuhanTestData {
     val ARRIVED_1 = buildB1(
         current = ST_ZHONG_YI_LU, next = ST_ZHONG_YI_LU,
         data16 = (WuhanProtocolConst.BC_TYPE_ARRIVE shl 4) or WuhanProtocolConst.BC_CTRL_START)
+
+    /** 离站: 中一路(33)→后湖四路(34), 类型1+开始 → boardStatus=0 (下一站) */
+    val DEPART_1 = buildB1(
+        current = ST_ZHONG_YI_LU, next = ST_HOU_HU_SI_LU,
+        data16 = (WuhanProtocolConst.BC_TYPE_DEPART shl 4) or WuhanProtocolConst.BC_CTRL_START)
+
+    /** 无广播: 类型0+无操作 → boardStatus=-1, 站点信息不更新(用于模拟穿插无效帧后信号重新触发) */
+    val IDLE_NONE = buildB1(
+        current = ST_ZHONG_YI_LU, next = ST_HOU_HU_SI_LU,
+        data16 = (WuhanProtocolConst.BC_TYPE_NONE shl 4) or WuhanProtocolConst.BC_CTRL_NONE)
+
+    /** 预到站: 后湖四路(34)→兴业路(35), 类型2+开始 → boardStatus=1 (即将到站) */
+    val NEXT_STATION_2 = buildB1(
+        current = ST_HOU_HU_SI_LU, next = ST_XING_YE_LU,
+        data16 = (WuhanProtocolConst.BC_TYPE_APPROACH shl 4) or WuhanProtocolConst.BC_CTRL_START)
 
     /** 离站: 后湖四路(34)→兴业路(35), 类型1+开始 → boardStatus=0 (下一站) */
     val DEPART_2 = buildB1(
@@ -157,5 +174,71 @@ object WuhanTestData {
             }
         }
         handler.post(runnable)
+    }
+
+    /**
+     * 站点播报视频测试场景 (MessageHandler.test() flavorB默认入口):
+     *
+     * 完整模拟一轮行车: 预到站(只改文案) → 到站(进站视频+持续到站信号去重)
+     * → 出站(出站视频) → 出站信号持续下发(视频播放中由top拦截,播完退出后由状态+站点去重拦截)
+     * → 穿插无效帧让出站信号重新触发(站点信息不变,仍不拉起)
+     * → 新一轮: 预到站(只改文案) → 到站(站点变化应重新拉起进站视频)
+     */
+    fun runStationNotifyScene(service: TmpServiceImpl) {
+        service.mScope.launch {
+            val videoWait = 15_000L // 等视频播完自动finish(视频均为13s,+2s缓冲)
+
+            // ① 预到站: 只更新顶部文案,不拉起界面
+            Timber.i("=== 站点播报测试①: 预到站(石桥→中一路) → 只改文案不切界面 ===")
+            MessageHandler.handleMessage(NEXT_STATION_1, service)
+            delay(3000)
+
+            // ② 到站: 拉起界面播放进站视频
+            Timber.i("=== 站点播报测试②: 到站(中一路) → 进站视频 ===")
+            MessageHandler.handleMessage(ARRIVED_1, service)
+
+            // ③ 到站信号持续下发+无效帧(开门声等映射-1)穿插重新触发: 均不应重复拉起
+            delay(3000)
+            Timber.i("=== 站点播报测试③: 持续到站信号+无效帧穿插(站点不变,均不应拉起) ===")
+            repeat(3) {
+                MessageHandler.handleMessage(ARRIVED_1, service)
+                delay(1000)
+                MessageHandler.handleMessage(IDLE_NONE, service)
+                delay(1000)
+            }
+
+            // ④ 出站: 进站视频播完界面退出后,拉起界面播出站视频
+            delay(videoWait)
+            Timber.i("=== 站点播报测试④: 出站(中一路→后湖四路) → 出站视频 ===")
+            MessageHandler.handleMessage(DEPART_1, service)
+
+            // ⑤ 出站后PISC持续下发出站信号(站点不变):
+            //    视频播放中 → top为StationNotifyActivity,不重复拉起
+            //    视频播完退出后 → 同值不重发回调/状态+站点去重,不重复拉起
+            delay(3000)
+            Timber.i("=== 站点播报测试⑤: 持续下发出站信号x6(站点不变,均不应拉起) ===")
+            repeat(6) {
+                MessageHandler.handleMessage(DEPART_1, service)
+                delay(2000)
+            }
+
+            // ⑥ 穿插无效帧(无广播)使出站信号重新触发回调: 站点信息不变,去重后仍不拉起
+            Timber.i("=== 站点播报测试⑥: 无效帧穿插+出站信号重新触发(站点不变,不应拉起) ===")
+            repeat(2) {
+                MessageHandler.handleMessage(IDLE_NONE, service)
+                delay(1000)
+                MessageHandler.handleMessage(DEPART_1, service)
+                delay(2000)
+            }
+
+            // ⑦ 新一轮: 预到站(只改文案) → 到站(站点信息变化)应重新拉起进站视频
+            Timber.i("=== 站点播报测试⑦: 新一轮 预到站(后湖四路→兴业路) → 只改文案 ===")
+            MessageHandler.handleMessage(NEXT_STATION_2, service)
+            delay(3000)
+            Timber.i("=== 站点播报测试⑦: 到站(兴业路) → 站点变化应重新拉起进站视频 ===")
+            MessageHandler.handleMessage(ARRIVED_2, service)
+
+            Timber.i("=== 站点播报测试完成 ===")
+        }
     }
 }

@@ -57,6 +57,7 @@
                 />
 
         <View
+                android:id="@+id/line_ly"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/si_line_height"
                 app:layout_constraintTop_toTopOf="@+id/station_rv"
@@ -93,6 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/line_iv"
+                    android:scaleType="fitCenter"
                     />
 
         </com.nbhope.lib_frame.view.ZoomView>
