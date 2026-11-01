@@ -338,11 +338,12 @@ class TmpServiceImpl : ITmpService, Service() {
             // ===== 根据风味启动不同的网络连接 =====
             if (FlavorConfigUtil.isFlavorA()) {
                 // FlavorA: 旧协议 UDP 组播
-                if (comThread == null) {
-                    Timber.i("组播创建 $SERVER_IP $SERVER_PORT")
-                    comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
-                }
-                comThread?.start()
+                // FlavorA 暂时移除所有对接
+//                if (comThread == null) {
+//                    Timber.i("组播创建 $SERVER_IP $SERVER_PORT")
+//                    comThread = UdpMultiThread(SERVER_IP, SERVER_PORT, onNetThreadListener)
+//                }
+//                comThread?.start()
             } else {
                 // FlavorB: 武汉协议 — TCP + 武汉UDP组播 + 心跳
                 // 同时保留旧协议监听以兼容
