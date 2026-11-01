@@ -56,7 +56,7 @@ object MessageHandler {
                 handleMessage(data, service)
             } else if (FlavorConfigUtil.isFlavorA()) {
                 // FlavorA: 模拟日志中的三帧站点到达信号，间隔1秒
-                // boardStatus=2（已到达：咸水沽西），触发 StationNotifyActivity
+                // boardStatus=2（已到达：咸水沽西），主页站名随 stationObs 直接刷新
                 Timber.i("FlavorA 测试：模拟日志三帧站点到达信号")
                 handleMessage(testLogSignal1, service)
                 delay(1000)

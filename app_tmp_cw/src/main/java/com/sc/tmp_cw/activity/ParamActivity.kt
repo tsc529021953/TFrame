@@ -1,5 +1,6 @@
 package com.sc.tmp_cw.activity
 
+import android.widget.EditText
 import android.widget.SeekBar
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.nbhope.lib_frame.base.BaseBindingActivity
@@ -30,6 +31,11 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
     VolumeChangeObserver.VolumeChangeListener {
 
     override var layoutId: Int = R.layout.activity_param
+
+    companion object {
+        /** flavorB 参数页标题输入框 tag：title_et 只在 flavorB 布局中，main 代码用 tag 查找以兼容 flavorA 编译 */
+        const val TITLE_ET_TAG = "title_et"
+    }
 
     private var mVolumeChangeObserver: VolumeChangeObserver? = null;
 
@@ -134,9 +140,13 @@ class ParamActivity : BaseBindingActivity<ActivityParamBinding, ParamViewModel>(
                 }
                 // flavorB 时保存标题配置
                 if (FlavorConfigUtil.isFlavorB()) {
-                    val title = binding.titleEt.text.toString().trim()
+                    val titleEt = binding.root.findViewWithTag<EditText>(TITLE_ET_TAG)
+                    val title = titleEt?.text?.toString()?.trim() ?: ""
                     viewModel.spManager.setString(MessageConstant.SP_TITLE, title)
-                    TmpServiceDelegate.service()?.titleObs?.set(title.ifEmpty { null })
+                    TmpServiceDelegate.service()?.let { service ->
+                        // 清空时回退配置文件标题，与重启后 initAppData 的回退逻辑一致
+                        service.titleObs.set(title.ifEmpty { service.getCWInfo().title })
+                    }
                 }
                 super.finish()
                 return@showInfoTip true

@@ -142,6 +142,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:id="@+id/title_et"
+                        android:tag="title_et"
                         android:text="@{vm.titleObs}"
                         android:hint="默认使用配置文件标题"
                         android:background="@drawable/ic_et_bg"

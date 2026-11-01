@@ -1,5 +1,6 @@
 package com.sc.tmp_cw.view
 
+import android.graphics.PointF
 import android.os.Environment
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
@@ -26,7 +27,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
     companion object {
         /** 初始显示比例：在完整显示的最小比例基础上放大 1.8 倍 */
-        private const val INITIAL_SCALE_FACTOR = 1.8f
+        private const val INITIAL_SCALE_FACTOR = 2.9f
     }
 
     override fun linkViewModel() {
@@ -65,7 +66,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
      */
     private fun loadImage() {
         val path = imagePath
-        // 图片就绪后才能拿到 minScale/center，此时设初始缩放为 1.8 倍
+        // 图片就绪后才能拿到 minScale/中心，此时应用初始缩放（若早于首次布局会自动延后重试）
         binding.lineIv.setOnImageEventListener(object : SubsamplingScaleImageView.DefaultOnImageEventListener() {
             override fun onImageLoaded() {
                 applyInitialScale()
@@ -78,21 +79,35 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
         }
     }
 
-    /** 以完整显示的最小比例为基准放大 1.8 倍，中心点保持图片中心 */
+    /** 还原初始缩放: 中心显式取图片中心,不用 getCenter()——那返回的是"当前视图中心压在源图的位置",
+     * 即上次浏览停留处,用它重开会停在上次位置; 尺寸未就绪(回调早于首次布局)时延后重试 */
     private fun applyInitialScale() {
         val view = binding.lineIv
-        view.setScaleAndCenter(view.minScale * INITIAL_SCALE_FACTOR, view.center)
+        if (view.width == 0 || view.sWidth == 0) {
+            view.post { applyInitialScale() }
+            return
+        }
+        view.setScaleAndCenter(
+            view.minScale * INITIAL_SCALE_FACTOR,
+            PointF(view.sWidth / 2f, view.sHeight / 2f)
+        )
     }
 
     override fun initData() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        Timber.i("LineFragment onResume")
+    }
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        Timber.i("LineFragment onHiddenChanged $hidden")
         if (!hidden) {
-            // Fragment 重新显示时重置缩放位置（图片数据仍在内存，无需重新解码）
-            binding.lineIv.resetScaleAndCenter()
+            // Fragment 重新显示时还原初始缩放位置（KeepStateNavigator 为 show/hide，
+            // 不触发 onResume/onPause，必须在这里处理；图片数据仍在内存，无需重新解码）
             applyInitialScale()
         }
     }

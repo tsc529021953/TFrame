@@ -175,21 +175,10 @@ class TmpServiceImpl : ITmpService, Service() {
                 val top = AppManager.appManager?.topActivity
                 Timber.i("站点提示 $m top:${if (top == null) "null" else top!!::class.java.simpleName}")
                 LiveEBUtil.post(RemoteMessageEvent(MessageConstant.CMD_STATION_NOTICE, m.toString() ?: ""))
+                // flavorA: 不再跳转 StationNotifyActivity, 站名文案由 stationObs 更新,
+                // 主页(MainActivity/module_title_info)观察 stationObs 直接刷新
                 if (FlavorConfigUtil.isFlavorB()) {
                     handleStationNotifyFlavorB(m, top)
-                    return
-                }
-                if (m in 0..9 && top != null
-                    && top!!::class.java.simpleName != UrgentNotifyActivity::class.java.simpleName
-                    && top!!::class.java.simpleName != StationNotifyActivity::class.java.simpleName
-                    && top::class.java.simpleName != SettingActivity::class.java.simpleName
-                    && top::class.java.simpleName != ParamActivity::class.java.simpleName
-                    && top::class.java.simpleName != PlatylistActivity::class.java.simpleName
-                    && top::class.java.simpleName != LogActivity::class.java.simpleName
-                    ) {
-                    mainHandler.post {
-                        ARouter.getInstance().build(MessageConstant.ROUTH_STATION_NOTIFY).navigation(this@TmpServiceImpl)
-                    }
                 }
             }
         })
