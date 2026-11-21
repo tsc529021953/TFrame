@@ -54,6 +54,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -238,6 +239,9 @@ class TmpServiceImpl : ITmpService, Service() {
         super.onDestroy()
         timerHandler?.stop()
         release()
+        // 取消服务协程作用域,终止消息处理/心跳/配置加载等在途任务,
+        // 避免Service销毁后回调继续在已死实例上执行(如initAppData回调触发reBuild重建网络线程)
+        mScope.cancel()
     }
 
     private fun initNotice() {
@@ -539,7 +543,6 @@ class TmpServiceImpl : ITmpService, Service() {
             val tcpOk = tcpClientThread?.send(frame) ?: false
             if (!tcpOk) {
                 // TCP不可用时通过武汉UDP组播发送
-                val hex = DataUtil.byteArray2HexString(frame)
                 wuhanUdpThread?.send(cwInfo.wuhanUdpTxIp, cwInfo.wuhanUdpTxPort, frame)
                 Timber.d("武汉心跳 通过UDP发送")
             } else {

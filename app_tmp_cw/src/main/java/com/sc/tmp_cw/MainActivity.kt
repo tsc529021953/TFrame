@@ -228,6 +228,9 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 //            TmpServiceDelegate.service()?.test("")
             layoutClick(binding.jhBtn, true) {
                 navController.navigate(R.id.navigation_interactive, null)
+                // navigate内部commitNow同步执行,返回时各fragment的onHiddenChanged已派发完毕,
+                // 此处显式重申最终按钮状态,保证进入互动页后home键可见、list键隐藏
+                show(arrayListOf(TAG_HOME))
                 if (FlavorConfigUtil.isFlavorB())  binding.titleLy2.logoLy.visibility = View.GONE
             }
         }
@@ -327,6 +330,8 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
     override fun onDestroy() {
         super.onDestroy()
         LiveEBUtil.unRegist(RemoteMessageEvent::class.java, listener)
+        // 静态引用置空,避免持有已销毁Activity造成泄漏
+        iMain = null
         iconAnimator?.cancel()
         iconAnimator?.removeAllListeners()
         // 释放硬件图层资源
@@ -417,18 +422,23 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
 
 
     override fun show(tag: ArrayList<String>) {
-        System.out.println("show tag $tag")
+        Timber.i("MainActivity show tag=$tag")
         try {
             binding.listSf.visibility = if (tag.contains(TAG_LIST)) View.VISIBLE else View.GONE
             binding.homeSf.visibility = if (tag.contains(TAG_HOME)) View.VISIBLE else View.GONE
-        } catch (e: Exception) {}
+        } catch (e: Exception) {
+            Timber.e(e, "show() failed, button state may be stale")
+        }
     }
 
     fun homeDelay() {
+        // Activity已销毁时直接终止,避免GlobalScope重试形成对已销毁Activity的无限循环
+        if (HopeUtils.isDestroy(this)) return
         this@MainActivity.runOnUiThread {
             try {
                 home()
             } catch (e: Exception) {
+                if (HopeUtils.isDestroy(this@MainActivity)) return@runOnUiThread
                 GlobalScope.launch {
                     delay(100)
                     homeDelay()
@@ -442,7 +452,13 @@ class MainActivity : BaseBindingActivity<ActivityMainBinding, MainViewModel>(), 
         try {
             navController.navigate(R.id.navigation_local, null)
             if (FlavorConfigUtil.isFlavorB())  binding.titleLy2.logoLy.visibility = View.VISIBLE
-        } catch (e: Exception) {}
+            // navigate内部commitNow同步执行,返回时"InteractiveFragment隐藏/LocalFragment显示"
+            // 的onHiddenChanged回调已全部派发,此处显式重申TAG_LIST作为最终状态,
+            // 避免回主页时与InteractiveFragment的show调用产生时序竞争导致list_btn停留在GONE
+            show(arrayListOf(TAG_LIST))
+        } catch (e: Exception) {
+            Timber.e(e, "home() navigate failed, button state unchanged")
+        }
     }
 
     private fun showHideTitle(isShow: Boolean = true) {

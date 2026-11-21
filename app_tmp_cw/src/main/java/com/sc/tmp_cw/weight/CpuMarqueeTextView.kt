@@ -100,10 +100,6 @@ class CpuMarqueeTextView @JvmOverloads constructor(
             val marquee = marqueeField[this] ?: return
             // 设置新的速度
             val marqueeClass: Class<*> = marquee.javaClass
-            // 速度变量的名称可能与此示例的不相同 可自行打印查看
-            for (field in marqueeClass.declaredFields) {
-                Timber.i("SpanTextView ${field.name}")
-            }
             // SDK中的是mPixelsPerMs，但我的开发机是下面的名称
             val speedField = marqueeClass.getDeclaredField("mPixelsPerSecond") //低版本：mScrollUnit
             speedField.isAccessible = true

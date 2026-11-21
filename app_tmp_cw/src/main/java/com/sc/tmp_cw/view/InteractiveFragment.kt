@@ -97,9 +97,11 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
     }
 
     private fun hide() {
+        // 仅重置互动子页导航回guide首页,不再无条件show(TAG_HOME):
+        // 该方法会在离开互动页(onHiddenChanged(true))时被调用,那时show(TAG_HOME)会与
+        // 主页导航后的show(TAG_LIST)产生时序竞争,导致主页list_btn消失
         try {
             navController?.navigate(R.id.navigation_guide, null)
-            MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -108,6 +110,8 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
     override fun onDestroy() {
         super.onDestroy()
         navController = null
+        // 静态引用置空,避免持有已销毁Fragment造成泄漏
+        iFragment = null
     }
 
     override fun initData() {
@@ -117,6 +121,9 @@ class InteractiveFragment: CWBaseBindingFragment<FragmentInteractiveBinding, Bas
     override fun back() {
         reset()
         hide()
+        // 子页返回guide首页后重申home键显示(原逻辑在hide()内无条件执行,
+        // 现移至hide()外,只在确实停留在互动页时才显示home键)
+        MainActivity.iMain?.show(arrayListOf(MainActivity.TAG_HOME))
     }
 
     override fun navigate(resId: Int) {

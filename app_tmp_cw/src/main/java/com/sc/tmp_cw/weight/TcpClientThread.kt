@@ -30,6 +30,8 @@ class TcpClientThread(
         private const val RECONNECT_DELAY_MS = 5000L
         private const val CONNECT_TIMEOUT_MS = 5000
         private const val READ_BUFFER_SIZE = 4096
+        /** 帧长度字段合理上限:脏数据/假帧头可能声明超大长度,导致缓冲区等待"完整帧"而无限膨胀 */
+        private const val MAX_FRAME_DATA_LENGTH = 1024
     }
 
     @Volatile
@@ -123,6 +125,12 @@ class TcpClientThread(
 
                 val dataLength = ((rawData[searchPos + 2].toInt() and 0xFF) shl 8) or
                         (rawData[searchPos + 3].toInt() and 0xFF)
+                // 长度字段超协议合理上限视为假帧头,跳过1字节,避免按"等待完整帧"逻辑让缓冲区无限膨胀
+                if (dataLength > MAX_FRAME_DATA_LENGTH) {
+                    Timber.w("$TAG 长度字段异常($dataLength>上限), 按假帧头跳过1字节")
+                    searchPos++
+                    continue
+                }
                 val frameSize = 2 + 2 + dataLength + 2 + 1 // header + length + data + crc + tail
 
                 if (searchPos + frameSize <= rawData.size) {
@@ -210,6 +218,8 @@ class TcpClientThread(
     }
 
     fun isConnected(): Boolean {
-        return socket?.isConnected == true && !socket?.isClosed!! && isRunning
+        // socket未建立(未连接/已释放)时直接返回false,原来的socket?.isClosed!!会NPE
+        val s = socket ?: return false
+        return s.isConnected && !s.isClosed && isRunning
     }
 }

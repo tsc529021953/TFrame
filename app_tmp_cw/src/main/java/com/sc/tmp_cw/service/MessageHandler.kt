@@ -2,6 +2,7 @@ package com.sc.tmp_cw.service
 
 import android.content.Context
 import android.os.Build
+import android.os.SystemClock
 import android.provider.Settings
 import com.nbhope.lib_frame.utils.DataUtil
 import com.sc.tmp_cw.bean.PISBean
@@ -399,9 +400,15 @@ object MessageHandler {
      * 注意：需要系统权限 android.permission.SET_TIME
      */
     private fun setSystemTime(timeMillis: Long) {
+        // 优先使用系统API(系统预装应用持SET_TIME权限时直接生效,无需root)
+        if (SystemClock.setCurrentTimeMillis(timeMillis)) {
+            Timber.i("系统时间已设置为: $timeMillis")
+            return
+        }
         try {
-            // 使用 root 权限或系统应用权限设置时间
-            val command = "date -s @$((timeMillis / 1000))"
+            // 秒数必须在Kotlin侧完成插值:原写法"@$((timeMillis / 1000))"里的$((...))不是Kotlin插值,
+            // 会被设备shell当作"未定义变量timeMillis的算术展开"→结果为0→date -s @0把系统时间设回1970年
+            val command = "date -s @${timeMillis / 1000}"
             val process = Runtime.getRuntime().exec(arrayOf("su", "-c", command))
             process.waitFor()
             Timber.i("系统时间已设置为: $timeMillis")
@@ -412,7 +419,7 @@ object MessageHandler {
                 val process = Runtime.getRuntime().exec("su")
                 val outputStream = process.outputStream
                 val writer = java.io.OutputStreamWriter(outputStream)
-                writer.write("date -s @$((timeMillis / 1000))\n")
+                writer.write("date -s @${timeMillis / 1000}\n")
                 writer.write("exit\n")
                 writer.flush()
                 writer.close()

@@ -27,6 +27,7 @@ import com.sc.tmp_cw.constant.MessageConstant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -244,8 +245,11 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
             list?.let { list3.addAll(it) }
         } else {
             val record = gson.fromJson<ArrayList<FileBean>>(local, object : TypeToken<List<FileBean?>?>() {}.type)
+            // list为null说明视频目录缺失/扫描失败(此时也无磁盘文件可匹配),按空列表处理;
+            // 原来的list!!会在"目录缺失+本地存有播放列表"场景直接NPE崩溃
+            val diskList = list ?: emptyList()
             record.forEach { it2 ->
-                val item = list!!.find { it3 -> it3.path == it2.path }
+                val item = diskList.find { it3 -> it3.path == it2.path }
                 if (item != null) {
                     it2.status = 1
                     list3.add(it2)
@@ -587,6 +591,8 @@ class LocalViewModel @Inject constructor(val spManager: SharedPreferencesManager
     }
 
     fun release() {
+        // 取消自定义协程作用域,终止缓冲监控等仍在轮询的任务,避免协程泄漏
+        mScope.cancel()
         releasePlayer()
     }
     

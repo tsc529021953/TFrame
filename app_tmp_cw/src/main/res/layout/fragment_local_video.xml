@@ -51,6 +51,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:layout_marginTop="@dimen/title_ly_height"
+                android:visibility="gone"
                 >
 
             <androidx.recyclerview.widget.RecyclerView
