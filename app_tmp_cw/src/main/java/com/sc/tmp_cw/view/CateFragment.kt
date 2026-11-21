@@ -49,7 +49,7 @@ class CateFragment: BaseBindingFragment<FragmentCateBinding, CateViewModel>(), F
             handleClick = HandleClick(500, 2)
         detailController = InPageDetailController(this, viewModel.viewModelScope,
                 DetailOverlayViews(binding.detailLy, binding.detailIv, binding.detailTitleTv,
-                        binding.detailUnderlineV, binding.detailTextTv))
+                        binding.detailSubtitleTv, binding.detailUnderlineV, binding.detailTextTv))
         binding.backBtn.setOnClickListener {
             if (detailController?.isShown() == true) detailController?.close()
             else InteractiveFragment.iFragment?.back()
@@ -66,9 +66,21 @@ class CateFragment: BaseBindingFragment<FragmentCateBinding, CateViewModel>(), F
             }
         }
         adapter = FileImgAdapter(viewModel.smallListObs.value ?: arrayListOf(), this)
-        val ly = WrapGridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, true)
+        // flavorB:竖向网格,每行5个自上而下逐行填充(列宽自动平分);
+        // 其他flavor维持横向2行
+        val ly = if (FlavorConfigUtil.isFlavorB()) {
+            WrapGridLayoutManager(requireContext(), 5, RecyclerView.VERTICAL, false, false)
+        } else {
+            WrapGridLayoutManager(requireContext(), 2, RecyclerView.HORIZONTAL, true)
+        }
         val line = resources.getDimension(R.dimen.travel_btn_ly_space).toInt()
-        binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line, 0, line, line)))
+        // flavorB:对称半间隔(左右各line/2),item宽=列宽-间隔,各列尺寸一致;
+        // 边缘=rv margin(30dp)+line/2=40dp
+        if (FlavorConfigUtil.isFlavorB()) {
+            binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line / 2, 0, line / 2, line)))
+        } else {
+            binding.rv.addItemDecoration(SpaceItemDecoration(arrayListOf(line, 0, line, line)))
+        }
         binding.rv.adapter = adapter
         binding.rv.layoutManager = ly
     }

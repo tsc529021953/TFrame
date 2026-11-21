@@ -53,6 +53,18 @@ object TextReveal {
                 .start()
     }
 
+    /** 竖条(如标题左侧竖线)自上而下生长 */
+    fun growFromTop(v: View, delay: Long, duration: Long) {
+        v.pivotY = 0f
+        v.scaleY = 0f
+        v.animate()
+                .scaleY(1f)
+                .setStartDelay(delay)
+                .setDuration(duration)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+    }
+
     /** 每个字一个span,只改透明度 */
     private class FadeCharSpan : CharacterStyle() {
         var alpha = 0f

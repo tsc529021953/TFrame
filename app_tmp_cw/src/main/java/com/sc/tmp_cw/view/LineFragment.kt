@@ -27,7 +27,17 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
 
     companion object {
         /** 初始显示比例：在完整显示的最小比例基础上放大 1.8 倍 */
-        private const val INITIAL_SCALE_FACTOR = 2.9f
+        private const val INITIAL_SCALE_FACTOR = 1.9f
+
+        /**
+         * 初始注视中心（图片坐标比例）：0.5f = 图片正中（默认）。
+         * x < 0.5 视口偏向图片左侧（画面右移），x > 0.5 视口偏向图片右侧（画面左移）；
+         * y < 0.5 偏向图片顶部（画面下移），y > 0.5 偏向图片底部（画面上移）。
+         * 注意控件会夹紧到当前缩放下可平移的范围内（1.8 倍时约只有 1/1.8 区域可见），
+         * 超出部分自动贴边，不会出现黑边
+         */
+        private const val INITIAL_CENTER_X = 0.42f
+        private const val INITIAL_CENTER_Y = 0.55f
     }
 
     override fun linkViewModel() {
@@ -89,7 +99,7 @@ class LineFragment: BaseBindingFragment<FragmentLineBinding, BaseViewModel>() {
         }
         view.setScaleAndCenter(
             view.minScale * INITIAL_SCALE_FACTOR,
-            PointF(view.sWidth / 2f, view.sHeight / 2f)
+            PointF(view.sWidth * INITIAL_CENTER_X, view.sHeight * INITIAL_CENTER_Y)
         )
     }
 

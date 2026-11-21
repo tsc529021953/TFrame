@@ -1,6 +1,7 @@
 package com.sc.tmp_cw.adapter
 
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -38,7 +39,8 @@ class FileImgAdapter(items: MutableList<FileBean>, var callback: FileImgCallback
         }
 
         glideRequest.into(binding!!.iv)
-        binding!!.tv.text = item.name
+        // tv在flavorB布局中已移除,可空查找保证跨flavor编译
+        holder.itemView.findViewById<TextView>(R.id.tv)?.text = item.name
     }
 
     interface FileImgCallback{

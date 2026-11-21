@@ -83,6 +83,17 @@
                       app:layout_constraintTop_toBottomOf="@+id/detail_title_tv"
                       />
 
+                <!-- 副标题:仅保持与flavorB同id供共享代码引用;非flavorB浮层不展示 -->
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/detail_subtitle_tv"
+                        android:textColor="#0090FF"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toStartOf="@+id/detail_title_tv"
+                        app:layout_constraintTop_toBottomOf="@+id/detail_underline_v"
+                      />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>

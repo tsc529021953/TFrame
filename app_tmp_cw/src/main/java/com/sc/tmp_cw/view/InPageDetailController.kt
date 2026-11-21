@@ -8,6 +8,8 @@ import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -29,6 +31,7 @@ class DetailOverlayViews(
         val rootLy: View,
         val iv: ImageView,
         val titleTv: TextView,
+        val subtitleTv: TextView,
         val underlineV: View,
         val textTv: TextView
 )
@@ -61,15 +64,17 @@ class InPageDetailController(
     fun show(item: FileBean, bigList: List<FileBean>?, textList: List<FileBean>?, cardIv: View?) {
         if (isShown()) return
         shownAt = SystemClock.uptimeMillis()
-        // 背景浮现
+        // 背景浮现(减速曲线收尾,慢一点不突兀)
         views.rootLy.alpha = 0f
         views.rootLy.visibility = View.VISIBLE
-        views.rootLy.animate().alpha(1f).setDuration(300).start()
-        // 大图:优先bigList大图,无则用卡片图;小图作占位避免大图未就绪时空白
-        val big = bigList?.find { it.name.startsWith(item.name) } ?: item
+        views.rootLy.animate().alpha(1f).setDuration(550)
+                .setInterpolator(DecelerateInterpolator()).start()
+        // 大图:优先bigList大图,无则用卡片图(此时落位后直接硬切,不做交叉渐变);
+        // 小图作占位避免大图未就绪时空白
+        val big = bigList?.find { it.name.startsWith(item.name) }
         views.iv.alpha = 0f
         Glide.with(fragment)
-                .load("file://" + big.path)
+                .load("file://" + (big ?: item).path)
                 .override(960, 540)
                 .centerInside()
                 .transform(RoundedCorners(24))
@@ -78,11 +83,7 @@ class InPageDetailController(
                         .dontAnimate()
                         .transform(RoundedCorners(24)))
                 .into(views.iv)
-        // 标题与下划线随飞行浮现
-        views.titleTv.text = item.name
-        revealAnims.add(TextReveal.revealText(views.titleTv, 350, 450))
-        TextReveal.growFromLeft(views.underlineV, 500, 450)
-        // 正文(与详情页同逻辑:按名称前缀找textList)
+        // 标题/副标题/竖线/正文:统一在txt读取完成后赋值并浮现(见loadText)
         loadText(item, textList)
         // 飞行图片:等浮层完成布局后再取落位坐标
         views.rootLy.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -90,35 +91,58 @@ class InPageDetailController(
                 views.rootLy.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (!isShown()) return
                 // 飞行仅在卡片图就绪时进行,否则大图直接淡入
-                if (cardIv !is ImageView || !flyCardToDetail(cardIv)) {
-                    views.iv.animate().alpha(1f).setDuration(250).start()
+                if (cardIv !is ImageView || !flyCardToDetail(cardIv, big != null)) {
+                    views.iv.animate().alpha(1f).setDuration(600).start()
                 }
             }
         })
     }
 
-    /** 正文:异步读取textList文件,加载完成后逐字浮现(不早于850ms) */
+    /**
+     * 标题/副标题/正文:异步读取textList文件(按名称前缀匹配),
+     * 第一行→标题,第二行→副标题,其余→正文;
+     * 无txt(或读取失败)时标题用图片名、副标题为空字符串。
+     * 读取完成后依次浮现(标题不早于450ms,正文不早于850ms)
+     */
     private fun loadText(item: FileBean, textList: List<FileBean>?) {
-        val textItem = textList?.find { it.name.startsWith(item.name) }
+        views.titleTv.text = ""
+        views.subtitleTv.text = ""
         views.textTv.text = ""
-        if (textItem != null) {
-            scope.launch(Dispatchers.IO) {
-                val content = try {
+        scope.launch(Dispatchers.IO) {
+            val textItem = textList?.find { it.name.startsWith(item.name) }
+            var title: String? = null
+            var subtitle: String? = null
+            var content: String? = null
+            if (textItem != null) {
+                val raw = try {
                     FileUtil.readFile(textItem.path)
                 } catch (e: Exception) {
                     Timber.e(e, "读取文件失败: ${textItem.path}")
                     null
                 }
-                mainHandler.post {
-                    if (!fragment.isAdded || !isShown()) return@post
-                    views.textTv.text = content ?: noIntroduceMsg
-                    val delay = (shownAt + 850 - SystemClock.uptimeMillis()).coerceAtLeast(0)
-                    revealAnims.add(TextReveal.revealText(views.textTv, delay, 1200))
+                if (!raw.isNullOrEmpty()) {
+                    val lines = raw.lines()
+                    title = lines.firstOrNull()?.trim()?.takeIf { it.isNotEmpty() }
+                    subtitle = lines.getOrNull(1)?.trim()?.takeIf { it.isNotEmpty() }
+                    content = lines.drop(2).joinToString("\n").trim().takeIf { it.isNotEmpty() }
                 }
             }
-        } else {
-            views.textTv.text = noIntroduceMsg
-            revealAnims.add(TextReveal.revealText(views.textTv, 850, 1200))
+            mainHandler.post {
+                if (!fragment.isAdded || !isShown()) return@post
+                views.titleTv.text = title ?: item.name
+                revealAnims.add(TextReveal.revealText(views.titleTv, 350, 450))
+                TextReveal.growFromTop(views.underlineV, 500, 450)
+                views.subtitleTv.text = subtitle ?: ""
+                revealAnims.add(TextReveal.revealText(views.subtitleTv, 500, 600))
+                if (content != null) {
+                    views.textTv.text = content
+                    val delay = (shownAt + 850 - SystemClock.uptimeMillis()).coerceAtLeast(0)
+                    revealAnims.add(TextReveal.revealText(views.textTv, delay, 1200))
+                } else {
+                    views.textTv.text = noIntroduceMsg
+                    revealAnims.add(TextReveal.revealText(views.textTv, 850, 1200))
+                }
+            }
         }
     }
 
@@ -127,9 +151,11 @@ class InPageDetailController(
      * 起点取卡片图在卡片内的实际显示矩形(剔除fitCenter留白);终点按图片宽高比
      * 推算大图在detailIv中的centerInside显示矩形,保证落位与真实显示位置一致,
      * 交叉淡入时不发生尺寸突变
+     * @param crossFade true=有bigList大图,落位后飞行层与大图1s交叉渐变;
+     *                  false=无big,底层即卡片图本身,落位后直接硬切
      * @return true表示飞行已启动;false表示卡片图未就绪,由调用方兜底
      */
-    private fun flyCardToDetail(cardIv: ImageView): Boolean {
+    private fun flyCardToDetail(cardIv: ImageView, crossFade: Boolean): Boolean {
         if (!fragment.isAdded) return false
         val drawable = cardIv.drawable ?: return false
         val dW = drawable.intrinsicWidth
@@ -181,21 +207,29 @@ class InPageDetailController(
                 .setDuration(750)
                 .setInterpolator(OvershootInterpolator(0.05f))
                 .withEndAction {
-                    // 落位矩形与真实大图显示区重合,直接硬切(交叉淡入会造成亮度瞬时下降,表现为闪烁)
-                    views.iv.alpha = 1f
-                    removeFlyWhenImageReady(fly)
+                    // 落位矩形与真实大图显示区重合:
+                    // 有big→飞行层渐隐、真实大图渐显(1s交叉);
+                    // 无big→底层与飞行层是同一张图,直接硬切
+                    if (crossFade) {
+                        crossFadeWhenImageReady(fly)
+                    } else {
+                        views.iv.alpha = 1f
+                        removeFlyWhenImageReady(fly)
+                    }
                 }
                 .start()
         return true
     }
 
-    /** 关闭浮层(淡出) */
+    /** 关闭浮层(淡出,加速曲线收尾) */
     fun close() {
         if (!isShown()) return
         cancelAnims()
-        views.rootLy.animate().alpha(0f).setDuration(350).withEndAction {
-            reset()
-        }.start()
+        views.rootLy.animate().alpha(0f).setDuration(550)
+                .setInterpolator(AccelerateInterpolator())
+                .withEndAction {
+                    reset()
+                }.start()
     }
 
     /** 直接收起浮层,不播动画(页面切走/定时器到达) */
@@ -209,6 +243,7 @@ class InPageDetailController(
         views.iv.alpha = 0f
         views.textTv.text = ""
         views.titleTv.text = ""
+        views.subtitleTv.text = ""
         if (fragment.isAdded) Glide.with(fragment).clear(views.iv)
     }
 
@@ -226,8 +261,50 @@ class InPageDetailController(
     }
 
     /**
-     * 移除飞行层:真实大图已就绪则立即移除(硬切,无动画);
-     * 未就绪时飞行层暂留(位置与大图显示区重合,视觉无差),待drawable出现的第一帧再移除
+     * 交叉渐变:飞行层渐隐、真实大图同步渐显(1s)。大图已就绪才开始(否则渐显的是空白);
+     * 未就绪时飞行层暂留(位置与大图显示区重合,视觉无差),待drawable出现的第一帧再开始
+     */
+    private fun crossFadeWhenImageReady(fly: ImageView) {
+        if (views.iv.drawable != null) {
+            crossFade(fly)
+            return
+        }
+        views.iv.viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
+                if (views.iv.drawable == null) return true
+                views.iv.viewTreeObserver.removeOnPreDrawListener(this)
+                if (flyIv === fly) crossFade(fly)
+                return true
+            }
+        })
+    }
+
+    /**
+     * 飞行层渐隐 + 大图渐显,1s同步,结束后移除飞行层。
+     * 注意:两层同时半透明期间叠加透明度低于1,紫色背景会轻微透出(中点约25%),
+     * 若观感发暗可改回"大图先垫底、只渐隐飞行层"的做法
+     */
+    private fun crossFade(fly: ImageView) {
+        views.iv.animate()
+                .alpha(1f)
+                .setDuration(1000)
+                .setInterpolator(DecelerateInterpolator())
+                .start()
+        // fly.animate()复用移动动画的ViewPropertyAnimator,需重置插值器,
+        // 否则残留Overshoot会让alpha冲过0再回弹,表现为渐隐结尾闪一下
+        fly.animate()
+                .alpha(0f)
+                .setDuration(1000)
+                .setInterpolator(DecelerateInterpolator())
+                .withEndAction {
+                    removeFlyView(fly)
+                }
+                .start()
+    }
+
+    /**
+     * 无big时的落位处理:底层即卡片图本身,drawable就绪后立即移除飞行层
+     * (两者是同一张图,硬切无视觉差异,交叉渐变反而会无谓地变暗)
      */
     private fun removeFlyWhenImageReady(fly: ImageView) {
         if (views.iv.drawable != null) {

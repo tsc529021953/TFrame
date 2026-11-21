@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- flavorB: 列表网格间隔10dp(列间/行间),对称半间隔decoration;边缘=rv 30dp margin+5dp=40dp -->
+    <dimen name="travel_btn_ly_space">10dp</dimen>
+    <dimen name="travel_btn_ly_height">165dp</dimen>
+</resources>

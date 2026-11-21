@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class WrapGridLayoutManager extends GridLayoutManager {
     private Boolean mSv = true;
+    private Boolean mRtl = true;
 
     public WrapGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -22,6 +23,15 @@ public class WrapGridLayoutManager extends GridLayoutManager {
 
     public WrapGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
         super(context, spanCount, orientation, reverseLayout);
+    }
+
+    /**
+     * @param rtl 是否强制RTL(竖向网格时会把第0列排到右边)。历史行为固定true,
+     *            竖向逐行填充的网格需传false
+     */
+    public WrapGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout, boolean rtl) {
+        super(context, spanCount, orientation, reverseLayout);
+        this.mRtl = rtl;
     }
 
     @Override
@@ -42,6 +52,6 @@ public class WrapGridLayoutManager extends GridLayoutManager {
     @Override
     protected boolean isLayoutRTL() {
 //        return super.isLayoutRTL();
-        return true;
+        return mRtl;
     }
 }

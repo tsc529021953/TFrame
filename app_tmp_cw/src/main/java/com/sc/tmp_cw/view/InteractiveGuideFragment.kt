@@ -41,7 +41,7 @@ class InteractiveGuideFragment: BaseBindingFragment<FragmentInteractiveGuideBind
                 InteractiveFragment.iFragment?.stop2()
                 // TODO 弹出密码框
                 PersonalTipDialog.inputNameDialog(context!!.resources.getString(R.string.setting_please_enter_password), null, {
-                    if ((FlavorConfigUtil.isFlavorB() && it == "wh128888") || (!FlavorConfigUtil.isFlavorB() && it == "8888")) {
+                    if ((FlavorConfigUtil.isFlavorB() && it == "CRRCwh12") || (!FlavorConfigUtil.isFlavorB() && it == "8888")) {
                         ARouter.getInstance().build(MessageConstant.ROUTH_SETTING).navigation(this.context)
                         return@inputNameDialog null
                     } else return@inputNameDialog context!!.resources.getString(R.string.setting_password_error)

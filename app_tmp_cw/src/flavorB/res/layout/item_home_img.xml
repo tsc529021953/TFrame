@@ -3,24 +3,17 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         >
 
+    <!-- flavorB:去掉底部文字,单图填满整个item;宽度match_parent填满网格列宽
+         (固定140dp时竖向网格不铺满列,差额变成不均匀空隙)。main版保留tv,共享adapter已改为tv可空查找 -->
     <LinearLayout style="@style/travel_btn_ly"
+                  android:layout_width="match_parent"
                   android:id="@+id/bg_ly"
             >
 
         <ImageView style="@style/travel_btn_iv"
                    android:id="@+id/iv"
-                />
-
-        <TextView style="@style/travel_btn_tv"
-                  android:layout_width="wrap_content"
-                  android:layout_height="23dp"
-                  android:layout_marginTop="10dp"
-                  android:gravity="center"
-                  android:layout_gravity="center"
-                  android:id="@+id/tv"
-                  android:paddingStart="15dp"
-                  android:paddingEnd="15dp"
-                  android:background="@drawable/shape_title_cv_bg"
+                   android:layout_height="match_parent"
+                    android:scaleType="fitXY"
                 />
 
     </LinearLayout>

@@ -14,7 +14,7 @@
                       app:layout_constraintStart_toStartOf="parent"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      app:layout_constraintEnd_toStartOf="@+id/cate_ly"
+                      app:layout_constraintEnd_toStartOf="@+id/si_ly"
                 >
 
             <ImageView style="@style/in_btn_iv"
@@ -28,11 +28,29 @@
         </LinearLayout>
 
         <LinearLayout style="@style/in_btn_ly"
+                android:id="@+id/si_ly"
+                app:layout_constraintStart_toEndOf="@+id/line_ly"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cate_ly"
+                >
+
+            <ImageView style="@style/in_btn_iv"
+                    android:id="@+id/si_iv"
+                    android:src="@drawable/selector_icon_si_search"
+                    />
+            <TextView style="@style/in_btn_tv"
+                    android:text="@string/in_station_search"
+                    />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/in_btn_ly"
                       android:id="@+id/cate_ly"
-                      app:layout_constraintStart_toEndOf="@+id/line_ly"
+                      app:layout_constraintStart_toEndOf="@+id/si_ly"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      app:layout_constraintEnd_toStartOf="@+id/si_ly"
+                      app:layout_constraintEnd_toStartOf="@+id/travel_ly"
                 >
 
             <ImageView style="@style/in_btn_iv"
@@ -46,26 +64,8 @@
         </LinearLayout>
 
         <LinearLayout style="@style/in_btn_ly"
-                      android:id="@+id/si_ly"
-                      app:layout_constraintStart_toEndOf="@+id/cate_ly"
-                      app:layout_constraintTop_toTopOf="parent"
-                      app:layout_constraintBottom_toBottomOf="parent"
-                      app:layout_constraintEnd_toStartOf="@+id/travel_ly"
-                >
-
-            <ImageView style="@style/in_btn_iv"
-                       android:id="@+id/si_iv"
-                       android:src="@drawable/selector_icon_si_search"
-                    />
-            <TextView style="@style/in_btn_tv"
-                      android:text="@string/in_station_search"
-                    />
-
-        </LinearLayout>
-
-        <LinearLayout style="@style/in_btn_ly"
                       android:id="@+id/travel_ly"
-                      app:layout_constraintStart_toEndOf="@+id/si_ly"
+                      app:layout_constraintStart_toEndOf="@+id/cate_ly"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
                       app:layout_constraintEnd_toEndOf="parent"

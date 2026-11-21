@@ -8,13 +8,14 @@
             android:layout_marginTop="20dp"
             >
 
+        <!-- flavorB: 对称半间隔decoration(左右各10dp),边缘=此margin+10dp=40dp;每行5个竖向网格 -->
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/travel_btn_ly_margin"
-                android:layout_marginEnd="@dimen/travel_btn_ly_margin"
-                android:layout_marginTop="60dp"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="20dp"
                 />
 
         <!-- 方案2(flavorB):图片详情页内浮层,点击卡片后浮现;非flavorB永不显示。
@@ -39,53 +40,88 @@
                 <ImageView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:id="@+id/detail_iv"
                         android:layout_margin="@dimen/introduce_margin"
                         />
 
-                <ScrollView
+                <!-- 右列:标题块置于正文ScrollView上方,与其同宽 -->
+                <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="2"
+                        android:orientation="vertical"
                         android:layout_margin="@dimen/introduce_margin"
-                        android:fillViewport="true"
                         >
 
-                    <TextView
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                            style="@style/top_title_ly_style2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:id="@+id/detail_text_tv"
-                            android:textColor="@color/text_color"
-                            android:textSize="@dimen/introduce_text_size"
-                            android:gravity="center_vertical"
-                            />
+                            android:paddingTop="0dp"
+                            >
 
-                </ScrollView>
+                        <!-- flavorB:竖线置于标题左侧,标题下方新增副标题(颜色同竖线) -->
+                        <View style="@style/top_title_iv_style"
+                              android:id="@+id/detail_underline_v"
+                              android:layout_width="2dp"
+                              android:layout_height="0dp"
+                              app:layout_constraintStart_toStartOf="parent"
+                              app:layout_constraintTop_toTopOf="@+id/detail_title_tv"
+                              app:layout_constraintBottom_toBottomOf="@+id/detail_subtitle_tv"
+                              />
+
+                        <TextView style="@style/top_title_tv_style"
+                                  android:id="@+id/detail_title_tv"
+                                  android:layout_width="0dp"
+                                  android:layout_marginStart="12dp"
+                                  android:maxLines="1"
+                                  android:ellipsize="end"
+                                  app:layout_constraintStart_toEndOf="@+id/detail_underline_v"
+                                  app:layout_constraintEnd_toEndOf="parent"
+                                  app:layout_constraintTop_toTopOf="parent"
+                                  tools:text="测试"
+                                />
+
+                        <!-- 副标题:txt第二行,无txt时为空字符串 -->
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/detail_subtitle_tv"
+                                android:layout_marginTop="6dp"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:textColor="#0090FF"
+                                android:textSize="15sp"
+                                app:layout_constraintStart_toStartOf="@+id/detail_title_tv"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/detail_title_tv"
+                                tools:text="副标题"
+                              />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:fillViewport="true"
+                            >
+
+                        <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/detail_text_tv"
+                                android:textColor="@color/text_color"
+                                android:textSize="@dimen/introduce_text_size"
+                                android:gravity="center_vertical"
+                                />
+
+                    </ScrollView>
+
+                </LinearLayout>
 
             </LinearLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                    style="@style/top_title_ly_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:paddingTop="0dp"
-                    >
-
-                <TextView style="@style/top_title_tv_style"
-                          android:id="@+id/detail_title_tv"
-                          tools:text="测试"
-                        />
-
-                <View style="@style/top_title_iv_style"
-                      android:id="@+id/detail_underline_v"
-                      app:layout_constraintStart_toStartOf="@+id/detail_title_tv"
-                      app:layout_constraintEnd_toEndOf="@+id/detail_title_tv"
-                      app:layout_constraintTop_toBottomOf="@+id/detail_title_tv"
-                      />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </FrameLayout>
 

@@ -249,6 +249,13 @@
         <item name="android:paddingStart">20dp</item>
         <item name="android:paddingTop">20dp</item>
     </style>
+    <style name="top_title_ly_style2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
     <style name="top_title_tv_style">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
